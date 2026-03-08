@@ -5,16 +5,22 @@
 }
 
 :root {
-  --bg-primary: #0f1117;
-  --bg-secondary: #1a1d2e;
-  --bg-card: #1e2235;
-  --bg-card-hover: #252840;
-  --border: #2a2d45;
-  --text-primary: #e8eaf6;
-  --text-secondary: #8b8fa8;
-  --text-muted: #5a5f7a;
-  --accent-blue: #4f8ef7;
-  --accent-purple: #8b5cf6;
+  /* Nelson City Council brand */
+  --ncc-blue: #0081C6;
+  --ncc-blue-dark: #00629a;
+  --ncc-blue-light: #33a3d9;
+  --ncc-blue-pale: #e6f4fb;
+
+  --bg-primary: #0b1a24;
+  --bg-secondary: #0f2233;
+  --bg-card: #132a3e;
+  --bg-card-hover: #1a3450;
+  --border: #1e3a52;
+  --text-primary: #e8f4fb;
+  --text-secondary: #7aaec8;
+  --text-muted: #4a7a96;
+  --accent-blue: #0081C6;
+  --accent-purple: #5b8dd9;
   --accent-pink: #ec4899;
   --accent-green: #10b981;
   --accent-orange: #f59e0b;
@@ -25,7 +31,7 @@
   --linkedin: #0a66c2;
   --tiktok: #ff0050;
   --youtube: #ff0000;
-  --sidebar-width: 240px;
+  --sidebar-width: 256px;
 }
 
 body {

@@ -14,6 +14,7 @@ const platformIcons = {
   linkedin:  'in',
   tiktok:    '♪',
   youtube:   '▶',
+  nextdoor:  'nd',
 }
 
 export default function PlatformCard({ platform }) {

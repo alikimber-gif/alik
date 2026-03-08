@@ -15,20 +15,46 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 24px 20px 20px;
+  padding: 20px 16px 18px;
   border-bottom: 1px solid var(--border);
 }
 
-.logo-icon {
-  font-size: 22px;
-  color: var(--accent-purple);
+.logo-n {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--ncc-blue);
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -1px;
+}
+
+.logo-text-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .logo-text {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+.logo-tagline {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-nav {
@@ -73,8 +99,8 @@
 }
 
 .nav-item.active {
-  background: rgba(79, 142, 247, 0.12);
-  color: var(--accent-blue);
+  background: rgba(0, 129, 198, 0.15);
+  color: var(--ncc-blue-light);
 }
 
 .nav-icon {
@@ -121,14 +147,15 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  background: var(--ncc-blue);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 700;
   color: white;
   flex-shrink: 0;
+  letter-spacing: -0.5px;
 }
 
 .user-info {

@@ -16,7 +16,7 @@ const overviewCards = [
     key: 'totalFollowers',
     changeKey: 'followersChange',
     format: 'number',
-    color: '#4f8ef7',
+    color: '#0081C6',
     icon: '◉',
   },
   {
@@ -24,7 +24,7 @@ const overviewCards = [
     key: 'totalReach',
     changeKey: 'reachChange',
     format: 'number',
-    color: '#8b5cf6',
+    color: '#33a3d9',
     icon: '◈',
   },
   {

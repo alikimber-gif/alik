@@ -11,20 +11,23 @@ const navItems = [
 ]
 
 const platformLinks = [
-  { id: 'twitter', label: 'Twitter / X', color: '#1da1f2' },
-  { id: 'instagram', label: 'Instagram', color: '#e1306c' },
   { id: 'facebook', label: 'Facebook', color: '#1877f2' },
+  { id: 'instagram', label: 'Instagram', color: '#e1306c' },
+  { id: 'twitter', label: 'Twitter / X', color: '#1da1f2' },
   { id: 'linkedin', label: 'LinkedIn', color: '#0a66c2' },
-  { id: 'tiktok', label: 'TikTok', color: '#ff0050' },
   { id: 'youtube', label: 'YouTube', color: '#ff0000' },
+  { id: 'nextdoor', label: 'Nextdoor', color: '#00b246' },
 ]
 
 export default function Sidebar({ activeNav, onNavChange }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <span className="logo-icon">◈</span>
-        <span className="logo-text">SocialHub</span>
+        <div className="logo-n">N</div>
+        <div className="logo-text-block">
+          <span className="logo-text">Nelson City</span>
+          <span className="logo-tagline">te kaunihera o whakatū</span>
+        </div>
       </div>
 
       <nav className="sidebar-nav">
@@ -55,10 +58,10 @@ export default function Sidebar({ activeNav, onNavChange }) {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="user-avatar">AK</div>
+        <div className="user-avatar">NCC</div>
         <div className="user-info">
-          <p className="user-name">Alik Brand</p>
-          <p className="user-role">Admin</p>
+          <p className="user-name">NCC Social Team</p>
+          <p className="user-role">Administrator</p>
         </div>
         <button className="settings-btn" title="Settings">⚙</button>
       </div>

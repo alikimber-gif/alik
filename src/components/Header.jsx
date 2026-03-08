@@ -9,7 +9,8 @@ export default function Header({ title, dateRange, onDateRangeChange }) {
       <div className="header-left">
         <h1 className="header-title">{title}</h1>
         <p className="header-subtitle">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          Nelson City Council · Social Media Dashboard ·{' '}
+          {new Date().toLocaleDateString('en-NZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
       <div className="header-right">
