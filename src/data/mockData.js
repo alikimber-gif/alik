@@ -130,7 +130,7 @@ export const recentPosts = [
   {
     id: 4,
     platform: 'linkedin',
-    content: 'Exciting news: We're hiring! Looking for passionate engineers who want to shape the future...',
+    content: "Exciting news: We're hiring! Looking for passionate engineers who want to shape the future...",
     image: null,
     likes: 842,
     comments: 143,
