@@ -38,7 +38,7 @@ export function countSearches(data) {
 
 export function parseJSON(raw) {
   // Strip markdown fences
-  let text = raw
+  const text = raw
     .replace(/^```(?:json)?\s*/im, "")
     .replace(/\s*```\s*$/im, "")
     .trim();
@@ -69,7 +69,7 @@ export function parseJSON(raw) {
 
   try {
     return JSON.parse(jsonStr);
-  } catch (e1) {
+  } catch {
     // Try fixing trailing commas
     const fixed = jsonStr.replace(/,(\s*[}\]])/g, "$1");
     try {

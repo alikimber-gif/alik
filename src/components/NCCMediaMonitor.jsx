@@ -291,7 +291,7 @@ export default function NCCMediaMonitor() {
             <div style={{ textAlign: "center", padding: "28px", color: "#bbb", fontSize: 13 }}>No stories match the current filters.</div>
           )}
 
-          {filtered.map((s, i) => <StoryCard key={s.id != null ? s.id : i} story={s} index={i} />)}
+          {filtered.map((s, i) => <StoryCard key={s.id !== null && s.id !== undefined ? s.id : i} story={s} index={i} />)}
 
           {stories.length === 0 && (
             <div style={{ textAlign: "center", padding: "40px", color: "#bbb", border: "1.5px dashed #ddd", borderRadius: 10 }}>
