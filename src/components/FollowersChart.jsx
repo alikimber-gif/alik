@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import { followersGrowthData, platforms } from '../data/mockData'
 import './Chart.css'
