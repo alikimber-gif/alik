@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './Header.css'
 
 const ranges = ['7D', '30D', '90D', '1Y']
