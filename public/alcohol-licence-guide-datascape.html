@@ -9,7 +9,7 @@
   Replace YOUR_DOMAIN with the URL where this app is hosted.
 
   <iframe
-    src="https://YOUR_DOMAIN/alcohol-licence-guide-iframe.html"
+    src="https://www.nelson.govt.nz/alcohol-licence-guide-iframe.html"
     width="100%"
     height="900"
     style="border:none;border-radius:8px;display:block"
@@ -22,6 +22,7 @@
 
   <script>
   window.addEventListener('message', function(e) {
+    if (e.origin !== 'https://www.nelson.govt.nz') return;
     if (e.data && e.data.type === 'ncc-alg-resize') {
       var f = document.querySelector('iframe[title="Alcohol Licence Application Guide"]');
       if (f) f.style.height = (e.data.height + 32) + 'px';

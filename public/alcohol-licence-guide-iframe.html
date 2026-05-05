@@ -722,7 +722,7 @@ function mark(n) {
 // Auto-resize iframe parent via postMessage
 function notifyResize() {
   const h = document.body.scrollHeight;
-  try { window.parent.postMessage({ type: 'ncc-alg-resize', height: h }, '*'); } catch(e) {}
+  try { window.parent.postMessage({ type: 'ncc-alg-resize', height: h }, 'https://www.nelson.govt.nz'); } catch(e) {}
 }
 // Observe height changes and notify parent
 if (window.ResizeObserver) {
