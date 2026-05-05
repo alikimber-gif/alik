@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applying for an Alcohol Licence — Nelson City Council</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300..900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ncc-blue:       #0077C8;
+  --ncc-blue-ink:   #174A5B;
+  --ncc-slate:      #7A99AC;
+  --ncc-teal:       #00AB8E;
+  --ncc-yellow:     #FFC72C;
+  --ncc-orange:     #FF5C39;
+  --ncc-white:      #FFFFFF;
+  --ncc-paper:      #F6F8FA;
+  --ncc-mist:       #DDE5EB;
+  --ncc-stone:      #B5C2CB;
+  --ncc-graphite:   #4A5A66;
+  --ncc-ink:        #1F2B33;
+  --accent-soft:    #E5F1FA;
+  --tint-teal:      #D9F3EC;
+  --tint-yellow:    #FFF3C9;
+  --tint-orange:    #FFE1D6;
+  --tint-green:     #EAF6DF;
+  --font-sans:      'Mulish', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shadow-sm:      0 1px 2px rgba(23,74,91,.06), 0 1px 3px rgba(23,74,91,.08);
+  --shadow-md:      0 2px 4px rgba(23,74,91,.06), 0 4px 12px rgba(23,74,91,.08);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ncc-paper);
+  color: var(--ncc-ink);
+}
+
+/* ── Page wrap ── */
+.page-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+/* ── Hero ── */
+.hero { margin-bottom: 32px; text-align: center; }
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ncc-blue);
+  margin-bottom: 6px;
+}
+.hero h1 {
+  font-size: clamp(20px, 4vw, 30px);
+  font-weight: 800;
+  color: var(--ncc-blue-ink);
+  line-height: 1.18;
+  margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--ncc-graphite);
+  line-height: 1.55;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Tracker ── */
+.tracker {
+  background: var(--ncc-white);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--ncc-mist);
+}
+.tracker-icon { color: var(--ncc-blue); flex-shrink: 0; }
+.tracker-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--ncc-mist);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.tracker-bar-fill {
+  height: 100%;
+  background: var(--ncc-blue);
+  border-radius: 999px;
+  transition: width .4s cubic-bezier(0,0,.2,1);
+  width: 0;
+}
+.tracker-label { font-size: 13px; color: var(--ncc-graphite); white-space: nowrap; }
+.tracker-label strong { color: var(--ncc-blue-ink); }
+
+/* ── Phase label ── */
+.phase-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  padding: 5px 13px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.phase-you      { background: var(--accent-soft);   color: var(--ncc-blue); }
+.phase-council  { background: var(--tint-teal);      color: #007A66; }
+.phase-decision { background: var(--tint-yellow);    color: #8B6500; }
+.phase-outcome  { background: var(--accent-soft);    color: var(--ncc-blue); }
+
+/* ── Step cards ── */
+.phase-group { margin-bottom: 6px; }
+
+.step-card {
+  background: var(--ncc-white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+.step-card:hover { box-shadow: var(--shadow-md); }
+.step-card.active {
+  border-color: var(--ncc-blue);
+  box-shadow: var(--shadow-md), 0 0 0 3px rgba(0,119,200,.10);
+}
+.step-card.council-card.active { border-color: var(--ncc-teal); }
+.step-card.decision-card.active { border-color: var(--ncc-yellow); }
+.step-card.checked .step-num { background: var(--ncc-teal) !important; color: white !important; }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  user-select: none;
+}
+.step-num {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: var(--accent-soft);
+  color: var(--ncc-blue);
+  transition: background .2s, color .2s;
+}
+.council-card  .step-num { background: var(--tint-teal);   color: #007A66; }
+.decision-card .step-num { background: var(--tint-yellow); color: #8B6500; }
+
+.step-title-wrap { flex: 1; min-width: 0; }
+.step-title    { font-size: 16px; font-weight: 700; color: var(--ncc-blue-ink); line-height: 1.2; }
+.step-subtitle { font-size: 13px; color: var(--ncc-graphite); margin-top: 2px; line-height: 1.4; }
+
+.step-chevron {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ncc-stone);
+  flex-shrink: 0;
+  transition: transform .25s cubic-bezier(.2,0,0,1), color .2s;
+}
+.step-card.active .step-chevron { transform: rotate(180deg); color: var(--ncc-blue); }
+.council-card.active  .step-chevron { color: var(--ncc-teal); }
+
+/* Accordion */
+.step-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s cubic-bezier(0,0,.2,1); }
+.step-body.open { grid-template-rows: 1fr; }
+.step-body-inner { overflow: hidden; }
+.step-body-content { padding: 0 18px 18px 70px; }
+.step-body-content p { font-size: 15px; color: var(--ncc-graphite); line-height: 1.65; margin-bottom: 10px; }
+.step-body-content p:last-child { margin-bottom: 0; }
+.step-body-content ul { list-style: none; display: flex; flex-direction: column; gap: 5px; margin: 3px 0 10px; padding: 0; }
+.step-body-content ul li {
+  font-size: 15px; color: var(--ncc-graphite); display: flex; align-items: flex-start; gap: 7px; line-height: 1.5;
+}
+.step-body-content ul li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ncc-blue); flex-shrink: 0; margin-top: 6px;
+}
+.council-card .step-body-content ul li::before { background: var(--ncc-teal); }
+
+.step-tag {
+  display: inline-flex;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  padding: 2px 9px; border-radius: 999px; margin-bottom: 9px;
+  background: var(--accent-soft); color: var(--ncc-blue);
+}
+.council-card  .step-tag { background: var(--tint-teal);   color: #007A66; }
+.decision-card .step-tag { background: var(--tint-yellow); color: #8B6500; }
+
+.tip-box {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--ncc-blue);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px; margin-top: 10px;
+  font-size: 13px; color: var(--ncc-blue-ink); line-height: 1.55;
+}
+
+/* Check button */
+.check-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 12px; padding: 7px 14px;
+  border-radius: 999px; border: 1.5px solid var(--ncc-blue);
+  background: transparent; color: var(--ncc-blue);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+}
+.check-btn:hover { background: var(--accent-soft); }
+.check-btn.marked { background: var(--ncc-teal); border-color: var(--ncc-teal); color: white; }
+.check-btn.marked:hover { background: #009075; border-color: #009075; }
+.council-card .check-btn { border-color: var(--ncc-teal); color: #007A66; }
+.council-card .check-btn:hover { background: var(--tint-teal); }
+.council-card .check-btn.marked { background: var(--ncc-teal); border-color: var(--ncc-teal); color: white; }
+
+/* Step connector */
+.step-connector { display: flex; padding-left: 34px; margin: -3px 0; pointer-events: none; }
+.step-connector .line { width: 2px; height: 12px; background: var(--ncc-mist); border-radius: 2px; margin-left: 18px; }
+.step-connector.council .line { background: #B2E0D8; }
+
+/* Section connector */
+.section-connector {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; margin: 4px 0 18px; color: var(--ncc-stone);
+}
+.connector-line { width: 2px; height: 28px; background: linear-gradient(to bottom, var(--ncc-mist), var(--ncc-stone)); border-radius: 2px; }
+.connector-label { font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--ncc-stone); text-transform: uppercase; }
+
+/* Branch */
+.branch-question {
+  background: var(--ncc-white); border-radius: 12px; box-shadow: var(--shadow-sm);
+  padding: 18px; border: 1.5px solid var(--ncc-yellow);
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+}
+.branch-icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--tint-yellow); color: #8B6500;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0; font-weight: 900;
+}
+.branch-text { font-size: 16px; font-weight: 700; color: var(--ncc-blue-ink); line-height: 1.25; }
+.branch-sub  { font-size: 13px; color: var(--ncc-graphite); margin-top: 2px; }
+.branch-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 480px) { .branch-paths { grid-template-columns: 1fr; } }
+.branch-path { border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.branch-path-header {
+  padding: 10px 14px; font-size: 13px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 7px;
+}
+.no-obj  .branch-path-header { background: var(--ncc-teal);   color: white; }
+.with-obj .branch-path-header { background: var(--ncc-orange); color: white; }
+.branch-path-body {
+  background: var(--ncc-white); padding: 12px 14px;
+  font-size: 13px; color: var(--ncc-graphite); line-height: 1.55;
+  border: 1.5px solid; border-top: none; border-radius: 0 0 12px 12px;
+}
+.no-obj  .branch-path-body { border-color: var(--ncc-teal); }
+.with-obj .branch-path-body { border-color: var(--ncc-orange); }
+.branch-path-body strong { display: block; font-weight: 600; color: var(--ncc-blue-ink); margin-bottom: 3px; font-size: 14px; }
+
+/* Outcome */
+.outcome-banner {
+  background: linear-gradient(135deg, #174A5B 0%, #0077C8 100%);
+  border-radius: 14px; padding: 26px 24px; color: white;
+  margin: 8px 0 10px; display: flex; align-items: center; gap: 18px;
+}
+.outcome-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 26px;
+}
+.outcome-text h2 { font-size: 20px; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 6px; }
+.outcome-text p  { font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.55; margin: 0; }
+.outcome-pills   { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.outcome-pill    { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: white; border-radius: 999px; padding: 3px 12px; font-size: 12px; font-weight: 500; }
+
+/* Help card */
+.help-card {
+  background: var(--ncc-white); border-radius: 12px; box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--ncc-mist); padding: 18px;
+  display: flex; align-items: flex-start; gap: 14px; margin-top: 28px;
+}
+.help-icon {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--ncc-blue);
+}
+.help-card h3  { font-size: 16px; font-weight: 700; color: var(--ncc-blue-ink); margin-bottom: 3px; }
+.help-card > div > p { font-size: 13px; color: var(--ncc-graphite); line-height: 1.5; margin-bottom: 10px; }
+.help-contacts { display: flex; flex-direction: column; gap: 5px; }
+.help-contact  { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ncc-graphite); }
+.help-contact a { color: var(--ncc-blue); text-decoration: none; font-weight: 500; }
+.help-contact a:hover { text-decoration: underline; }
+.contact-icon  { color: var(--ncc-slate); flex-shrink: 0; }
+
+/* Footer */
+.footer-note {
+  margin-top: 40px; padding-top: 20px;
+  border-top: 1px solid var(--ncc-mist);
+  font-size: 12px; color: var(--ncc-stone); line-height: 1.6; text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .page-wrap { padding: 20px 14px 48px; }
+  .step-body-content { padding-left: 52px; }
+  .outcome-banner { flex-direction: column; text-align: center; }
+  .help-card { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<main class="page-wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Step-by-step guide</div>
+    <h1>Applying for an alcohol licence<br>in Whakatū Nelson</h1>
+    <p class="hero-sub">Follow these steps to apply for an On, Off, Club, or Special licence. Tap each step to learn more.</p>
+  </div>
+
+  <!-- Tracker -->
+  <div class="tracker">
+    <svg class="tracker-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm3.5 5.5l-4 5a.75.75 0 01-1.1.1l-2-2a.75.75 0 011.1-1l1.4 1.4 3.5-4.4a.75.75 0 011.1 1z" fill="currentColor"/>
+    </svg>
+    <div class="tracker-bar-wrap"><div class="tracker-bar-fill" id="trackerBar"></div></div>
+    <div class="tracker-label" id="trackerLabel"><strong>0</strong> of 5 steps done</div>
+  </div>
+
+  <!-- YOUR STEPS -->
+  <div class="phase-label phase-you">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4" r="2.5" fill="currentColor"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+    Your steps
+  </div>
+
+  <div class="phase-group">
+
+    <div class="step-card" id="step1" onclick="toggle('step1')">
+      <div class="step-header">
+        <div class="step-num" id="num1">1</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Decide what type of licence you need</div>
+          <div class="step-subtitle">On, Off, Club, or Special?</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="body1"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Applicant action</div>
+        <p>The type of licence determines what you can sell and when. Choose the one that fits your business:</p>
+        <ul>
+          <li><strong>On licence</strong> — alcohol consumed on the premises (bar, café, restaurant)</li>
+          <li><strong>Off licence</strong> — alcohol sold for consumption elsewhere (bottle store, supermarket)</li>
+          <li><strong>Club licence</strong> — members-only club (RSA, sports club)</li>
+          <li><strong>Special licence</strong> — one-off event or occasion</li>
+        </ul>
+        <div class="tip-box"><strong>Not sure?</strong> Contact the NCC licensing team before you start — they'll point you in the right direction.</div>
+        <button class="check-btn" id="chk1" onclick="event.stopPropagation();mark(1)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as done
+        </button>
+      </div></div></div>
+    </div>
+    <div class="step-connector"><div class="line"></div></div>
+
+    <div class="step-card" id="step2" onclick="toggle('step2')">
+      <div class="step-header">
+        <div class="step-num" id="num2">2</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Check the local rules</div>
+          <div class="step-subtitle">Local Alcohol Policy, trading hours, and planning rules</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="body2"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Applicant action</div>
+        <p>Before applying, check that your premises and proposed hours are permitted under:</p>
+        <ul>
+          <li>Nelson City Council's <strong>Local Alcohol Policy (LAP)</strong></li>
+          <li>District Plan <strong>planning and zoning rules</strong> for your address</li>
+          <li>Any <strong>ban areas</strong> or restricted zones that apply</li>
+          <li><strong>Food registration</strong> requirements (if selling food alongside alcohol)</li>
+        </ul>
+        <div class="tip-box"><strong>Tip:</strong> The LAP sets maximum trading hours in Nelson. Your licence cannot exceed these hours, so check them early.</div>
+        <button class="check-btn" id="chk2" onclick="event.stopPropagation();mark(2)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as done
+        </button>
+      </div></div></div>
+    </div>
+    <div class="step-connector"><div class="line"></div></div>
+
+    <div class="step-card" id="step3" onclick="toggle('step3')">
+      <div class="step-header">
+        <div class="step-num" id="num3">3</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Get qualified</div>
+          <div class="step-subtitle">LCQ + Manager's Certificate required</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="body3"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Applicant action</div>
+        <p>Every licensed premises must have a Certified Manager on duty. This requires two things:</p>
+        <ul>
+          <li>Complete the <strong>LCQ (Licence Controller Qualification)</strong> — a nationally recognised training course</li>
+          <li>Apply for a <strong>Manager's Certificate</strong> through Nelson City Council</li>
+        </ul>
+        <p>The Manager's Certificate application is separate from the premises licence application — start it early.</p>
+        <button class="check-btn" id="chk3" onclick="event.stopPropagation();mark(3)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as done
+        </button>
+      </div></div></div>
+    </div>
+    <div class="step-connector"><div class="line"></div></div>
+
+    <div class="step-card" id="step4" onclick="toggle('step4')">
+      <div class="step-header">
+        <div class="step-num" id="num4">4</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Gather your documents</div>
+          <div class="step-subtitle">Plans, ID, host responsibility, and more</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="body4"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Applicant action</div>
+        <p>You'll need to provide these with your application:</p>
+        <ul>
+          <li><strong>Site plan</strong> of the premises (floor plan showing licensed area)</li>
+          <li><strong>Lease or ownership</strong> documents for the premises</li>
+          <li><strong>Host responsibility policy</strong> — how you'll manage intoxication, minors, and transport</li>
+          <li><strong>Food and beverage menu</strong> (for on-licences)</li>
+          <li><strong>Photo ID</strong> for all applicants / directors</li>
+        </ul>
+        <div class="tip-box"><strong>Tip:</strong> A complete application avoids delays. The Council will check completeness within 10 working days — missing documents mean starting the clock over.</div>
+        <button class="check-btn" id="chk4" onclick="event.stopPropagation();mark(4)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as done
+        </button>
+      </div></div></div>
+    </div>
+    <div class="step-connector"><div class="line"></div></div>
+
+    <div class="step-card" id="step5" onclick="toggle('step5')">
+      <div class="step-header">
+        <div class="step-num" id="num5">5</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Submit your application &amp; pay the fee</div>
+          <div class="step-subtitle">Online form + correct fee for your licence category</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="body5"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Applicant action</div>
+        <p>Submit your completed application form online through the NCC website, along with all supporting documents and the correct fee.</p>
+        <p>Fees are set by regulation and depend on your licence category and the risk level of your business. Contact NCC to confirm the current fee before submitting.</p>
+        <div class="tip-box"><strong>What happens next?</strong> Once submitted, your application moves to the Council — they take over from here. Processing typically takes several weeks, so apply well ahead of when you need your licence.</div>
+        <button class="check-btn" id="chk5" onclick="event.stopPropagation();mark(5)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as done
+        </button>
+      </div></div></div>
+    </div>
+
+  </div><!-- /phase-group -->
+
+  <!-- Connector -->
+  <div class="section-connector">
+    <div class="connector-line"></div>
+    <div class="connector-label">Submitted — Council takes over</div>
+    <div class="connector-line" style="background:linear-gradient(to bottom,#B5C2CB,#B2E0D8)"></div>
+  </div>
+
+  <!-- COUNCIL STEPS -->
+  <div class="phase-label phase-council">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M4 3V2a1 1 0 012 0v1M8 3V2a1 1 0 012 0v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    What the Council does
+  </div>
+
+  <div class="phase-group">
+
+    <div class="step-card council-card" id="stepC6" onclick="toggle('stepC6')">
+      <div class="step-header">
+        <div class="step-num">6</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Application check</div>
+          <div class="step-subtitle">Completeness confirmed within ~10 working days</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="bodyC6"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Council action</div>
+        <p>The DLC Secretariat reviews your application to confirm it's complete and correct. You'll be notified within approximately 10 working days of receipt.</p>
+        <p>If something's missing, they'll contact you — the clock pauses until the application is complete.</p>
+      </div></div></div>
+    </div>
+    <div class="step-connector council"><div class="line"></div></div>
+
+    <div class="step-card council-card" id="stepC7" onclick="toggle('stepC7')">
+      <div class="step-header">
+        <div class="step-num">7</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Public notice</div>
+          <div class="step-subtitle">Posted online and displayed at the premises</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="bodyC7"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Council action</div>
+        <p>Your application is publicly notified — a notice is posted on the NCC website and two notices are displayed at the premises.</p>
+        <p>This opens the <strong>25 working day window</strong> during which the public and reporting agencies may object.</p>
+      </div></div></div>
+    </div>
+    <div class="step-connector council"><div class="line"></div></div>
+
+    <div class="step-card council-card" id="stepC8" onclick="toggle('stepC8')">
+      <div class="step-header">
+        <div class="step-num">8</div>
+        <div class="step-title-wrap">
+          <div class="step-title">Sent to reporting agencies</div>
+          <div class="step-subtitle">Police, Medical Officer of Health, Inspector</div>
+        </div>
+        <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="step-body" id="bodyC8"><div class="step-body-inner"><div class="step-body-content">
+        <div class="step-tag">Council action</div>
+        <p>Copies of your application are sent to the three statutory reporting agencies:</p>
+        <ul>
+          <li><strong>New Zealand Police</strong></li>
+          <li><strong>Medical Officer of Health</strong> (Nelson Marlborough Health)</li>
+          <li><strong>Licensing Inspector</strong> (NCC)</li>
+        </ul>
+        <p>Each agency reviews the application and may file a report within the 25 working day window.</p>
+      </div></div></div>
+    </div>
+
+  </div>
+
+  <!-- Connector -->
+  <div class="section-connector">
+    <div class="connector-line" style="background:linear-gradient(to bottom,#B2E0D8,#FFC72C)"></div>
+    <div class="connector-label">25-day window closes</div>
+    <div class="connector-line" style="background:linear-gradient(to bottom,#FFC72C,#B5C2CB)"></div>
+  </div>
+
+  <!-- DECISION -->
+  <div class="phase-label phase-decision">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4.5H13L9.5 8l1.5 4.5L7 10 3 12.5 4.5 8 1 5.5h4.5z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>
+    Decision process
+  </div>
+
+  <div class="branch-question">
+    <div class="branch-icon">?</div>
+    <div>
+      <div class="branch-text">Any objections or opposition?</div>
+      <div class="branch-sub">After 25 working days, the DLC decides how to proceed</div>
+    </div>
+  </div>
+  <div class="branch-paths">
+    <div class="branch-path no-obj">
+      <div class="branch-path-header">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        No objections
+      </div>
+      <div class="branch-path-body">
+        <strong>10a — DLC Chair decides on the papers</strong>
+        No public hearing needed. The Chair reviews the reports and decides in writing. This is typically faster.
+      </div>
+    </div>
+    <div class="branch-path with-obj">
+      <div class="branch-path-header">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 3v4M7 9v1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+        Objections filed
+      </div>
+      <div class="branch-path-body">
+        <strong>10b — Public hearing held</strong>
+        The District Licensing Committee sits as a panel of 3. You (and objectors) present your case. Decisions are made after the hearing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector to outcome -->
+  <div class="section-connector" style="margin:14px 0">
+    <div class="connector-line" style="background:linear-gradient(to bottom,#B5C2CB,#0077C8)"></div>
+  </div>
+
+  <div class="phase-label phase-outcome">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7.5l3.5 3.5 6.5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Outcome
+  </div>
+
+  <div class="step-card" id="stepD11" onclick="toggle('stepD11')" style="margin-bottom:14px">
+    <div class="step-header">
+      <div class="step-num" style="background:var(--accent-soft);color:var(--ncc-blue)">11</div>
+      <div class="step-title-wrap">
+        <div class="step-title">Decision issued</div>
+        <div class="step-subtitle">Granted, declined, or granted with conditions</div>
+      </div>
+      <div class="step-chevron"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M4.5 6.75L9 11.25l4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="step-body" id="bodyD11"><div class="step-body-inner"><div class="step-body-content">
+      <p>The DLC issues its written decision. There are three possible outcomes:</p>
+      <ul>
+        <li><strong>Granted</strong> — your licence is issued as applied for</li>
+        <li><strong>Granted with conditions</strong> — your licence is issued with changes (e.g. reduced hours, additional requirements)</li>
+        <li><strong>Declined</strong> — the application does not meet the criteria under the Sale and Supply of Alcohol Act 2012</li>
+      </ul>
+      <p>If declined, you may appeal to the Alcohol Regulatory and Licensing Authority (ARLA).</p>
+    </div></div></div>
+  </div>
+
+  <!-- Outcome banner -->
+  <div class="outcome-banner">
+    <div class="outcome-icon">🎉</div>
+    <div class="outcome-text">
+      <h2>Licence in hand — trade safely</h2>
+      <p>Your first licence is valid for 1 year. After that, renew every 3 years — file at least 20 working days before expiry. Keep your host responsibility policy current. Your Manager's Certificate must stay in date.</p>
+      <div class="outcome-pills">
+        <span class="outcome-pill">Renews every 3 years</span>
+        <span class="outcome-pill">Manager's cert must be current</span>
+        <span class="outcome-pill">File 20 days before expiry</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help card -->
+  <div class="help-card">
+    <div class="help-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/></svg>
+    </div>
+    <div>
+      <h3>Need help? Talk to NCC early</h3>
+      <p>The licensing team is happy to answer questions before you apply. A pre-application conversation can save significant time and cost.</p>
+      <div class="help-contacts">
+        <div class="help-contact">
+          <svg class="contact-icon" width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13.5 10.5l-2-2a1 1 0 00-1.4 0l-.8.8a8.1 8.1 0 01-3.6-3.6l.8-.8a1 1 0 000-1.4L4.5 1A1 1 0 003 1l-.9.9C1.4 2.6 1.2 3.6 1.6 4.6A13 13 0 0011.4 14.4c1 .4 2 .2 2.7-.5l.9-.9a1 1 0 000-1.5z" fill="currentColor"/></svg>
+          <a href="tel:035460200">03 546 0200</a>
+        </div>
+        <div class="help-contact">
+          <svg class="contact-icon" width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 3h12a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1 4l7 5 7-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <a href="mailto:regulatory@ncc.govt.nz">regulatory@ncc.govt.nz</a>
+        </div>
+        <div class="help-contact">
+          <svg class="contact-icon" width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a5 5 0 100 10A5 5 0 008 1.5zM8 9V8M8 6v-.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          110 Trafalgar Street, Whakatū Nelson
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Indicative timings only — actual time depends on application complexity, completeness, and any hearings.<br>
+    Working days exclude 20 December – 15 January and mondayised public holidays.<br>
+    <strong>Nelson City Council</strong> · ncc.govt.nz
+  </div>
+
+</main>
+
+<script>
+// Accordion
+function toggle(id) {
+  const card = document.getElementById(id);
+  const bodyId = 'body' + id.replace('step', '');
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const wasOpen = card.classList.contains('active');
+  document.querySelectorAll('.step-card.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.step-body.open').forEach(b => b.classList.remove('open'));
+  if (!wasOpen) { card.classList.add('active'); body.classList.add('open'); notifyResize(); }
+}
+
+// Progress tracker
+let done = 0;
+const TOTAL = 5;
+function mark(n) {
+  const card = document.getElementById('step' + n);
+  const btn  = document.getElementById('chk' + n);
+  if (!card || !btn) return;
+  const already = card.classList.contains('checked');
+  if (already) {
+    card.classList.remove('checked');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Mark as done';
+    btn.classList.remove('marked');
+    done = Math.max(0, done - 1);
+  } else {
+    card.classList.add('checked');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Done ✓';
+    btn.classList.add('marked');
+    done = Math.min(TOTAL, done + 1);
+  }
+  const bar   = document.getElementById('trackerBar');
+  const label = document.getElementById('trackerLabel');
+  bar.style.width = Math.round((done / TOTAL) * 100) + '%';
+  if (done === TOTAL) {
+    bar.style.background = '#00AB8E';
+    label.innerHTML = '<strong>All 5 steps ready</strong> — submit your application!';
+  } else {
+    bar.style.background = '#0077C8';
+    label.innerHTML = '<strong>' + done + '</strong> of ' + TOTAL + ' steps done';
+  }
+}
+
+// Auto-resize iframe parent via postMessage
+function notifyResize() {
+  const h = document.body.scrollHeight;
+  try { window.parent.postMessage({ type: 'ncc-alg-resize', height: h }, '*'); } catch(e) {}
+}
+// Observe height changes and notify parent
+if (window.ResizeObserver) {
+  new ResizeObserver(notifyResize).observe(document.body);
+}
+
+// Open step 1 on load
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() { toggle('step1'); }, 80);
+});
+</script>
+
+</body>
+</html>

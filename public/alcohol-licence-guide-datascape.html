@@ -2,10 +2,35 @@
   DATASCAPE EMBED — Alcohol Licence Application Guide
   Nelson City Council · Regulatory Services · Alcohol Licensing
 
-  HOW TO USE:
-  Copy everything between the <div> tags below and paste into a
-  full-width HTML / content block in Datascape.
-  Datascape's own site stylesheet will handle all visual styling.
+  TWO OPTIONS:
+
+  OPTION A — IFRAME EMBED (recommended — fully interactive, keeps all styling)
+  Paste the <iframe> snippet below into a Datascape HTML block.
+  Replace YOUR_DOMAIN with the URL where this app is hosted.
+
+  <iframe
+    src="https://YOUR_DOMAIN/alcohol-licence-guide-iframe.html"
+    width="100%"
+    height="900"
+    style="border:none;border-radius:8px;display:block"
+    title="Alcohol Licence Application Guide"
+    loading="lazy"
+  ></iframe>
+
+  To auto-resize the iframe height as users expand steps, also add this
+  snippet (only if Datascape allows <script> in a separate block):
+
+  <script>
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'ncc-alg-resize') {
+      var f = document.querySelector('iframe[title="Alcohol Licence Application Guide"]');
+      if (f) f.style.height = (e.data.height + 32) + 'px';
+    }
+  });
+  </script>
+
+  OPTION B — PLAIN HTML PASTE (no styles — Datascape's own CSS applies)
+  Copy everything inside the <div> below and paste into a Datascape HTML block.
   No <style>, <link>, <script>, or inline style attributes are used.
 -->
 
