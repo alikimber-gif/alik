@@ -7,6 +7,7 @@ import EngagementChart from './components/EngagementChart'
 import AudienceChart from './components/AudienceChart'
 import PlatformCard from './components/PlatformCard'
 import RecentPosts from './components/RecentPosts'
+import AlcoholLicenceGuide from './components/AlcoholLicenceGuide'
 import { overviewStats, platforms } from './data/mockData'
 import './App.css'
 
@@ -54,6 +55,10 @@ export default function App() {
       <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
 
       <div className="main-content">
+        {activeNav === 'alcohol-licence' ? (
+          <AlcoholLicenceGuide />
+        ) : (
+        <>
         <Header
           title="Overview"
           dateRange={dateRange}
@@ -109,6 +114,8 @@ export default function App() {
             <RecentPosts />
           </section>
         </div>
+        </>
+        )}
       </div>
     </div>
   )

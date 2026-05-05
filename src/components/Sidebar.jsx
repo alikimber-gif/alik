@@ -8,6 +8,7 @@ const navItems = [
   { id: 'audience', label: 'Audience', icon: '◉' },
   { id: 'schedule', label: 'Schedule', icon: '◷' },
   { id: 'messages', label: 'Messages', icon: '◻' },
+  { id: 'alcohol-licence', label: 'Alcohol Licence Guide', icon: '📋' },
 ]
 
 const platformLinks = [
