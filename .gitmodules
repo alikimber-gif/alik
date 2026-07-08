@@ -1,3 +1,6 @@
 [submodule ".superpowers"]
 	path = .superpowers
 	url = https://github.com/obra/superpowers.git
+[submodule ".remotion"]
+	path = .remotion
+	url = https://github.com/remotion-dev/remotion.git
