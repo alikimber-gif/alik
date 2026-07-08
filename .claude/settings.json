@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_PLUGIN_ROOT=\"/home/user/alik/.superpowers\" bash /home/user/alik/.superpowers/hooks/session-start"
+          }
+        ]
+      }
+    ]
+  },
+  "plugins": {
+    "superpowers": {
+      "path": "/home/user/alik/.superpowers",
+      "skills": [
+        "skills"
+      ]
+    }
+  }
+}
