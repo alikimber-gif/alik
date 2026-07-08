@@ -10,8 +10,6 @@
       --pounamu-light: #5A9E7E;
       --sand: #C9B896;
       --bush-dark: #1A2E23;
-      --sky: #B8D4E3;
-      --earth: #5C3D2E;
       --bg: #E8E0D0;
       --text: #1A2E23;
       --text-muted: #5C6B5A;
@@ -40,42 +38,42 @@
     body {
       background: var(--bg); color: var(--text);
       font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh; overflow-x: hidden;
+      height: 100vh; overflow: hidden;
       display: flex; flex-direction: column;
     }
     .game-header {
-      text-align: center; padding: 16px 16px 6px;
+      text-align: center; padding: 10px 12px 4px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
     }
     .game-title {
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-size: clamp(1.2rem, 3.5vw, 1.7rem);
       font-weight: 700; color: var(--pounamu);
-      letter-spacing: -0.02em;
     }
-    .game-subtitle {
-      font-size: 0.78rem; color: var(--text-muted);
-      margin-top: 2px; letter-spacing: 0.05em;
-      text-transform: uppercase;
+    .music-btn {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 4px 12px; cursor: pointer;
+      font-size: 0.72rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 4px;
+      transition: all 0.2s;
     }
+    .music-btn:hover { border-color: var(--pounamu); }
+    .music-btn.playing { border-color: var(--pounamu); color: var(--pounamu); }
     .top-bar {
       display: flex; justify-content: center; align-items: center;
-      gap: 10px; padding: 6px 12px; flex-wrap: wrap;
+      gap: 8px; padding: 4px 10px; flex-wrap: wrap;
     }
     .bird-reward {
       display: flex; align-items: center; gap: 5px;
       background: var(--reward-bg); border: 1px solid var(--card-border);
-      border-radius: 20px; padding: 4px 10px 4px 6px;
-      font-size: 0.75rem; color: var(--text-muted);
-      transition: all 0.4s ease; opacity: 0.4;
+      border-radius: 18px; padding: 3px 10px 3px 6px;
+      font-size: 0.7rem; color: var(--text-muted);
+      transition: all 0.4s; opacity: 0.4;
     }
     .bird-reward.earned {
       opacity: 1; border-color: var(--pounamu); color: var(--text);
-      background: var(--card-bg);
     }
-    .bird-icon {
-      font-size: 1.2rem; filter: grayscale(1);
-      transition: filter 0.4s ease;
-    }
+    .bird-icon { font-size: 1.1rem; filter: grayscale(1); transition: filter 0.4s; }
     .bird-reward.earned .bird-icon {
       filter: grayscale(0); animation: birdPop 0.6s ease;
     }
@@ -84,72 +82,62 @@
       50% { transform: scale(1.4) rotate(10deg); }
       100% { transform: scale(1) rotate(0); }
     }
-    .progress-wrap {
-      max-width: 320px; margin: 0 auto; padding: 2px 16px 6px;
-    }
+    .progress-wrap { max-width: 280px; margin: 0 auto; padding: 2px 16px 4px; }
     .progress-track {
-      height: 5px; background: rgba(0,0,0,0.08);
-      border-radius: 3px; overflow: hidden;
+      height: 4px; background: rgba(0,0,0,0.08);
+      border-radius: 2px; overflow: hidden;
     }
     .progress-fill {
-      height: 100%; border-radius: 3px;
+      height: 100%; border-radius: 2px;
       background: linear-gradient(90deg, var(--pounamu), var(--pounamu-light));
-      transition: width 0.4s ease; width: 0%;
+      transition: width 0.4s; width: 0%;
     }
     .progress-label {
-      font-size: 0.65rem; color: var(--text-muted);
-      text-align: center; margin-top: 3px;
+      font-size: 0.6rem; color: var(--text-muted);
+      text-align: center; margin-top: 2px;
       font-variant-numeric: tabular-nums;
     }
     .canvas-wrap {
       position: relative; width: 100%;
-      flex: 1; min-height: 340px; max-height: 480px;
+      flex: 1; min-height: 0;
       cursor: pointer; overflow: hidden;
     }
-    canvas#game {
-      display: block; width: 100%; height: 100%;
-    }
+    canvas#game { display: block; width: 100%; height: 100%; }
     .zone-indicator {
-      position: absolute; top: 8px; left: 50%;
+      position: absolute; top: 6px; left: 50%;
       transform: translateX(-50%);
       background: var(--reward-bg); border: 1px solid var(--card-border);
-      border-radius: 16px; padding: 4px 14px;
-      font-size: 0.72rem; color: var(--text);
+      border-radius: 14px; padding: 3px 12px;
+      font-size: 0.65rem; color: var(--text);
       font-weight: 600; pointer-events: none;
-      transition: opacity 0.3s;
       white-space: nowrap;
     }
-    .hint-bar {
-      text-align: center; padding: 6px 16px;
-      min-height: 28px;
-    }
+    .hint-bar { text-align: center; padding: 4px 12px; min-height: 24px; }
     .hint-text {
-      font-size: 0.8rem; color: var(--text-muted);
+      font-size: 0.75rem; color: var(--text-muted);
       font-style: italic; transition: opacity 0.3s;
     }
     .hint-text.error { color: #B85C4A; font-style: normal; font-weight: 500; }
     .hint-text.success { color: var(--pounamu); font-style: normal; font-weight: 500; }
     .palette-section {
-      padding: 6px 12px 16px; max-width: 800px; margin: 0 auto; width: 100%;
+      padding: 4px 10px 10px; max-width: 780px; margin: 0 auto; width: 100%;
     }
     .palette-title {
-      font-size: 0.68rem; text-transform: uppercase;
+      font-size: 0.62rem; text-transform: uppercase;
       letter-spacing: 0.08em; color: var(--text-muted);
-      margin-bottom: 6px; text-align: center;
+      margin-bottom: 5px; text-align: center;
     }
-    .plant-palette {
-      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
-    }
+    .plant-palette { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
     .plant-option {
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
       background: var(--card-bg); border: 2px solid var(--card-border);
-      border-radius: 10px; padding: 5px 8px 4px;
-      cursor: pointer; transition: all 0.15s ease;
-      min-width: 58px; user-select: none;
+      border-radius: 8px; padding: 4px 7px 3px;
+      cursor: pointer; transition: all 0.15s;
+      min-width: 52px; user-select: none;
     }
     .plant-option:hover {
-      border-color: var(--pounamu); transform: translateY(-2px);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      border-color: var(--pounamu); transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     .plant-option.selected {
       border-color: var(--pounamu);
@@ -157,37 +145,34 @@
       box-shadow: 0 0 0 2px rgba(61, 122, 95, 0.25);
     }
     .plant-option.used { opacity: 0.25; pointer-events: none; }
-    .plant-emoji { font-size: 1.4rem; }
+    .plant-emoji { font-size: 1.2rem; }
     .plant-name {
-      font-size: 0.56rem; color: var(--text-muted);
-      text-align: center; line-height: 1.15; max-width: 56px;
+      font-size: 0.52rem; color: var(--text-muted);
+      text-align: center; line-height: 1.1; max-width: 52px;
     }
     .controls-hint {
-      text-align: center; padding: 0 12px 10px;
-      font-size: 0.65rem; color: var(--text-muted);
-      letter-spacing: 0.02em;
+      text-align: center; padding: 0 10px 6px;
+      font-size: 0.58rem; color: var(--text-muted);
     }
     .celebration-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(26, 46, 35, 0.9); z-index: 100;
       align-items: center; justify-content: center;
-      flex-direction: column; gap: 18px; padding: 24px;
+      flex-direction: column; gap: 16px; padding: 20px;
       animation: fadeIn 0.6s ease;
     }
     .celebration-overlay.active { display: flex; }
     .celebration-title {
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      font-size: clamp(1.5rem, 5vw, 2.6rem);
       color: #fff; text-align: center;
     }
     .celebration-sub {
-      color: #C9B896; font-size: 0.95rem; text-align: center;
-      max-width: 420px; line-height: 1.6;
+      color: #C9B896; font-size: 0.9rem; text-align: center;
+      max-width: 400px; line-height: 1.5;
     }
-    .flying-birds { display: flex; gap: 24px; font-size: 2.8rem; }
-    .flying-bird {
-      animation: flyAround 3s ease-in-out infinite; display: inline-block;
-    }
+    .flying-birds { display: flex; gap: 20px; font-size: 2.6rem; }
+    .flying-bird { animation: flyAround 3s ease-in-out infinite; display: inline-block; }
     .flying-bird:nth-child(2) { animation-delay: 0.4s; }
     .flying-bird:nth-child(3) { animation-delay: 0.8s; }
     .flying-bird:nth-child(4) { animation-delay: 1.2s; }
@@ -200,13 +185,12 @@
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .celebration-btn {
-      margin-top: 10px; background: var(--pounamu); color: #fff;
-      border: none; border-radius: 20px; padding: 10px 28px;
-      font-size: 0.9rem; cursor: pointer; font-weight: 600;
+      margin-top: 8px; background: var(--pounamu); color: #fff;
+      border: none; border-radius: 18px; padding: 9px 24px;
+      font-size: 0.85rem; cursor: pointer; font-weight: 600;
       transition: background 0.2s;
     }
     .celebration-btn:hover { background: var(--pounamu-light); }
-    .celebration-btn:focus-visible { outline: 3px solid var(--pounamu-light); outline-offset: 2px; }
     canvas#confetti-canvas {
       position: fixed; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 101;
@@ -222,15 +206,17 @@
 <body>
 
   <div class="game-header">
-    <div class="game-title">Bridge Street</div>
-    <div class="game-subtitle">Native Planting Game — Nelson</div>
+    <div class="game-title">Bridge Street, Nelson</div>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <span id="musicIcon">♪</span> <span id="musicLabel">Music</span>
+    </button>
   </div>
 
   <div class="top-bar" id="birdShelf"></div>
 
   <div class="progress-wrap">
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">0 of 16 plants placed</div>
+    <div class="progress-label" id="progressLabel">0 / 16</div>
   </div>
 
   <div class="canvas-wrap" id="canvasWrap">
@@ -239,7 +225,7 @@
   </div>
 
   <div class="hint-bar">
-    <div class="hint-text" id="hintText">Click on the street to walk. Stand near a bed and select a plant to place it.</div>
+    <div class="hint-text" id="hintText">Click the street to walk · Stand near a garden bed · Pick a plant</div>
   </div>
 
   <div class="palette-section">
@@ -247,22 +233,24 @@
     <div class="plant-palette" id="plantPalette"></div>
   </div>
 
-  <div class="controls-hint">Arrow keys or click to walk · Stand near a garden bed · Select a plant to place it</div>
+  <div class="controls-hint">Arrow keys or click to walk · Stand near a glowing bed · Select a plant to place it</div>
 
   <div class="celebration-overlay" id="celebration">
     <canvas id="confetti-canvas"></canvas>
     <div class="flying-birds" id="flyingBirds"></div>
     <div class="celebration-title">Bridge Street is Alive!</div>
     <div class="celebration-sub">
-      The native birds have returned. Your planting from coast to mountain
-      has restored the corridor — tūī sing in the flax, kererū feast on the kōwhai,
-      fantails dance through the ferns, and ruru watch over it all.
+      The native birds have returned. Tūī sing in the flax, kererū feast on kōwhai,
+      fantails dance through the ferns, and ruru watch from the rātā. From the coast
+      to the hills above Nelson — the corridor is restored.
     </div>
     <button class="celebration-btn" onclick="resetGame()">Plant Again</button>
   </div>
 
   <script>
     // ─── DATA ───
+    var WORLD_W = 4000;
+
     var ZONES = [
       { id:'coastal', name:'Coastal Edge', label:'Te Taha Moana',
         bird:{name:'Tūī',emoji:'🐦‍⬛'},
@@ -291,29 +279,64 @@
     ];
 
     var PLANTS = {
-      'pohutukawa':   {emoji:'🌺',name:'Pōhutukawa',  hint:'Coastal',  zone:'coastal'},
-      'harakeke':     {emoji:'🌿',name:'Harakeke',     hint:'Coastal',  zone:'coastal'},
-      'karaka':       {emoji:'🌳',name:'Karaka',       hint:'Coastal',  zone:'coastal'},
-      'taupata':      {emoji:'🍃',name:'Taupata',      hint:'Coastal',  zone:'coastal'},
-      'nikau':        {emoji:'🌴',name:'Nīkau',        hint:'Lowland',  zone:'lowland'},
-      'kawakawa':     {emoji:'🌱',name:'Kawakawa',     hint:'Lowland',  zone:'lowland'},
-      'ti-kouka':     {emoji:'🎋',name:'Tī Kōuka',    hint:'Lowland',  zone:'lowland'},
-      'kowhai':       {emoji:'🌼',name:'Kōwhai',       hint:'Lowland',  zone:'lowland'},
-      'ponga':        {emoji:'🌿',name:'Ponga',        hint:'Bush',     zone:'bush'},
-      'kanuka':       {emoji:'🌲',name:'Kānuka',       hint:'Bush',     zone:'bush'},
-      'rimu':         {emoji:'🎄',name:'Rimu',         hint:'Bush',     zone:'bush'},
-      'mahoe':        {emoji:'🍀',name:'Māhoe',        hint:'Bush',     zone:'bush'},
-      'tawhai':       {emoji:'🌳',name:'Tawhai',       hint:'Upland',   zone:'upland'},
-      'mountain-flax':{emoji:'🪴',name:'Wharariki',    hint:'Upland',   zone:'upland'},
-      'hebe':         {emoji:'💮',name:'Hebe',         hint:'Upland',   zone:'upland'},
-      'rata':         {emoji:'🌸',name:'Rātā',         hint:'Upland',   zone:'upland'},
+      'pohutukawa':   {emoji:'🌺',name:'Pōhutukawa',  hint:'Coastal'},
+      'harakeke':     {emoji:'🌿',name:'Harakeke',     hint:'Coastal'},
+      'karaka':       {emoji:'🌳',name:'Karaka',       hint:'Coastal'},
+      'taupata':      {emoji:'🍃',name:'Taupata',      hint:'Coastal'},
+      'nikau':        {emoji:'🌴',name:'Nīkau',        hint:'Lowland'},
+      'kawakawa':     {emoji:'🌱',name:'Kawakawa',     hint:'Lowland'},
+      'ti-kouka':     {emoji:'🎋',name:'Tī Kōuka',    hint:'Lowland'},
+      'kowhai':       {emoji:'🌼',name:'Kōwhai',       hint:'Lowland'},
+      'ponga':        {emoji:'🌿',name:'Ponga',        hint:'Bush'},
+      'kanuka':       {emoji:'🌲',name:'Kānuka',       hint:'Bush'},
+      'rimu':         {emoji:'🎄',name:'Rimu',         hint:'Bush'},
+      'mahoe':        {emoji:'🍀',name:'Māhoe',        hint:'Bush'},
+      'tawhai':       {emoji:'🌳',name:'Tawhai',       hint:'Upland'},
+      'mountain-flax':{emoji:'🪴',name:'Wharariki',    hint:'Upland'},
+      'hebe':         {emoji:'💮',name:'Hebe',         hint:'Upland'},
+      'rata':         {emoji:'🌸',name:'Rātā',         hint:'Upland'},
     };
 
+    // shops along the street
+    var SHOPS = [
+      { x: 180, w: 90, h: 70, name: 'Ché Café', color: '#8B4513', awning: '#C84040', roofColor: '#6B3010' },
+      { x: 380, w: 80, h: 60, name: 'Nelson\nMarket', color: '#5A6B78', awning: '#E8A030', roofColor: '#3A4B58' },
+      { x: 620, w: 100, h: 75, name: 'DeVille', color: '#704030', awning: '#D4A060', roofColor: '#503020' },
+      { x: 900, w: 85, h: 65, name: 'Jens\nHansen', color: '#4A5A3A', awning: '#88A868', roofColor: '#3A4A2A' },
+      { x: 1150, w: 95, h: 72, name: 'Pic\'s\nPeanut\nButter', color: '#C8A040', awning: '#E8C860', roofColor: '#A88030' },
+      { x: 1400, w: 80, h: 60, name: 'Miyazu\nGifts', color: '#884848', awning: '#C06060', roofColor: '#683838' },
+      { x: 1700, w: 100, h: 68, name: 'The Suter\nGallery', color: '#F0E8D8', awning: '#C0B8A0', roofColor: '#D0C8B0' },
+      { x: 1950, w: 75, h: 58, name: 'Organic\nGreengrocer', color: '#5A8A4A', awning: '#78B858', roofColor: '#4A7A3A' },
+      { x: 2200, w: 90, h: 70, name: 'Founders\nBrew', color: '#6B4020', awning: '#A86830', roofColor: '#4B3010' },
+      { x: 2500, w: 85, h: 62, name: 'Free House', color: '#383838', awning: '#B04040', roofColor: '#282828' },
+      { x: 2750, w: 80, h: 65, name: 'Höglund\nGlass', color: '#5878A8', awning: '#7898C8', roofColor: '#4868A0' },
+      { x: 3050, w: 95, h: 70, name: 'McCashins', color: '#886830', awning: '#C89840', roofColor: '#685020' },
+      { x: 3350, w: 80, h: 60, name: 'Tramping\nGear', color: '#4A6848', awning: '#689860', roofColor: '#3A5838' },
+      { x: 3650, w: 90, h: 68, name: 'Sprig &\nFern', color: '#5A4830', awning: '#8A7850', roofColor: '#4A3820' },
+    ];
+
+    // side roads
+    var SIDEROADS = [
+      { x: 500,  name: 'Trafalgar St', signColor: '#4A6B8A' },
+      { x: 1050, name: 'Hardy St', signColor: '#6A5A4A' },
+      { x: 1600, name: 'Halifax St', signColor: '#5A7A5A' },
+      { x: 2350, name: 'Collingwood St', signColor: '#7A5A5A' },
+      { x: 2900, name: 'Nile St', signColor: '#5A6A7A' },
+      { x: 3500, name: 'Waimea Rd', signColor: '#6A6A5A' },
+    ];
+
+    // landmarks drawn in background
+    var LANDMARKS = [
+      { x: 500,  type: 'cathedral' },
+      { x: 1300, type: 'queensgardens' },
+      { x: 2100, type: 'centreofnz' },
+      { x: 3200, type: 'mountains' },
+    ];
+
     // ─── STATE ───
-    var WORLD_W = 3200;
     var canvas, ctx, W, H;
     var cameraX = 0;
-    var player = { x: 80, targetX: 80, speed: 0, facing: 1, walkFrame: 0, walkTimer: 0 };
+    var player = { x: 80, targetX: 80, facing: 1, walkFrame: 0, walkTimer: 0 };
     var beds = [];
     var placed = {};
     var zonesComplete = new Set();
@@ -323,7 +346,109 @@
     var nearestBed = null;
     var keysDown = {};
     var lastTime = 0;
+    var gameTime = 0;
 
+    // ─── MUSIC ───
+    var audioCtx = null;
+    var musicPlaying = false;
+    var musicNodes = [];
+    var nextNoteTime = 0;
+    var musicScheduler = null;
+
+    var MELODY_NOTES = [
+      64, 67, 69, 71, 72, 71, 69, 67,
+      64, 62, 60, 62, 64, 67, 69, 71,
+      72, 74, 76, 74, 72, 71, 69, 67,
+      69, 67, 64, 62, 64, 60, 62, 64,
+      60, 64, 67, 72, 71, 69, 67, 64,
+      62, 64, 67, 69, 71, 72, 74, 72,
+      69, 67, 64, 67, 69, 64, 62, 60,
+      64, 67, 71, 69, 67, 64, 62, 64,
+    ];
+    var BASS_NOTES = [
+      48, 48, 52, 52, 55, 55, 52, 52,
+      48, 48, 53, 53, 55, 55, 52, 52,
+      48, 48, 52, 52, 55, 55, 53, 53,
+      48, 48, 52, 52, 48, 48, 52, 52,
+    ];
+    var melodyIndex = 0;
+    var bassIndex = 0;
+    var beatCount = 0;
+
+    function midiToFreq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+
+    function playNote(freq, startTime, duration, type, vol) {
+      if (!audioCtx) return;
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      var filter = audioCtx.createBiquadFilter();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, startTime);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, startTime);
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(vol || 0.08, startTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.1);
+      musicNodes.push(osc);
+    }
+
+    function scheduleMusicBeat() {
+      if (!audioCtx || !musicPlaying) return;
+      var now = audioCtx.currentTime;
+      while (nextNoteTime < now + 0.3) {
+        var bpm = 72;
+        var beatDur = 60 / bpm / 2;
+
+        var mNote = MELODY_NOTES[melodyIndex % MELODY_NOTES.length];
+        playNote(midiToFreq(mNote), nextNoteTime, beatDur * 1.8, 'sine', 0.06);
+        playNote(midiToFreq(mNote + 12), nextNoteTime, beatDur * 1.2, 'sine', 0.02);
+
+        if (beatCount % 4 === 0) {
+          var bNote = BASS_NOTES[bassIndex % BASS_NOTES.length];
+          playNote(midiToFreq(bNote), nextNoteTime, beatDur * 3.5, 'triangle', 0.05);
+          playNote(midiToFreq(bNote - 12), nextNoteTime, beatDur * 3.5, 'sine', 0.03);
+          bassIndex++;
+        }
+
+        if (beatCount % 2 === 0) {
+          playNote(midiToFreq(mNote + 7), nextNoteTime + beatDur * 0.5, beatDur * 0.8, 'sine', 0.025);
+        }
+
+        melodyIndex++;
+        beatCount++;
+        nextNoteTime += beatDur;
+      }
+      musicScheduler = setTimeout(scheduleMusicBeat, 100);
+    }
+
+    function toggleMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      musicPlaying = !musicPlaying;
+      var btn = document.getElementById('musicBtn');
+      var label = document.getElementById('musicLabel');
+      if (musicPlaying) {
+        btn.classList.add('playing');
+        label.textContent = 'Playing';
+        nextNoteTime = audioCtx.currentTime;
+        melodyIndex = 0; bassIndex = 0; beatCount = 0;
+        scheduleMusicBeat();
+      } else {
+        btn.classList.remove('playing');
+        label.textContent = 'Music';
+        clearTimeout(musicScheduler);
+        musicNodes.forEach(function(n) { try { n.stop(); } catch(e) {} });
+        musicNodes = [];
+      }
+    }
+
+    // ─── INIT ───
     function initBeds() {
       beds = [];
       ZONES.forEach(function(z, zi) {
@@ -353,50 +478,56 @@
       return a;
     }
 
-    // ─── INIT ───
     function init() {
       canvas = document.getElementById('game');
-      var wrap = document.getElementById('canvasWrap');
-      W = canvas.width = wrap.clientWidth * (window.devicePixelRatio || 1);
-      H = canvas.height = wrap.clientHeight * (window.devicePixelRatio || 1);
+      resizeCanvas();
       ctx = canvas.getContext('2d');
-
-      player = { x: 80, targetX: 80, speed: 0, facing: 1, walkFrame: 0, walkTimer: 0 };
+      player = { x: 80, targetX: 80, facing: 1, walkFrame: 0, walkTimer: 0 };
       cameraX = 0;
       placed = {};
       zonesComplete = new Set();
       selectedPlant = null;
       animBirds = [];
       keysDown = {};
-
+      gameTime = 0;
       initBeds();
       paletteOrder = shuffleArray(Object.keys(PLANTS));
       renderBirdShelf();
       renderPalette();
       updateProgress();
-      setHint('Click on the street to walk. Stand near a bed and select a plant to place it.');
+      setHint('Click the street to walk · Stand near a garden bed · Pick a plant');
+      lastTime = 0;
       requestAnimationFrame(gameLoop);
+    }
+
+    function resizeCanvas() {
+      var wrap = document.getElementById('canvasWrap');
+      var dpr = window.devicePixelRatio || 1;
+      W = canvas.width = wrap.clientWidth * dpr;
+      H = canvas.height = wrap.clientHeight * dpr;
     }
 
     // ─── GAME LOOP ───
     function gameLoop(ts) {
-      var dt = Math.min((ts - (lastTime || ts)) / 1000, 0.05);
+      if (!lastTime) lastTime = ts;
+      var dt = Math.min((ts - lastTime) / 1000, 0.05);
       lastTime = ts;
+      gameTime += dt;
       update(dt);
       draw();
       requestAnimationFrame(gameLoop);
     }
 
     function update(dt) {
-      var moveSpeed = 280;
+      var moveSpeed = 300;
       var moving = false;
 
       if (keysDown['ArrowLeft'] || keysDown['KeyA']) {
-        player.targetX = Math.max(40, player.x - 10);
+        player.targetX = Math.max(40, player.x - 12);
         player.facing = -1;
       }
       if (keysDown['ArrowRight'] || keysDown['KeyD']) {
-        player.targetX = Math.min(WORLD_W - 40, player.x + 10);
+        player.targetX = Math.min(WORLD_W - 40, player.x + 12);
         player.facing = 1;
       }
 
@@ -411,17 +542,18 @@
 
       if (moving) {
         player.walkTimer += dt;
-        player.walkFrame = Math.floor(player.walkTimer * 6) % 4;
+        player.walkFrame = Math.floor(player.walkTimer * 7) % 4;
       } else {
         player.walkFrame = 0;
         player.walkTimer = 0;
       }
 
-      var screenW = W / (window.devicePixelRatio || 1);
+      var dpr = window.devicePixelRatio || 1;
+      var screenW = W / dpr;
       cameraX = Math.max(0, Math.min(WORLD_W - screenW, player.x - screenW / 2));
 
       nearestBed = null;
-      var minD = 70;
+      var minD = 60;
       beds.forEach(function(b) {
         if (b.planted) return;
         var d = Math.abs(b.x - player.x);
@@ -429,282 +561,539 @@
       });
 
       beds.forEach(function(b) {
-        if (b.planted && b.growAnim < 1) {
-          b.growAnim = Math.min(1, b.growAnim + dt * 2.5);
-        }
+        if (b.planted && b.growAnim < 1) b.growAnim = Math.min(1, b.growAnim + dt * 2.5);
       });
 
       animBirds = animBirds.filter(function(b) {
         b.t += dt;
         b.x += b.vx * dt;
-        b.y += Math.sin(b.t * 3) * 30 * dt;
-        return b.t < 4;
+        b.y += Math.sin(b.t * 3) * 40 * dt - 20 * dt;
+        return b.t < 5;
       });
 
       var zi = Math.floor((player.x / WORLD_W) * 4);
       zi = Math.max(0, Math.min(3, zi));
       var zone = ZONES[zi];
-      var indicator = document.getElementById('zoneIndicator');
-      indicator.textContent = zone.name + ' · ' + zone.label;
+      document.getElementById('zoneIndicator').textContent = zone.name + ' · ' + zone.label;
     }
 
     // ─── DRAWING ───
     function draw() {
       var dpr = window.devicePixelRatio || 1;
-      var sw = W / dpr;
-      var sh = H / dpr;
+      var sw = W / dpr, sh = H / dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, sw, sh);
 
-      var groundY = sh * 0.72;
-      var roadY = sh * 0.82;
+      var groundY = sh * 0.58;
+      var shopBaseY = groundY - 6;
       var pathY = sh * 0.78;
+      var roadY = sh * 0.83;
 
       drawSky(sw, sh, groundY);
+      drawLandmarks(sw, sh, groundY);
       drawHills(sw, sh, groundY);
-      drawGround(sw, sh, groundY, roadY);
-      drawRoad(sw, sh, roadY);
+      drawGround(sw, sh, groundY);
+      drawShops(sw, sh, shopBaseY);
+      drawSideRoads(sw, sh, groundY);
       drawPath(sw, sh, pathY, roadY);
-      drawTrees(sw, sh, groundY);
+      drawRoad(sw, sh, roadY);
       drawBeds(sw, sh, groundY);
+      drawForegroundTrees(sw, sh, groundY);
+      drawZoneHeaders(sw, sh, groundY);
       drawPlayer(sw, sh, roadY);
       drawAnimBirds(sw, sh);
-      drawZoneDividers(sw, sh, groundY);
+      drawTouchControls(sw, sh);
     }
 
-    function getZoneAt(worldX) {
-      var zi = Math.floor((worldX / WORLD_W) * 4);
+    function getZoneAt(wx) {
+      var zi = Math.floor((wx / WORLD_W) * 4);
       return ZONES[Math.max(0, Math.min(3, zi))];
     }
 
-    function lerpColor(c1, c2, t) {
-      var r1 = parseInt(c1.slice(1,3),16), g1 = parseInt(c1.slice(3,5),16), b1 = parseInt(c1.slice(5,7),16);
-      var r2 = parseInt(c2.slice(1,3),16), g2 = parseInt(c2.slice(3,5),16), b2 = parseInt(c2.slice(5,7),16);
-      var r = Math.round(r1+(r2-r1)*t), g = Math.round(g1+(g2-g1)*t), b = Math.round(b1+(b2-b1)*t);
-      return 'rgb('+r+','+g+','+b+')';
-    }
-
-    function drawSky(sw, sh, groundY) {
-      var zL = getZoneAt(cameraX);
-      var zR = getZoneAt(cameraX + sw);
-      var grad = ctx.createLinearGradient(0, 0, 0, groundY);
+    function drawSky(sw, sh, gy) {
+      var zL = getZoneAt(cameraX), zR = getZoneAt(cameraX + sw);
+      var grad = ctx.createLinearGradient(0, 0, 0, gy);
       grad.addColorStop(0, zL.skyTop);
       grad.addColorStop(1, zR.skyBot);
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, sw, groundY);
+      ctx.fillRect(0, 0, sw, gy);
+
+      // clouds
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      for (var i = 0; i < 8; i++) {
+        var cx = (i * 520 + 100 - cameraX * 0.08 + gameTime * 6) % (sw + 200) - 100;
+        var cy = 30 + Math.sin(i * 2.7) * 25;
+        drawCloud(cx, cy, 30 + Math.sin(i * 1.3) * 12);
+      }
     }
 
-    function drawHills(sw, sh, groundY) {
+    function drawCloud(cx, cy, r) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.7, cy - r * 0.2, r * 0.7, 0, Math.PI * 2);
+      ctx.arc(cx - r * 0.6, cy + r * 0.1, r * 0.6, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.3, cy + r * 0.3, r * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawLandmarks(sw, sh, gy) {
+      LANDMARKS.forEach(function(lm) {
+        var sx = lm.x - cameraX * 0.3;
+        if (sx < -200 || sx > sw + 200) return;
+        var baseY = gy - 30;
+        ctx.globalAlpha = 0.35;
+        if (lm.type === 'cathedral') {
+          ctx.fillStyle = '#B0A898';
+          // cathedral body
+          rrect(ctx, sx - 30, baseY - 60, 60, 60, 3); ctx.fill();
+          // spire
+          ctx.beginPath();
+          ctx.moveTo(sx - 8, baseY - 60);
+          ctx.lineTo(sx, baseY - 110);
+          ctx.lineTo(sx + 8, baseY - 60);
+          ctx.fill();
+          // cross
+          ctx.fillRect(sx - 2, baseY - 118, 4, 12);
+          ctx.fillRect(sx - 5, baseY - 112, 10, 3);
+          // windows
+          ctx.fillStyle = '#8898A8';
+          ctx.fillRect(sx - 18, baseY - 45, 10, 16);
+          ctx.fillRect(sx + 8, baseY - 45, 10, 16);
+          // rose window
+          ctx.beginPath();
+          ctx.arc(sx, baseY - 42, 8, 0, Math.PI * 2);
+          ctx.fill();
+          // steps
+          ctx.fillStyle = '#C0B8A8';
+          for (var s = 0; s < 4; s++) {
+            ctx.fillRect(sx - 25 - s * 3, baseY + s * 3, 50 + s * 6, 4);
+          }
+        } else if (lm.type === 'queensgardens') {
+          // gazebo / bandstand
+          ctx.fillStyle = '#E8E0D0';
+          ctx.beginPath();
+          ctx.moveTo(sx - 28, baseY - 30);
+          ctx.lineTo(sx, baseY - 55);
+          ctx.lineTo(sx + 28, baseY - 30);
+          ctx.fill();
+          ctx.fillStyle = '#A09080';
+          ctx.fillRect(sx - 22, baseY - 30, 44, 30);
+          ctx.fillStyle = '#C0B0A0';
+          ctx.fillRect(sx - 3, baseY - 30, 6, 30);
+          ctx.fillRect(sx - 20, baseY - 30, 4, 30);
+          ctx.fillRect(sx + 16, baseY - 30, 4, 30);
+          // pond
+          ctx.fillStyle = '#7AA8C0';
+          ctx.beginPath();
+          ctx.ellipse(sx + 50, baseY + 5, 35, 8, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (lm.type === 'centreofnz') {
+          // botanical hill with marker
+          ctx.fillStyle = '#6A9A5A';
+          ctx.beginPath();
+          ctx.moveTo(sx - 80, baseY + 10);
+          ctx.quadraticCurveTo(sx, baseY - 90, sx + 80, baseY + 10);
+          ctx.fill();
+          // marker/obelisk
+          ctx.fillStyle = '#D0C8B8';
+          ctx.beginPath();
+          ctx.moveTo(sx - 4, baseY - 60);
+          ctx.lineTo(sx, baseY - 82);
+          ctx.lineTo(sx + 4, baseY - 60);
+          ctx.fill();
+          ctx.fillRect(sx - 5, baseY - 62, 10, 6);
+        } else if (lm.type === 'mountains') {
+          // Richmond Ranges
+          ctx.fillStyle = '#5A7A5A';
+          ctx.beginPath();
+          ctx.moveTo(sx - 120, baseY + 10);
+          ctx.lineTo(sx - 40, baseY - 100);
+          ctx.lineTo(sx + 10, baseY - 60);
+          ctx.lineTo(sx + 60, baseY - 110);
+          ctx.lineTo(sx + 120, baseY + 10);
+          ctx.fill();
+          // snow caps
+          ctx.fillStyle = '#E8E8F0';
+          ctx.beginPath();
+          ctx.moveTo(sx - 52, baseY - 85);
+          ctx.lineTo(sx - 40, baseY - 100);
+          ctx.lineTo(sx - 28, baseY - 85);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(sx + 48, baseY - 95);
+          ctx.lineTo(sx + 60, baseY - 110);
+          ctx.lineTo(sx + 72, baseY - 95);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    function drawHills(sw, sh, gy) {
       for (var layer = 0; layer < 3; layer++) {
-        var parallax = 0.15 + layer * 0.15;
-        var hillH = 60 - layer * 15;
-        var baseY = groundY - 20 + layer * 10;
+        var px = 0.12 + layer * 0.12;
+        var hh = 45 - layer * 12;
+        var by = gy - 15 + layer * 8;
         ctx.beginPath();
-        ctx.moveTo(-10, baseY + 20);
-        for (var sx = -10; sx <= sw + 10; sx += 4) {
-          var wx = sx + cameraX * parallax;
-          var y = baseY - Math.sin(wx * 0.008 + layer) * hillH
-                        - Math.sin(wx * 0.003 + layer * 2) * (hillH * 0.6)
-                        - Math.sin(wx * 0.015 + layer * 0.5) * (hillH * 0.3);
-          var progress = (sx + cameraX * parallax) / WORLD_W;
-          y -= progress * 40;
+        ctx.moveTo(-10, by + 30);
+        for (var sx = -10; sx <= sw + 10; sx += 5) {
+          var wx = sx + cameraX * px;
+          var y = by - Math.sin(wx*0.007+layer)*hh - Math.sin(wx*0.003+layer*2)*(hh*0.5);
+          var progress = (sx + cameraX * px) / WORLD_W;
+          y -= progress * 30;
           ctx.lineTo(sx, y);
         }
-        ctx.lineTo(sw + 10, baseY + 60);
-        ctx.lineTo(-10, baseY + 60);
+        ctx.lineTo(sw+10, by+50);
+        ctx.lineTo(-10, by+50);
         ctx.closePath();
-        var zone = getZoneAt(cameraX + sw / 2);
-        ctx.fillStyle = layer === 0 ? zone.hillColor : zone.hillColor2;
-        ctx.globalAlpha = 0.5 + layer * 0.2;
+        var zone = getZoneAt(cameraX + sw/2);
+        ctx.fillStyle = layer===0 ? zone.hillColor : zone.hillColor2;
+        ctx.globalAlpha = 0.4 + layer*0.15;
         ctx.fill();
         ctx.globalAlpha = 1;
       }
     }
 
-    function drawGround(sw, sh, groundY, roadY) {
-      var zL = getZoneAt(cameraX);
-      var zR = getZoneAt(cameraX + sw);
-      var grad = ctx.createLinearGradient(0, groundY, 0, sh);
+    function drawGround(sw, sh, gy) {
+      var zL = getZoneAt(cameraX), zR = getZoneAt(cameraX+sw);
+      var grad = ctx.createLinearGradient(0, gy, 0, sh);
       grad.addColorStop(0, zL.groundTop);
       grad.addColorStop(1, zR.groundBot);
       ctx.fillStyle = grad;
-      ctx.fillRect(0, groundY, sw, sh - groundY);
+      ctx.fillRect(0, gy, sw, sh-gy);
     }
 
-    function drawRoad(sw, sh, roadY) {
-      ctx.fillStyle = '#888880';
-      ctx.fillRect(0, roadY, sw, sh * 0.12);
-      ctx.fillStyle = '#999990';
-      ctx.fillRect(0, roadY, sw, 2);
-      ctx.fillStyle = '#777770';
-      ctx.fillRect(0, roadY + sh * 0.12 - 2, sw, 2);
-      ctx.setLineDash([20, 15]);
-      ctx.strokeStyle = '#CCCC99';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, roadY + sh * 0.06);
-      ctx.lineTo(sw, roadY + sh * 0.06);
-      ctx.stroke();
-      ctx.setLineDash([]);
+    function drawShops(sw, sh, baseY) {
+      SHOPS.forEach(function(shop) {
+        var sx = shop.x - cameraX;
+        if (sx < -120 || sx > sw + 120) return;
+        var w = shop.w, h = shop.h;
+
+        // building body
+        ctx.fillStyle = shop.color;
+        rrect(ctx, sx - w/2, baseY - h, w, h, 3);
+        ctx.fill();
+
+        // roof line
+        ctx.fillStyle = shop.roofColor;
+        ctx.fillRect(sx - w/2 - 2, baseY - h - 4, w + 4, 6);
+
+        // windows
+        ctx.fillStyle = 'rgba(180, 210, 230, 0.6)';
+        var winW = 12, winH = 14, winGap = 18;
+        var nWins = Math.floor((w - 16) / winGap);
+        var winStart = sx - (nWins * winGap) / 2 + winGap / 2 - winW / 2;
+        for (var i = 0; i < nWins; i++) {
+          rrect(ctx, winStart + i * winGap, baseY - h + 12, winW, winH, 2);
+          ctx.fill();
+        }
+
+        // door
+        ctx.fillStyle = 'rgba(60, 40, 20, 0.7)';
+        rrect(ctx, sx - 6, baseY - 22, 12, 22, 2);
+        ctx.fill();
+        ctx.fillStyle = '#C8A040';
+        ctx.beginPath();
+        ctx.arc(sx + 3, baseY - 10, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // awning
+        ctx.fillStyle = shop.awning;
+        ctx.beginPath();
+        ctx.moveTo(sx - w/2 + 2, baseY - h + 28);
+        ctx.lineTo(sx + w/2 - 2, baseY - h + 28);
+        ctx.lineTo(sx + w/2 + 8, baseY - h + 38);
+        ctx.lineTo(sx - w/2 - 8, baseY - h + 38);
+        ctx.closePath();
+        ctx.fill();
+        // awning stripes
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1;
+        for (var s = 0; s < 5; s++) {
+          var stripeX = sx - w/2 + 6 + s * (w / 5);
+          ctx.beginPath();
+          ctx.moveTo(stripeX, baseY - h + 28);
+          ctx.lineTo(stripeX + 2, baseY - h + 38);
+          ctx.stroke();
+        }
+
+        // shop name
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 7px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        var lines = shop.name.split('\n');
+        lines.forEach(function(line, li) {
+          ctx.fillText(line, sx, baseY - h + 42 + li * 9);
+        });
+      });
+    }
+
+    function drawSideRoads(sw, sh, gy) {
+      SIDEROADS.forEach(function(road) {
+        var sx = road.x - cameraX;
+        if (sx < -60 || sx > sw + 60) return;
+
+        // road gap perspective
+        ctx.fillStyle = '#888880';
+        ctx.beginPath();
+        ctx.moveTo(sx - 20, gy);
+        ctx.lineTo(sx - 4, gy - 50);
+        ctx.lineTo(sx + 4, gy - 50);
+        ctx.lineTo(sx + 20, gy);
+        ctx.closePath();
+        ctx.fill();
+        // centre line
+        ctx.strokeStyle = '#CCCC99';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(sx, gy);
+        ctx.lineTo(sx, gy - 48);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // street sign
+        ctx.fillStyle = road.signColor;
+        rrect(ctx, sx - 28, gy - 74, 56, 16, 3);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 7px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(road.name, sx, gy - 62);
+
+        // sign post
+        ctx.fillStyle = '#666';
+        ctx.fillRect(sx + 22, gy - 72, 2, 24);
+      });
     }
 
     function drawPath(sw, sh, pathY, roadY) {
       ctx.fillStyle = '#B8A888';
       ctx.fillRect(0, pathY, sw, roadY - pathY);
       ctx.fillStyle = '#C8B898';
-      ctx.fillRect(0, pathY, sw, 2);
-    }
-
-    function drawTrees(sw, sh, groundY) {
-      for (var i = 0; i < 30; i++) {
-        var tx = i * (WORLD_W / 30) + 40;
-        var screenX = tx - cameraX;
-        if (screenX < -60 || screenX > sw + 60) continue;
-        var progress = tx / WORLD_W;
-        var treeH = 30 + progress * 40 + Math.sin(i * 7.3) * 15;
-        var treeW = 16 + Math.sin(i * 3.1) * 6;
-        var treeY = groundY - 8;
-        var zone = getZoneAt(tx);
-        ctx.fillStyle = '#5A3E2A';
-        ctx.fillRect(screenX - 2, treeY - treeH * 0.4, 4, treeH * 0.4 + 5);
+      ctx.fillRect(0, pathY, sw, 1.5);
+      // paving pattern
+      ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+      ctx.lineWidth = 0.5;
+      for (var px = -cameraX % 30; px < sw; px += 30) {
         ctx.beginPath();
-        ctx.ellipse(screenX, treeY - treeH * 0.5, treeW, treeH * 0.55, 0, 0, Math.PI * 2);
-        ctx.fillStyle = zone.hillColor2;
-        ctx.globalAlpha = 0.7;
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.moveTo(px, pathY);
+        ctx.lineTo(px, roadY);
+        ctx.stroke();
       }
     }
 
-    function drawBeds(sw, sh, groundY) {
-      var bedY = groundY + 4;
-      var bedW = 44;
-      var bedH = 22;
+    function drawRoad(sw, sh, roadY) {
+      var roadH = sh * 0.11;
+      ctx.fillStyle = '#787870';
+      ctx.fillRect(0, roadY, sw, roadH);
+      ctx.fillStyle = '#8A8A80';
+      ctx.fillRect(0, roadY, sw, 2);
+      // kerb
+      ctx.fillStyle = '#A0A090';
+      ctx.fillRect(0, roadY - 2, sw, 3);
+      // centre line
+      ctx.setLineDash([18, 12]);
+      ctx.strokeStyle = '#CCCC99';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + roadH/2);
+      ctx.lineTo(sw, roadY + roadH/2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // bottom kerb
+      ctx.fillStyle = '#A0A090';
+      ctx.fillRect(0, roadY + roadH - 1, sw, 3);
+    }
+
+    function drawBeds(sw, sh, gy) {
+      var bedY = gy + (sh * 0.78 - gy) / 2 + 4;
+      var bedW = 40, bedH = 20;
 
       beds.forEach(function(b) {
         var sx = b.x - cameraX;
         if (sx < -60 || sx > sw + 60) return;
         var isNear = (nearestBed === b);
 
+        // soil mound
         ctx.fillStyle = isNear ? '#6B4E3D' : '#5C3D2E';
-        roundRect(ctx, sx - bedW/2, bedY, bedW, bedH, 6);
-        ctx.fill();
-
+        rrect(ctx, sx-bedW/2, bedY, bedW, bedH, 5); ctx.fill();
         ctx.fillStyle = isNear ? '#4A3520' : '#3E2818';
-        roundRect(ctx, sx - bedW/2 + 3, bedY + 3, bedW - 6, bedH - 6, 4);
-        ctx.fill();
+        rrect(ctx, sx-bedW/2+3, bedY+3, bedW-6, bedH-6, 3); ctx.fill();
 
         if (isNear && !b.planted) {
           ctx.strokeStyle = '#5A9E7E';
           ctx.lineWidth = 2;
-          ctx.setLineDash([4, 3]);
-          roundRect(ctx, sx - bedW/2 - 2, bedY - 2, bedW + 4, bedH + 4, 8);
+          ctx.setLineDash([4,3]);
+          rrect(ctx, sx-bedW/2-3, bedY-3, bedW+6, bedH+6, 7);
           ctx.stroke();
           ctx.setLineDash([]);
-
-          ctx.fillStyle = 'rgba(90,158,126,0.15)';
-          roundRect(ctx, sx - bedW/2, bedY, bedW, bedH, 6);
-          ctx.fill();
+          ctx.fillStyle = 'rgba(90,158,126,0.12)';
+          rrect(ctx, sx-bedW/2, bedY, bedW, bedH, 5); ctx.fill();
         }
 
         if (b.planted) {
           var p = PLANTS[b.planted];
-          var scale = b.growAnim;
+          var sc = b.growAnim;
           ctx.save();
-          ctx.translate(sx, bedY - 4);
-          ctx.scale(scale, scale);
-          ctx.font = '24px sans-serif';
+          ctx.translate(sx, bedY - 6);
+          ctx.scale(sc, sc);
+          ctx.font = '22px sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(p.emoji, 0, 0);
           ctx.restore();
-
-          ctx.font = '8px -apple-system, sans-serif';
-          ctx.fillStyle = 'rgba(255,255,255,0.7)';
-          ctx.textAlign = 'center';
-          ctx.fillText(p.name, sx, bedY + bedH + 10);
-        } else {
-          var hint = PLANTS[b.correctPlant].name;
           ctx.font = '7px -apple-system, sans-serif';
-          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.fillStyle = 'rgba(255,255,255,0.65)';
           ctx.textAlign = 'center';
-          ctx.fillText(hint, sx, bedY + bedH + 9);
+          ctx.fillText(p.name, sx, bedY + bedH + 9);
+        } else {
+          ctx.font = '6px -apple-system, sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+          ctx.textAlign = 'center';
+          ctx.fillText(PLANTS[b.correctPlant].name, sx, bedY + bedH + 8);
         }
       });
     }
 
+    function drawForegroundTrees(sw, sh, gy) {
+      for (var i = 0; i < 20; i++) {
+        var tx = i * (WORLD_W / 20) + 70 + Math.sin(i*5.1)*80;
+        var sx = tx - cameraX;
+        if (sx < -40 || sx > sw + 40) continue;
+        // avoid overlapping shops and beds
+        var tooClose = false;
+        SHOPS.forEach(function(s) {
+          if (Math.abs(tx - s.x) < s.w/2 + 20) tooClose = true;
+        });
+        beds.forEach(function(b) {
+          if (Math.abs(tx - b.x) < 50) tooClose = true;
+        });
+        if (tooClose) continue;
+
+        var progress = tx / WORLD_W;
+        var treeH = 20 + progress * 25 + Math.sin(i*4.3) * 8;
+        var treeW = 10 + Math.sin(i*2.1) * 4;
+        var treeY = gy + 2;
+        var zone = getZoneAt(tx);
+
+        ctx.fillStyle = '#5A3E2A';
+        ctx.fillRect(sx - 1.5, treeY, 3, treeH * 0.35);
+        ctx.beginPath();
+        ctx.ellipse(sx, treeY - treeH * 0.15, treeW, treeH * 0.4, 0, 0, Math.PI*2);
+        ctx.fillStyle = zone.hillColor2;
+        ctx.globalAlpha = 0.55;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
     function drawPlayer(sw, sh, roadY) {
       var px = player.x - cameraX;
-      var py = roadY - 4;
+      var py = roadY - 6;
       var f = player.facing;
       var frame = player.walkFrame;
-      var bobY = (frame === 1 || frame === 3) ? -2 : 0;
+      var bobY = (frame===1||frame===3) ? -2 : 0;
 
       ctx.save();
       ctx.translate(px, py + bobY);
       ctx.scale(f, 1);
 
+      var armSwing = Math.sin(player.walkTimer * 8) * 8;
+
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.beginPath();
+      ctx.ellipse(0, 2, 12, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+
       // boots
       ctx.fillStyle = '#3A2818';
-      var legOffset = 0;
-      if (frame === 1) legOffset = 3;
-      if (frame === 3) legOffset = -3;
-      roundRect(ctx, -7 + legOffset, -4, 7, 6, 2); ctx.fill();
-      roundRect(ctx, 1 - legOffset, -4, 7, 6, 2); ctx.fill();
+      var legOff = 0;
+      if (frame===1) legOff = 4;
+      if (frame===3) legOff = -4;
+      rrect(ctx, -8+legOff, -5, 7, 7, 2); ctx.fill();
+      rrect(ctx, 1-legOff, -5, 7, 7, 2); ctx.fill();
 
       // trousers
       ctx.fillStyle = '#5B7553';
-      roundRect(ctx, -6, -18, 6, 16, 2); ctx.fill();
-      roundRect(ctx, 1, -18, 6, 16, 2); ctx.fill();
+      rrect(ctx, -6, -20, 6, 17, 2); ctx.fill();
+      rrect(ctx, 1, -20, 6, 17, 2); ctx.fill();
 
-      // body/shirt
+      // body
       ctx.fillStyle = '#3D7A5F';
-      roundRect(ctx, -8, -34, 17, 18, 4); ctx.fill();
+      rrect(ctx, -9, -38, 18, 20, 4); ctx.fill();
 
-      // arms
-      ctx.fillStyle = '#3D7A5F';
-      var armSwing = Math.sin(player.walkTimer * 8) * 6;
+      // hi-vis vest stripes
+      ctx.fillStyle = '#E8C840';
+      ctx.fillRect(-9, -28, 18, 2);
+      ctx.fillRect(-9, -24, 18, 2);
+
+      // left arm
       ctx.save();
-      ctx.translate(-9, -30);
+      ctx.translate(-10, -34);
       ctx.rotate(armSwing * Math.PI / 180);
-      ctx.fillRect(-2, 0, 4, 14);
+      ctx.fillStyle = '#3D7A5F';
+      ctx.fillRect(-2, 0, 5, 15);
       ctx.fillStyle = '#D4A574';
-      ctx.fillRect(-2, 12, 4, 4);
+      ctx.fillRect(-1, 13, 4, 4);
       ctx.restore();
+
+      // right arm
       ctx.save();
-      ctx.translate(9, -30);
+      ctx.translate(10, -34);
       ctx.rotate(-armSwing * Math.PI / 180);
       ctx.fillStyle = '#3D7A5F';
-      ctx.fillRect(-2, 0, 4, 14);
+      ctx.fillRect(-3, 0, 5, 15);
       ctx.fillStyle = '#D4A574';
-      ctx.fillRect(-2, 12, 4, 4);
+      ctx.fillRect(-2, 13, 4, 4);
+      // trowel in hand
+      ctx.fillStyle = '#A0A0A0';
+      ctx.fillRect(-1, 16, 2, 8);
+      ctx.fillStyle = '#888';
+      ctx.beginPath();
+      ctx.moveTo(-3, 24);
+      ctx.lineTo(3, 24);
+      ctx.lineTo(1, 30);
+      ctx.lineTo(-1, 30);
+      ctx.fill();
       ctx.restore();
 
       // head
       ctx.fillStyle = '#D4A574';
       ctx.beginPath();
-      ctx.ellipse(0.5, -40, 7, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(0.5, -44, 7.5, 8.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // hat
+      // sunhat
       ctx.fillStyle = '#C9B896';
       ctx.beginPath();
-      ctx.ellipse(0.5, -48, 10, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(0.5, -52, 11, 3.5, 0, 0, Math.PI * 2);
       ctx.fill();
-      roundRect(ctx, -5, -52, 11, 6, 3); ctx.fill();
+      rrect(ctx, -5, -57, 11, 7, 3); ctx.fill();
+      // hat band
+      ctx.fillStyle = '#3D7A5F';
+      ctx.fillRect(-5, -52, 11, 2);
 
       // eyes
       ctx.fillStyle = '#1A2E23';
-      ctx.fillRect(3, -42, 2, 2);
+      ctx.fillRect(3, -46, 2, 2.5);
+
+      // smile
+      ctx.strokeStyle = '#8B6040';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(4, -42, 3, 0.2, 1.2);
+      ctx.stroke();
 
       ctx.restore();
 
-      // selected plant indicator above head
+      // held plant floating above
       if (selectedPlant) {
         ctx.save();
         ctx.font = '18px sans-serif';
         ctx.textAlign = 'center';
-        ctx.globalAlpha = 0.8 + Math.sin(Date.now() * 0.005) * 0.2;
-        ctx.fillText(PLANTS[selectedPlant].emoji, px, py - 60 + bobY);
+        ctx.globalAlpha = 0.85 + Math.sin(gameTime * 4) * 0.15;
+        ctx.fillText(PLANTS[selectedPlant].emoji, px, py - 66 + bobY + Math.sin(gameTime * 2) * 3);
         ctx.globalAlpha = 1;
         ctx.restore();
       }
@@ -713,40 +1102,167 @@
     function drawAnimBirds(sw, sh) {
       animBirds.forEach(function(b) {
         ctx.save();
-        ctx.font = '28px sans-serif';
+        ctx.font = '26px sans-serif';
         ctx.textAlign = 'center';
-        ctx.globalAlpha = Math.max(0, 1 - b.t / 4);
+        ctx.globalAlpha = Math.max(0, 1 - b.t / 5);
         ctx.fillText(b.emoji, b.x - cameraX, b.y);
         ctx.restore();
       });
     }
 
-    function drawZoneDividers(sw, sh, groundY) {
-      for (var i = 1; i < 4; i++) {
-        var dx = (WORLD_W / 4) * i - cameraX;
-        if (dx < -5 || dx > sw + 5) continue;
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([6, 4]);
+    function drawZoneHeaders(sw, sh, gy) {
+      var zoneW = WORLD_W / 4;
+      ZONES.forEach(function(z, zi) {
+        var zoneCenter = zi * zoneW + zoneW / 2;
+        var sx = zoneCenter - cameraX;
+        if (sx < -200 || sx > sw + 200) return;
+
+        var playerInZone = Math.floor((player.x / WORLD_W) * 4) === zi;
+        var opacity = playerInZone ? 0.95 : 0.35;
+
+        // banner background
+        ctx.save();
+        ctx.globalAlpha = opacity;
+
+        var bannerW = 180;
+        var bannerH = 42;
+        var bannerY = gy + 10;
+
+        // decorative banner shape
+        ctx.fillStyle = 'rgba(26, 46, 35, 0.7)';
         ctx.beginPath();
-        ctx.moveTo(dx, groundY - 30);
-        ctx.lineTo(dx, sh);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.moveTo(sx - bannerW/2 + 8, bannerY);
+        ctx.lineTo(sx + bannerW/2 - 8, bannerY);
+        ctx.quadraticCurveTo(sx + bannerW/2, bannerY, sx + bannerW/2, bannerY + 8);
+        ctx.lineTo(sx + bannerW/2, bannerY + bannerH - 8);
+        ctx.quadraticCurveTo(sx + bannerW/2, bannerY + bannerH, sx + bannerW/2 - 8, bannerY + bannerH);
+        ctx.lineTo(sx - bannerW/2 + 8, bannerY + bannerH);
+        ctx.quadraticCurveTo(sx - bannerW/2, bannerY + bannerH, sx - bannerW/2, bannerY + bannerH - 8);
+        ctx.lineTo(sx - bannerW/2, bannerY + 8);
+        ctx.quadraticCurveTo(sx - bannerW/2, bannerY, sx - bannerW/2 + 8, bannerY);
+        ctx.closePath();
+        ctx.fill();
+
+        // accent line top
+        ctx.fillStyle = zonesComplete.has(z.id) ? '#5A9E7E' : '#C9B896';
+        ctx.fillRect(sx - bannerW/2 + 10, bannerY + 3, bannerW - 20, 2);
+
+        // zone name
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(z.name, sx, bannerY + 22);
+
+        // te reo label
+        ctx.fillStyle = '#C9B896';
+        ctx.font = '9px -apple-system, sans-serif';
+        ctx.fillText(z.label, sx, bannerY + 35);
+
+        // completed tick
+        if (zonesComplete.has(z.id)) {
+          ctx.fillStyle = '#5A9E7E';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText('✓ ' + z.bird.name, sx, bannerY + bannerH + 14);
+        }
+
+        ctx.restore();
+
+        // zone divider lines
+        if (zi > 0) {
+          var divX = zi * zoneW - cameraX;
+          if (divX > -5 && divX < sw + 5) {
+            ctx.save();
+            ctx.globalAlpha = 0.2;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([8, 5]);
+            ctx.beginPath();
+            ctx.moveTo(divX, gy - 20);
+            ctx.lineTo(divX, sh);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+          }
+        }
+      });
+    }
+
+    // touch controls state
+    var touchActive = false;
+    var touchStartX = 0;
+    var touchCurrentX = 0;
+    var touchControlsVisible = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    var leftBtnPressed = false;
+    var rightBtnPressed = false;
+
+    function drawTouchControls(sw, sh) {
+      if (!touchControlsVisible) return;
+      var btnR = 28;
+      var btnY = sh - 44;
+      var leftX = 48;
+      var rightX = 120;
+
+      // left button
+      ctx.save();
+      ctx.globalAlpha = leftBtnPressed ? 0.6 : 0.3;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(leftX, btnY, btnR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#1A2E23';
+      ctx.beginPath();
+      ctx.moveTo(leftX + 8, btnY - 12);
+      ctx.lineTo(leftX - 10, btnY);
+      ctx.lineTo(leftX + 8, btnY + 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // right button
+      ctx.save();
+      ctx.globalAlpha = rightBtnPressed ? 0.6 : 0.3;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(rightX, btnY, btnR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#1A2E23';
+      ctx.beginPath();
+      ctx.moveTo(rightX - 8, btnY - 12);
+      ctx.lineTo(rightX + 10, btnY);
+      ctx.lineTo(rightX - 8, btnY + 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // plant button (when near a bed with plant selected)
+      if (nearestBed && selectedPlant) {
+        var plantX = sw - 60;
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = '#3D7A5F';
+        ctx.beginPath();
+        ctx.arc(plantX, btnY, btnR + 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('PLANT', plantX, btnY + 4);
+        ctx.restore();
       }
     }
 
-    function roundRect(c, x, y, w, h, r) {
+    function rrect(c, x, y, w, h, r) {
+      r = Math.min(r, w/2, h/2);
       c.beginPath();
-      c.moveTo(x + r, y);
-      c.lineTo(x + w - r, y);
-      c.quadraticCurveTo(x + w, y, x + w, y + r);
-      c.lineTo(x + w, y + h - r);
-      c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      c.lineTo(x + r, y + h);
-      c.quadraticCurveTo(x, y + h, x, y + h - r);
-      c.lineTo(x, y + r);
-      c.quadraticCurveTo(x, y, x + r, y);
+      c.moveTo(x+r, y);
+      c.lineTo(x+w-r, y);
+      c.quadraticCurveTo(x+w, y, x+w, y+r);
+      c.lineTo(x+w, y+h-r);
+      c.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+      c.lineTo(x+r, y+h);
+      c.quadraticCurveTo(x, y+h, x, y+h-r);
+      c.lineTo(x, y+r);
+      c.quadraticCurveTo(x, y, x+r, y);
       c.closePath();
     }
 
@@ -754,14 +1270,12 @@
     function canvasClick(e) {
       var rect = canvas.getBoundingClientRect();
       var cx = e.clientX - rect.left;
-      var cy = e.clientY - rect.top;
       var worldClickX = cx + cameraX;
 
       if (nearestBed && selectedPlant) {
         tryPlant(nearestBed);
         return;
       }
-
       player.targetX = Math.max(40, Math.min(WORLD_W - 40, worldClickX));
     }
 
@@ -774,6 +1288,14 @@
       bed.planted = selectedPlant;
       bed.growAnim = 0;
       placed[bed.id] = selectedPlant;
+
+      // planting sound
+      if (audioCtx && musicPlaying) {
+        playNote(midiToFreq(72), audioCtx.currentTime, 0.15, 'sine', 0.1);
+        playNote(midiToFreq(76), audioCtx.currentTime + 0.08, 0.15, 'sine', 0.08);
+        playNote(midiToFreq(79), audioCtx.currentTime + 0.16, 0.2, 'sine', 0.06);
+      }
+
       selectedPlant = null;
 
       var zone = ZONES[bed.zoneIndex];
@@ -787,7 +1309,7 @@
         spawnBirdAnim(zone);
         if (zonesComplete.size === 4) setTimeout(celebrate, 1500);
       } else {
-        setHint(PLANTS[bed.correctPlant].name + ' planted! Keep going.', 'success');
+        setHint(PLANTS[bed.correctPlant].name + ' planted!', 'success');
       }
       renderPalette();
       updateProgress();
@@ -796,18 +1318,20 @@
     function spawnBirdAnim(zone) {
       var zi = ZONES.indexOf(zone);
       var bx = (zi + 0.5) * (WORLD_W / 4);
-      animBirds.push({
-        emoji: zone.bird.emoji,
-        x: bx, y: 200,
-        vx: (Math.random() - 0.5) * 80,
-        t: 0
-      });
+      for (var i = 0; i < 3; i++) {
+        animBirds.push({
+          emoji: zone.bird.emoji,
+          x: bx + (Math.random()-0.5) * 100,
+          y: 250 + Math.random() * 40,
+          vx: (Math.random()-0.5) * 60,
+          t: -i * 0.3
+        });
+      }
     }
 
-    // ─── UI RENDERING ───
+    // ─── UI ───
     function renderBirdShelf() {
-      var shelf = document.getElementById('birdShelf');
-      shelf.innerHTML = ZONES.map(function(z) {
+      document.getElementById('birdShelf').innerHTML = ZONES.map(function(z) {
         return '<div class="bird-reward" id="bird-' + z.id + '">' +
           '<span class="bird-icon">' + z.bird.emoji + '</span>' +
           '<span>' + z.bird.name + '</span></div>';
@@ -818,48 +1342,42 @@
       var pal = document.getElementById('plantPalette');
       var usedPlants = new Set(Object.values(placed));
       pal.innerHTML = paletteOrder.map(function(pid) {
-        var p = PLANTS[pid];
-        var isUsed = usedPlants.has(pid);
-        var isSel = selectedPlant === pid;
-        return '<div class="plant-option ' + (isSel?'selected':'') + ' ' + (isUsed?'used':'') + '"' +
-          ' onclick="selectPlant(\'' + pid + '\')">' +
-          '<span class="plant-emoji">' + p.emoji + '</span>' +
-          '<span class="plant-name">' + p.name + '</span></div>';
+        var p = PLANTS[pid], isUsed = usedPlants.has(pid), isSel = selectedPlant === pid;
+        return '<div class="plant-option '+(isSel?'selected':'')+' '+(isUsed?'used':'')+'"'+
+          ' onclick="selectPlant(\''+pid+'\')">' +
+          '<span class="plant-emoji">'+p.emoji+'</span>' +
+          '<span class="plant-name">'+p.name+'</span></div>';
       }).join('');
     }
 
     function selectPlant(pid) {
       if (Object.values(placed).includes(pid)) return;
-      selectedPlant = selectedPlant === pid ? null : pid;
+      selectedPlant = selectedPlant===pid ? null : pid;
       if (selectedPlant) {
-        setHint(PLANTS[selectedPlant].name + ' selected — walk near a bed to plant');
+        setHint(PLANTS[selectedPlant].name + ' — walk to a bed in the ' + PLANTS[selectedPlant].hint + ' zone');
       } else {
-        setHint('Select a plant below, then walk near a garden bed.');
+        setHint('Select a plant from the palette');
       }
       renderPalette();
-
-      if (selectedPlant && nearestBed) {
-        tryPlant(nearestBed);
-      }
+      if (selectedPlant && nearestBed) tryPlant(nearestBed);
     }
 
     function updateProgress() {
-      var total = 16;
       var count = Object.keys(placed).length;
-      document.getElementById('progressFill').style.width = ((count/total)*100) + '%';
-      document.getElementById('progressLabel').textContent = count + ' of ' + total + ' plants placed';
+      document.getElementById('progressFill').style.width = ((count/16)*100)+'%';
+      document.getElementById('progressLabel').textContent = count + ' / 16';
     }
 
     function setHint(msg, type) {
       var el = document.getElementById('hintText');
       el.textContent = msg;
-      el.className = 'hint-text' + (type ? ' ' + type : '');
+      el.className = 'hint-text' + (type ? ' '+type : '');
       if (type) {
         setTimeout(function() {
           if (el.textContent === msg) {
             el.textContent = selectedPlant
-              ? PLANTS[selectedPlant].name + ' selected — walk near a bed to plant'
-              : 'Click on the street to walk. Stand near a bed and select a plant.';
+              ? PLANTS[selectedPlant].name + ' — walk to the ' + PLANTS[selectedPlant].hint + ' zone'
+              : 'Select a plant · Walk to a garden bed';
             el.className = 'hint-text';
           }
         }, 2500);
@@ -868,9 +1386,8 @@
 
     function celebrate() {
       document.getElementById('celebration').classList.add('active');
-      var fb = document.getElementById('flyingBirds');
-      fb.innerHTML = ZONES.map(function(z) {
-        return '<span class="flying-bird">' + z.bird.emoji + '</span>';
+      document.getElementById('flyingBirds').innerHTML = ZONES.map(function(z) {
+        return '<span class="flying-bird">'+z.bird.emoji+'</span>';
       }).join('');
       launchConfetti();
     }
@@ -879,13 +1396,13 @@
       var c = document.getElementById('confetti-canvas');
       var cx = c.getContext('2d');
       c.width = window.innerWidth; c.height = window.innerHeight;
-      var colors = ['#3D7A5F','#C9B896','#B85C4A','#7AABC5','#5A9E7E','#DDD4BA'];
+      var cols = ['#3D7A5F','#C9B896','#B85C4A','#7AABC5','#5A9E7E','#DDD4BA','#E8C840'];
       var pcs = [];
-      for (var i = 0; i < 140; i++) {
+      for (var i = 0; i < 160; i++) {
         pcs.push({
-          x: Math.random()*c.width, y: Math.random()*c.height - c.height,
+          x: Math.random()*c.width, y: Math.random()*c.height-c.height,
           w: Math.random()*8+4, h: Math.random()*6+3,
-          color: colors[Math.floor(Math.random()*colors.length)],
+          color: cols[Math.floor(Math.random()*cols.length)],
           vy: Math.random()*3+1.5, vx: (Math.random()-0.5)*2,
           rot: Math.random()*360, vr: (Math.random()-0.5)*8
         });
@@ -916,7 +1433,6 @@
 
     // ─── EVENTS ───
     document.getElementById('canvasWrap').addEventListener('click', canvasClick);
-
     window.addEventListener('keydown', function(e) {
       keysDown[e.code] = true;
       if (e.code === 'Space' && nearestBed && selectedPlant) {
@@ -925,11 +1441,64 @@
       }
     });
     window.addEventListener('keyup', function(e) { keysDown[e.code] = false; });
+    window.addEventListener('resize', function() { resizeCanvas(); });
 
-    window.addEventListener('resize', function() {
-      var wrap = document.getElementById('canvasWrap');
-      W = canvas.width = wrap.clientWidth * (window.devicePixelRatio || 1);
-      H = canvas.height = wrap.clientHeight * (window.devicePixelRatio || 1);
+    // ─── TOUCH CONTROLS ───
+    var canvasEl = document.getElementById('canvasWrap');
+
+    canvasEl.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var rect = canvas.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      var sw = W / dpr, sh = H / dpr;
+      var btnR = 28, btnY = sh - 44;
+      var leftX = 48, rightX = 120;
+      var plantX = sw - 60;
+
+      for (var i = 0; i < e.touches.length; i++) {
+        var tx = e.touches[i].clientX - rect.left;
+        var ty = e.touches[i].clientY - rect.top;
+
+        // left button
+        if (Math.hypot(tx - leftX, ty - btnY) < btnR + 8) {
+          leftBtnPressed = true;
+          keysDown['ArrowLeft'] = true;
+          continue;
+        }
+        // right button
+        if (Math.hypot(tx - rightX, ty - btnY) < btnR + 8) {
+          rightBtnPressed = true;
+          keysDown['ArrowRight'] = true;
+          continue;
+        }
+        // plant button
+        if (nearestBed && selectedPlant && Math.hypot(tx - plantX, ty - btnY) < btnR + 12) {
+          tryPlant(nearestBed);
+          continue;
+        }
+        // tap elsewhere to walk
+        var worldClickX = tx + cameraX;
+        player.targetX = Math.max(40, Math.min(WORLD_W - 40, worldClickX));
+      }
+    }, { passive: false });
+
+    canvasEl.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    canvasEl.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      leftBtnPressed = false;
+      rightBtnPressed = false;
+      keysDown['ArrowLeft'] = false;
+      keysDown['ArrowRight'] = false;
+    }, { passive: false });
+
+    canvasEl.addEventListener('touchcancel', function(e) {
+      leftBtnPressed = false;
+      rightBtnPressed = false;
+      keysDown['ArrowLeft'] = false;
+      keysDown['ArrowRight'] = false;
     });
 
     init();
