@@ -9,439 +9,208 @@
       --pounamu: #3D7A5F;
       --pounamu-light: #5A9E7E;
       --sand: #C9B896;
-      --sand-light: #DDD4BA;
       --bush-dark: #1A2E23;
       --sky: #B8D4E3;
-      --sky-deep: #7AABC5;
       --earth: #5C3D2E;
-      --earth-light: #7A5A48;
-      --tui-accent: #2B4A6B;
       --bg: #E8E0D0;
       --text: #1A2E23;
       --text-muted: #5C6B5A;
       --card-bg: #F5F0E6;
       --card-border: #C9B896;
-      --slot-empty: rgba(93, 61, 46, 0.15);
-      --slot-hover: rgba(61, 122, 95, 0.25);
-      --reward-bg: rgba(255,255,255,0.85);
+      --reward-bg: rgba(255,255,255,0.9);
     }
-
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg: #141E18;
-        --text: #D4DDD0;
-        --text-muted: #8A9B86;
-        --card-bg: #1E2D24;
-        --card-border: #3D5A3F;
-        --slot-empty: rgba(180, 200, 170, 0.12);
-        --slot-hover: rgba(90, 158, 126, 0.2);
-        --reward-bg: rgba(30,45,36,0.9);
-        --sand: #8A7B60;
-        --sand-light: #A89878;
+        --bg: #141E18; --text: #D4DDD0; --text-muted: #8A9B86;
+        --card-bg: #1E2D24; --card-border: #3D5A3F;
+        --reward-bg: rgba(30,45,36,0.92); --sand: #8A7B60;
       }
     }
     :root[data-theme="dark"] {
-      --bg: #141E18;
-      --text: #D4DDD0;
-      --text-muted: #8A9B86;
-      --card-bg: #1E2D24;
-      --card-border: #3D5A3F;
-      --slot-empty: rgba(180, 200, 170, 0.12);
-      --slot-hover: rgba(90, 158, 126, 0.2);
-      --reward-bg: rgba(30,45,36,0.9);
-      --sand: #8A7B60;
-      --sand-light: #A89878;
+      --bg: #141E18; --text: #D4DDD0; --text-muted: #8A9B86;
+      --card-bg: #1E2D24; --card-border: #3D5A3F;
+      --reward-bg: rgba(30,45,36,0.92); --sand: #8A7B60;
     }
     :root[data-theme="light"] {
-      --bg: #E8E0D0;
-      --text: #1A2E23;
-      --text-muted: #5C6B5A;
-      --card-bg: #F5F0E6;
-      --card-border: #C9B896;
-      --slot-empty: rgba(93, 61, 46, 0.15);
-      --slot-hover: rgba(61, 122, 95, 0.25);
-      --reward-bg: rgba(255,255,255,0.85);
-      --sand: #C9B896;
-      --sand-light: #DDD4BA;
+      --bg: #E8E0D0; --text: #1A2E23; --text-muted: #5C6B5A;
+      --card-bg: #F5F0E6; --card-border: #C9B896;
+      --reward-bg: rgba(255,255,255,0.9); --sand: #C9B896;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg); color: var(--text);
       font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
+      min-height: 100vh; overflow-x: hidden;
+      display: flex; flex-direction: column;
     }
-
     .game-header {
-      text-align: center;
-      padding: 28px 16px 14px;
+      text-align: center; padding: 16px 16px 6px;
     }
     .game-title {
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: 700;
-      color: var(--pounamu);
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 700; color: var(--pounamu);
       letter-spacing: -0.02em;
-      text-wrap: balance;
     }
     .game-subtitle {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-      letter-spacing: 0.05em;
+      font-size: 0.78rem; color: var(--text-muted);
+      margin-top: 2px; letter-spacing: 0.05em;
       text-transform: uppercase;
     }
-
-    .bird-shelf {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      padding: 12px 16px;
-      flex-wrap: wrap;
+    .top-bar {
+      display: flex; justify-content: center; align-items: center;
+      gap: 10px; padding: 6px 12px; flex-wrap: wrap;
     }
     .bird-reward {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--reward-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 6px 14px 6px 8px;
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      transition: all 0.4s ease;
-      opacity: 0.45;
+      display: flex; align-items: center; gap: 5px;
+      background: var(--reward-bg); border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 4px 10px 4px 6px;
+      font-size: 0.75rem; color: var(--text-muted);
+      transition: all 0.4s ease; opacity: 0.4;
     }
     .bird-reward.earned {
-      opacity: 1;
-      border-color: var(--pounamu);
-      color: var(--text);
+      opacity: 1; border-color: var(--pounamu); color: var(--text);
       background: var(--card-bg);
     }
     .bird-icon {
-      font-size: 1.5rem;
-      filter: grayscale(1);
-      transition: filter 0.4s ease, transform 0.4s ease;
+      font-size: 1.2rem; filter: grayscale(1);
+      transition: filter 0.4s ease;
     }
     .bird-reward.earned .bird-icon {
-      filter: grayscale(0);
-      animation: birdBounce 0.6s ease;
+      filter: grayscale(0); animation: birdPop 0.6s ease;
     }
-    @keyframes birdBounce {
-      0% { transform: scale(0.4) rotate(-25deg); }
-      50% { transform: scale(1.35) rotate(10deg); }
+    @keyframes birdPop {
+      0% { transform: scale(0.3) rotate(-20deg); }
+      50% { transform: scale(1.4) rotate(10deg); }
       100% { transform: scale(1) rotate(0); }
     }
-
-    .progress-bar-wrap {
-      max-width: 420px;
-      margin: 0 auto;
-      padding: 4px 20px 10px;
+    .progress-wrap {
+      max-width: 320px; margin: 0 auto; padding: 2px 16px 6px;
     }
     .progress-track {
-      height: 6px;
-      background: var(--slot-empty);
-      border-radius: 3px;
-      overflow: hidden;
+      height: 5px; background: rgba(0,0,0,0.08);
+      border-radius: 3px; overflow: hidden;
     }
     .progress-fill {
-      height: 100%;
+      height: 100%; border-radius: 3px;
       background: linear-gradient(90deg, var(--pounamu), var(--pounamu-light));
-      border-radius: 3px;
-      transition: width 0.4s ease;
-      width: 0%;
+      transition: width 0.4s ease; width: 0%;
     }
     .progress-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 5px;
+      font-size: 0.65rem; color: var(--text-muted);
+      text-align: center; margin-top: 3px;
       font-variant-numeric: tabular-nums;
     }
-
-    .street-container {
-      width: 100%;
-      overflow-x: auto;
-      padding: 0 16px 8px;
-      -webkit-overflow-scrolling: touch;
+    .canvas-wrap {
+      position: relative; width: 100%;
+      flex: 1; min-height: 340px; max-height: 480px;
+      cursor: pointer; overflow: hidden;
     }
-    .street-view {
-      display: flex;
-      gap: 0;
-      min-width: 880px;
-      width: 100%;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px solid var(--card-border);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    canvas#game {
+      display: block; width: 100%; height: 100%;
     }
-
-    .zone {
-      flex: 1;
-      min-width: 220px;
-      position: relative;
-      padding: 14px 12px;
-      cursor: default;
-      transition: all 0.3s ease;
+    .zone-indicator {
+      position: absolute; top: 8px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--reward-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 4px 14px;
+      font-size: 0.72rem; color: var(--text);
+      font-weight: 600; pointer-events: none;
+      transition: opacity 0.3s;
+      white-space: nowrap;
     }
-    .zone + .zone { border-left: 1px solid rgba(0,0,0,0.06); }
-    .zone-header { text-align: center; margin-bottom: 10px; }
-    .zone-name {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .zone-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .zone-coastal { background: linear-gradient(180deg, #D6E8EE 0%, #C5D8C8 100%); }
-    .zone-lowland { background: linear-gradient(180deg, #C5D8C8 0%, #A8C4A0 100%); }
-    .zone-bush    { background: linear-gradient(180deg, #A8C4A0 0%, #7BA67A 100%); }
-    .zone-upland  { background: linear-gradient(180deg, #7BA67A 0%, #5E8A62 100%); }
-
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) .zone-coastal { background: linear-gradient(180deg, #1E2D2F 0%, #1A2E23 100%); }
-      :root:not([data-theme="light"]) .zone-lowland { background: linear-gradient(180deg, #1A2E23 0%, #1E3520 100%); }
-      :root:not([data-theme="light"]) .zone-bush    { background: linear-gradient(180deg, #1E3520 0%, #1A3022 100%); }
-      :root:not([data-theme="light"]) .zone-upland  { background: linear-gradient(180deg, #1A3022 0%, #152818 100%); }
-    }
-    :root[data-theme="dark"] .zone-coastal { background: linear-gradient(180deg, #1E2D2F 0%, #1A2E23 100%); }
-    :root[data-theme="dark"] .zone-lowland { background: linear-gradient(180deg, #1A2E23 0%, #1E3520 100%); }
-    :root[data-theme="dark"] .zone-bush    { background: linear-gradient(180deg, #1E3520 0%, #1A3022 100%); }
-    :root[data-theme="dark"] .zone-upland  { background: linear-gradient(180deg, #1A3022 0%, #152818 100%); }
-
-    .zone-complete-badge {
-      display: none;
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: var(--pounamu);
-      color: #fff;
-      font-size: 0.63rem;
-      padding: 3px 10px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 600;
-    }
-    .zone.complete .zone-complete-badge { display: block; }
-
-    .planting-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .plant-slot {
-      aspect-ratio: 1;
-      background: var(--slot-empty);
-      border: 2px dashed rgba(92, 61, 46, 0.22);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
-    }
-    .plant-slot:hover {
-      background: var(--slot-hover);
-      border-color: var(--pounamu-light);
-      transform: scale(1.05);
-    }
-    .plant-slot.filled {
-      background: rgba(61, 122, 95, 0.12);
-      border: 2px solid var(--pounamu);
-      cursor: default;
-      animation: plantGrow 0.5s ease;
-    }
-    .plant-slot.filled:hover { transform: none; }
-    .plant-slot.wrong {
-      animation: shake 0.4s ease;
-      border-color: #B85C4A;
-      background: rgba(184, 92, 74, 0.12);
-    }
-    .slot-hint {
-      position: absolute;
-      bottom: 4px;
-      font-size: 0.55rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      opacity: 0.65;
-    }
-    .plant-slot.filled .slot-hint { display: none; }
-
-    @keyframes plantGrow {
-      0% { transform: scale(0.3); opacity: 0.3; }
-      60% { transform: scale(1.15); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      75% { transform: translateX(6px); }
-    }
-
     .hint-bar {
-      text-align: center;
-      padding: 10px 16px 14px;
-      min-height: 38px;
+      text-align: center; padding: 6px 16px;
+      min-height: 28px;
     }
     .hint-text {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-style: italic;
-      transition: opacity 0.3s ease;
+      font-size: 0.8rem; color: var(--text-muted);
+      font-style: italic; transition: opacity 0.3s;
     }
     .hint-text.error { color: #B85C4A; font-style: normal; font-weight: 500; }
     .hint-text.success { color: var(--pounamu); font-style: normal; font-weight: 500; }
-
     .palette-section {
-      padding: 12px 16px 24px;
-      max-width: 960px;
-      margin: 0 auto;
+      padding: 6px 12px 16px; max-width: 800px; margin: 0 auto; width: 100%;
     }
     .palette-title {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      text-align: center;
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+      margin-bottom: 6px; text-align: center;
     }
     .plant-palette {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
+      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
     }
     .plant-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: 12px;
-      padding: 8px 12px 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-width: 72px;
-      user-select: none;
-      -webkit-user-select: none;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: var(--card-bg); border: 2px solid var(--card-border);
+      border-radius: 10px; padding: 5px 8px 4px;
+      cursor: pointer; transition: all 0.15s ease;
+      min-width: 58px; user-select: none;
     }
     .plant-option:hover {
-      border-color: var(--pounamu);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-color: var(--pounamu); transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
     .plant-option.selected {
       border-color: var(--pounamu);
-      background: rgba(61, 122, 95, 0.1);
-      box-shadow: 0 0 0 3px rgba(61, 122, 95, 0.2);
+      background: rgba(61, 122, 95, 0.12);
+      box-shadow: 0 0 0 2px rgba(61, 122, 95, 0.25);
     }
-    .plant-option.used {
-      opacity: 0.3;
-      pointer-events: none;
-      transform: none;
-    }
-    .plant-emoji { font-size: 1.7rem; }
+    .plant-option.used { opacity: 0.25; pointer-events: none; }
+    .plant-emoji { font-size: 1.4rem; }
     .plant-name {
-      font-size: 0.64rem;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.2;
-      max-width: 68px;
+      font-size: 0.56rem; color: var(--text-muted);
+      text-align: center; line-height: 1.15; max-width: 56px;
     }
-
+    .controls-hint {
+      text-align: center; padding: 0 12px 10px;
+      font-size: 0.65rem; color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
     .celebration-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(26, 46, 35, 0.88);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 20px;
+      display: none; position: fixed; inset: 0;
+      background: rgba(26, 46, 35, 0.9); z-index: 100;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 18px; padding: 24px;
       animation: fadeIn 0.6s ease;
-      padding: 20px;
     }
     .celebration-overlay.active { display: flex; }
     .celebration-title {
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      color: #fff;
-      text-align: center;
-      text-wrap: balance;
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      color: #fff; text-align: center;
     }
     .celebration-sub {
-      color: var(--sand-light);
-      font-size: 1rem;
-      text-align: center;
-      max-width: 440px;
-      line-height: 1.6;
+      color: #C9B896; font-size: 0.95rem; text-align: center;
+      max-width: 420px; line-height: 1.6;
     }
-    .flying-birds {
-      display: flex;
-      gap: 28px;
-      font-size: 3.2rem;
-    }
+    .flying-birds { display: flex; gap: 24px; font-size: 2.8rem; }
     .flying-bird {
-      animation: flyAround 3s ease-in-out infinite;
-      display: inline-block;
+      animation: flyAround 3s ease-in-out infinite; display: inline-block;
     }
     .flying-bird:nth-child(2) { animation-delay: 0.4s; }
     .flying-bird:nth-child(3) { animation-delay: 0.8s; }
     .flying-bird:nth-child(4) { animation-delay: 1.2s; }
     @keyframes flyAround {
-      0%   { transform: translate(0, 0) rotate(0deg); }
-      25%  { transform: translate(30px, -45px) rotate(10deg); }
-      50%  { transform: translate(-20px, -65px) rotate(-5deg); }
-      75%  { transform: translate(-40px, -20px) rotate(8deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
+      0%   { transform: translate(0,0) rotate(0); }
+      25%  { transform: translate(30px,-40px) rotate(10deg); }
+      50%  { transform: translate(-20px,-60px) rotate(-5deg); }
+      75%  { transform: translate(-40px,-20px) rotate(8deg); }
+      100% { transform: translate(0,0) rotate(0); }
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
     .celebration-btn {
-      margin-top: 16px;
-      background: var(--pounamu);
-      color: #fff;
-      border: none;
-      border-radius: 24px;
-      padding: 12px 32px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      margin-top: 10px; background: var(--pounamu); color: #fff;
+      border: none; border-radius: 20px; padding: 10px 28px;
+      font-size: 0.9rem; cursor: pointer; font-weight: 600;
       transition: background 0.2s;
     }
     .celebration-btn:hover { background: var(--pounamu-light); }
-    .celebration-btn:focus-visible {
-      outline: 3px solid var(--pounamu-light);
-      outline-offset: 2px;
+    .celebration-btn:focus-visible { outline: 3px solid var(--pounamu-light); outline-offset: 2px; }
+    canvas#confetti-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 101;
     }
-
-    canvas#confetti {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 101;
-    }
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -457,223 +226,627 @@
     <div class="game-subtitle">Native Planting Game — Nelson</div>
   </div>
 
-  <div class="bird-shelf" id="birdShelf"></div>
+  <div class="top-bar" id="birdShelf"></div>
 
-  <div class="progress-bar-wrap">
+  <div class="progress-wrap">
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-label" id="progressLabel">0 of 16 plants placed</div>
   </div>
 
-  <div class="street-container">
-    <div class="street-view" id="streetView"></div>
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="game"></canvas>
+    <div class="zone-indicator" id="zoneIndicator"></div>
   </div>
 
   <div class="hint-bar">
-    <div class="hint-text" id="hintText">Select a plant below, then tap an empty bed to plant it</div>
+    <div class="hint-text" id="hintText">Click on the street to walk. Stand near a bed and select a plant to place it.</div>
   </div>
 
   <div class="palette-section">
-    <div class="palette-title">Plant Palette — select a plant</div>
+    <div class="palette-title">Plant Palette</div>
     <div class="plant-palette" id="plantPalette"></div>
   </div>
 
+  <div class="controls-hint">Arrow keys or click to walk · Stand near a garden bed · Select a plant to place it</div>
+
   <div class="celebration-overlay" id="celebration">
-    <canvas id="confetti"></canvas>
+    <canvas id="confetti-canvas"></canvas>
     <div class="flying-birds" id="flyingBirds"></div>
     <div class="celebration-title">Bridge Street is Alive!</div>
     <div class="celebration-sub">
-      The native birds have returned to Bridge Street. Your planting from coast to mountain
-      has restored the corridor — tui sing in the flax, kererū feast on the kōwhai,
-      fantails dance through the ferns, and morepork watch over it all.
+      The native birds have returned. Your planting from coast to mountain
+      has restored the corridor — tūī sing in the flax, kererū feast on the kōwhai,
+      fantails dance through the ferns, and ruru watch over it all.
     </div>
     <button class="celebration-btn" onclick="resetGame()">Plant Again</button>
   </div>
 
   <script>
-    const ZONES = [
-      {
-        id: 'coastal',
-        name: 'Coastal Edge',
-        label: 'Te Taha Moana',
-        cssClass: 'zone-coastal',
-        bird: { name: 'Tūī', emoji: '🐦‍⬛' },
-        plants: ['pohutukawa', 'harakeke', 'karaka', 'taupata'],
-      },
-      {
-        id: 'lowland',
-        name: 'Lowland Grove',
-        label: 'Te Papa Rākau',
-        cssClass: 'zone-lowland',
-        bird: { name: 'Kererū', emoji: '🕊️' },
-        plants: ['nikau', 'kawakawa', 'ti-kouka', 'kowhai'],
-      },
-      {
-        id: 'bush',
-        name: 'Native Bush',
-        label: 'Te Ngahere',
-        cssClass: 'zone-bush',
-        bird: { name: 'Pīwakawaka', emoji: '🐦' },
-        plants: ['ponga', 'kanuka', 'rimu', 'mahoe'],
-      },
-      {
-        id: 'upland',
-        name: 'Upland Forest',
-        label: 'Te Maunga',
-        cssClass: 'zone-upland',
-        bird: { name: 'Ruru', emoji: '🦉' },
-        plants: ['tawhai', 'mountain-flax', 'hebe', 'rata'],
-      },
+    // ─── DATA ───
+    var ZONES = [
+      { id:'coastal', name:'Coastal Edge', label:'Te Taha Moana',
+        bird:{name:'Tūī',emoji:'🐦‍⬛'},
+        plants:['pohutukawa','harakeke','karaka','taupata'],
+        skyTop:'#C8E0EE', skyBot:'#A8CCD8',
+        groundTop:'#C5CDB0', groundBot:'#A8B898',
+        hillColor:'#6B8B6A', hillColor2:'#89A882' },
+      { id:'lowland', name:'Lowland Grove', label:'Te Papa Rākau',
+        bird:{name:'Kererū',emoji:'🕊️'},
+        plants:['nikau','kawakawa','ti-kouka','kowhai'],
+        skyTop:'#B8D8C8', skyBot:'#98C4A8',
+        groundTop:'#A8B898', groundBot:'#90A880',
+        hillColor:'#5A7B5A', hillColor2:'#78A070' },
+      { id:'bush', name:'Native Bush', label:'Te Ngahere',
+        bird:{name:'Pīwakawaka',emoji:'🐦'},
+        plants:['ponga','kanuka','rimu','mahoe'],
+        skyTop:'#A8C8B8', skyBot:'#88B498',
+        groundTop:'#90A880', groundBot:'#789868',
+        hillColor:'#4A6B4A', hillColor2:'#689060' },
+      { id:'upland', name:'Upland Forest', label:'Te Maunga',
+        bird:{name:'Ruru',emoji:'🦉'},
+        plants:['tawhai','mountain-flax','hebe','rata'],
+        skyTop:'#98B8A8', skyBot:'#78A488',
+        groundTop:'#789868', groundBot:'#608858',
+        hillColor:'#3A5B3A', hillColor2:'#588050' },
     ];
 
-    const PLANTS = {
-      'pohutukawa':    { emoji: '🌺', name: 'Pōhutukawa', hint: 'Coastal' },
-      'harakeke':      { emoji: '🌿', name: 'Harakeke', hint: 'Coastal' },
-      'karaka':        { emoji: '🌳', name: 'Karaka', hint: 'Coastal' },
-      'taupata':       { emoji: '🍃', name: 'Taupata', hint: 'Coastal' },
-      'nikau':         { emoji: '🌴', name: 'Nīkau', hint: 'Lowland' },
-      'kawakawa':      { emoji: '🌱', name: 'Kawakawa', hint: 'Lowland' },
-      'ti-kouka':      { emoji: '🎋', name: 'Tī Kōuka', hint: 'Lowland' },
-      'kowhai':        { emoji: '🌼', name: 'Kōwhai', hint: 'Lowland' },
-      'ponga':         { emoji: '🌿', name: 'Ponga', hint: 'Bush' },
-      'kanuka':        { emoji: '🌲', name: 'Kānuka', hint: 'Bush' },
-      'rimu':          { emoji: '🎄', name: 'Rimu', hint: 'Bush' },
-      'mahoe':         { emoji: '🍀', name: 'Māhoe', hint: 'Bush' },
-      'tawhai':        { emoji: '🌳', name: 'Tawhai', hint: 'Upland' },
-      'mountain-flax': { emoji: '🪴', name: 'Wharariki', hint: 'Upland' },
-      'hebe':          { emoji: '💮', name: 'Hebe', hint: 'Upland' },
-      'rata':          { emoji: '🌸', name: 'Rātā', hint: 'Upland' },
+    var PLANTS = {
+      'pohutukawa':   {emoji:'🌺',name:'Pōhutukawa',  hint:'Coastal',  zone:'coastal'},
+      'harakeke':     {emoji:'🌿',name:'Harakeke',     hint:'Coastal',  zone:'coastal'},
+      'karaka':       {emoji:'🌳',name:'Karaka',       hint:'Coastal',  zone:'coastal'},
+      'taupata':      {emoji:'🍃',name:'Taupata',      hint:'Coastal',  zone:'coastal'},
+      'nikau':        {emoji:'🌴',name:'Nīkau',        hint:'Lowland',  zone:'lowland'},
+      'kawakawa':     {emoji:'🌱',name:'Kawakawa',     hint:'Lowland',  zone:'lowland'},
+      'ti-kouka':     {emoji:'🎋',name:'Tī Kōuka',    hint:'Lowland',  zone:'lowland'},
+      'kowhai':       {emoji:'🌼',name:'Kōwhai',       hint:'Lowland',  zone:'lowland'},
+      'ponga':        {emoji:'🌿',name:'Ponga',        hint:'Bush',     zone:'bush'},
+      'kanuka':       {emoji:'🌲',name:'Kānuka',       hint:'Bush',     zone:'bush'},
+      'rimu':         {emoji:'🎄',name:'Rimu',         hint:'Bush',     zone:'bush'},
+      'mahoe':        {emoji:'🍀',name:'Māhoe',        hint:'Bush',     zone:'bush'},
+      'tawhai':       {emoji:'🌳',name:'Tawhai',       hint:'Upland',   zone:'upland'},
+      'mountain-flax':{emoji:'🪴',name:'Wharariki',    hint:'Upland',   zone:'upland'},
+      'hebe':         {emoji:'💮',name:'Hebe',         hint:'Upland',   zone:'upland'},
+      'rata':         {emoji:'🌸',name:'Rātā',         hint:'Upland',   zone:'upland'},
     };
 
-    let selectedPlant = null;
-    let placed = {};
-    let zonesComplete = new Set();
-    let paletteOrder = null;
+    // ─── STATE ───
+    var WORLD_W = 3200;
+    var canvas, ctx, W, H;
+    var cameraX = 0;
+    var player = { x: 80, targetX: 80, speed: 0, facing: 1, walkFrame: 0, walkTimer: 0 };
+    var beds = [];
+    var placed = {};
+    var zonesComplete = new Set();
+    var selectedPlant = null;
+    var paletteOrder = [];
+    var animBirds = [];
+    var nearestBed = null;
+    var keysDown = {};
+    var lastTime = 0;
 
-    function init() {
-      paletteOrder = shuffleArray(Object.keys(PLANTS));
-      renderBirdShelf();
-      renderStreet();
-      renderPalette();
-      updateProgress();
+    function initBeds() {
+      beds = [];
+      ZONES.forEach(function(z, zi) {
+        var zoneStart = zi * (WORLD_W / 4);
+        var spacing = (WORLD_W / 4) / (z.plants.length + 1);
+        z.plants.forEach(function(pid, pi) {
+          beds.push({
+            id: z.id + '-' + pi,
+            zoneId: z.id,
+            zoneIndex: zi,
+            plantIndex: pi,
+            correctPlant: pid,
+            x: zoneStart + spacing * (pi + 1),
+            planted: null,
+            growAnim: 0,
+          });
+        });
+      });
     }
 
     function shuffleArray(arr) {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
       }
       return a;
     }
 
-    function renderBirdShelf() {
-      const shelf = document.getElementById('birdShelf');
-      shelf.innerHTML = ZONES.map(z =>
-        '<div class="bird-reward" id="bird-' + z.id + '">' +
-          '<span class="bird-icon">' + z.bird.emoji + '</span>' +
-          '<span>' + z.bird.name + '</span>' +
-        '</div>'
-      ).join('');
+    // ─── INIT ───
+    function init() {
+      canvas = document.getElementById('game');
+      var wrap = document.getElementById('canvasWrap');
+      W = canvas.width = wrap.clientWidth * (window.devicePixelRatio || 1);
+      H = canvas.height = wrap.clientHeight * (window.devicePixelRatio || 1);
+      ctx = canvas.getContext('2d');
+
+      player = { x: 80, targetX: 80, speed: 0, facing: 1, walkFrame: 0, walkTimer: 0 };
+      cameraX = 0;
+      placed = {};
+      zonesComplete = new Set();
+      selectedPlant = null;
+      animBirds = [];
+      keysDown = {};
+
+      initBeds();
+      paletteOrder = shuffleArray(Object.keys(PLANTS));
+      renderBirdShelf();
+      renderPalette();
+      updateProgress();
+      setHint('Click on the street to walk. Stand near a bed and select a plant to place it.');
+      requestAnimationFrame(gameLoop);
     }
 
-    function renderStreet() {
-      const sv = document.getElementById('streetView');
-      sv.innerHTML = ZONES.map(z => {
-        const slots = z.plants.map((p, i) => {
-          const plant = PLANTS[p];
-          const filled = placed[z.id + '-' + i];
-          return '<div class="plant-slot ' + (filled ? 'filled' : '') + '"' +
-            ' data-zone="' + z.id + '" data-index="' + i + '"' +
-            ' onclick="placeInSlot(\'' + z.id + '\', ' + i + ')"' +
-            ' title="' + plant.name + '">' +
-            (filled ? PLANTS[filled].emoji : '') +
-            '<span class="slot-hint">' + plant.name + '</span>' +
-          '</div>';
-        }).join('');
-        return '<div class="zone ' + z.cssClass + (zonesComplete.has(z.id) ? ' complete' : '') + '" id="zone-' + z.id + '">' +
-          '<div class="zone-complete-badge">Complete</div>' +
-          '<div class="zone-header">' +
-            '<div class="zone-name">' + z.name + '</div>' +
-            '<div class="zone-label">' + z.label + '</div>' +
-          '</div>' +
-          '<div class="planting-grid">' + slots + '</div>' +
-        '</div>';
+    // ─── GAME LOOP ───
+    function gameLoop(ts) {
+      var dt = Math.min((ts - (lastTime || ts)) / 1000, 0.05);
+      lastTime = ts;
+      update(dt);
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function update(dt) {
+      var moveSpeed = 280;
+      var moving = false;
+
+      if (keysDown['ArrowLeft'] || keysDown['KeyA']) {
+        player.targetX = Math.max(40, player.x - 10);
+        player.facing = -1;
+      }
+      if (keysDown['ArrowRight'] || keysDown['KeyD']) {
+        player.targetX = Math.min(WORLD_W - 40, player.x + 10);
+        player.facing = 1;
+      }
+
+      var dx = player.targetX - player.x;
+      if (Math.abs(dx) > 2) {
+        player.x += Math.sign(dx) * Math.min(moveSpeed * dt, Math.abs(dx));
+        player.facing = dx > 0 ? 1 : -1;
+        moving = true;
+      } else {
+        player.x = player.targetX;
+      }
+
+      if (moving) {
+        player.walkTimer += dt;
+        player.walkFrame = Math.floor(player.walkTimer * 6) % 4;
+      } else {
+        player.walkFrame = 0;
+        player.walkTimer = 0;
+      }
+
+      var screenW = W / (window.devicePixelRatio || 1);
+      cameraX = Math.max(0, Math.min(WORLD_W - screenW, player.x - screenW / 2));
+
+      nearestBed = null;
+      var minD = 70;
+      beds.forEach(function(b) {
+        if (b.planted) return;
+        var d = Math.abs(b.x - player.x);
+        if (d < minD) { minD = d; nearestBed = b; }
+      });
+
+      beds.forEach(function(b) {
+        if (b.planted && b.growAnim < 1) {
+          b.growAnim = Math.min(1, b.growAnim + dt * 2.5);
+        }
+      });
+
+      animBirds = animBirds.filter(function(b) {
+        b.t += dt;
+        b.x += b.vx * dt;
+        b.y += Math.sin(b.t * 3) * 30 * dt;
+        return b.t < 4;
+      });
+
+      var zi = Math.floor((player.x / WORLD_W) * 4);
+      zi = Math.max(0, Math.min(3, zi));
+      var zone = ZONES[zi];
+      var indicator = document.getElementById('zoneIndicator');
+      indicator.textContent = zone.name + ' · ' + zone.label;
+    }
+
+    // ─── DRAWING ───
+    function draw() {
+      var dpr = window.devicePixelRatio || 1;
+      var sw = W / dpr;
+      var sh = H / dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, sw, sh);
+
+      var groundY = sh * 0.72;
+      var roadY = sh * 0.82;
+      var pathY = sh * 0.78;
+
+      drawSky(sw, sh, groundY);
+      drawHills(sw, sh, groundY);
+      drawGround(sw, sh, groundY, roadY);
+      drawRoad(sw, sh, roadY);
+      drawPath(sw, sh, pathY, roadY);
+      drawTrees(sw, sh, groundY);
+      drawBeds(sw, sh, groundY);
+      drawPlayer(sw, sh, roadY);
+      drawAnimBirds(sw, sh);
+      drawZoneDividers(sw, sh, groundY);
+    }
+
+    function getZoneAt(worldX) {
+      var zi = Math.floor((worldX / WORLD_W) * 4);
+      return ZONES[Math.max(0, Math.min(3, zi))];
+    }
+
+    function lerpColor(c1, c2, t) {
+      var r1 = parseInt(c1.slice(1,3),16), g1 = parseInt(c1.slice(3,5),16), b1 = parseInt(c1.slice(5,7),16);
+      var r2 = parseInt(c2.slice(1,3),16), g2 = parseInt(c2.slice(3,5),16), b2 = parseInt(c2.slice(5,7),16);
+      var r = Math.round(r1+(r2-r1)*t), g = Math.round(g1+(g2-g1)*t), b = Math.round(b1+(b2-b1)*t);
+      return 'rgb('+r+','+g+','+b+')';
+    }
+
+    function drawSky(sw, sh, groundY) {
+      var zL = getZoneAt(cameraX);
+      var zR = getZoneAt(cameraX + sw);
+      var grad = ctx.createLinearGradient(0, 0, 0, groundY);
+      grad.addColorStop(0, zL.skyTop);
+      grad.addColorStop(1, zR.skyBot);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, sw, groundY);
+    }
+
+    function drawHills(sw, sh, groundY) {
+      for (var layer = 0; layer < 3; layer++) {
+        var parallax = 0.15 + layer * 0.15;
+        var hillH = 60 - layer * 15;
+        var baseY = groundY - 20 + layer * 10;
+        ctx.beginPath();
+        ctx.moveTo(-10, baseY + 20);
+        for (var sx = -10; sx <= sw + 10; sx += 4) {
+          var wx = sx + cameraX * parallax;
+          var y = baseY - Math.sin(wx * 0.008 + layer) * hillH
+                        - Math.sin(wx * 0.003 + layer * 2) * (hillH * 0.6)
+                        - Math.sin(wx * 0.015 + layer * 0.5) * (hillH * 0.3);
+          var progress = (sx + cameraX * parallax) / WORLD_W;
+          y -= progress * 40;
+          ctx.lineTo(sx, y);
+        }
+        ctx.lineTo(sw + 10, baseY + 60);
+        ctx.lineTo(-10, baseY + 60);
+        ctx.closePath();
+        var zone = getZoneAt(cameraX + sw / 2);
+        ctx.fillStyle = layer === 0 ? zone.hillColor : zone.hillColor2;
+        ctx.globalAlpha = 0.5 + layer * 0.2;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawGround(sw, sh, groundY, roadY) {
+      var zL = getZoneAt(cameraX);
+      var zR = getZoneAt(cameraX + sw);
+      var grad = ctx.createLinearGradient(0, groundY, 0, sh);
+      grad.addColorStop(0, zL.groundTop);
+      grad.addColorStop(1, zR.groundBot);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, groundY, sw, sh - groundY);
+    }
+
+    function drawRoad(sw, sh, roadY) {
+      ctx.fillStyle = '#888880';
+      ctx.fillRect(0, roadY, sw, sh * 0.12);
+      ctx.fillStyle = '#999990';
+      ctx.fillRect(0, roadY, sw, 2);
+      ctx.fillStyle = '#777770';
+      ctx.fillRect(0, roadY + sh * 0.12 - 2, sw, 2);
+      ctx.setLineDash([20, 15]);
+      ctx.strokeStyle = '#CCCC99';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + sh * 0.06);
+      ctx.lineTo(sw, roadY + sh * 0.06);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function drawPath(sw, sh, pathY, roadY) {
+      ctx.fillStyle = '#B8A888';
+      ctx.fillRect(0, pathY, sw, roadY - pathY);
+      ctx.fillStyle = '#C8B898';
+      ctx.fillRect(0, pathY, sw, 2);
+    }
+
+    function drawTrees(sw, sh, groundY) {
+      for (var i = 0; i < 30; i++) {
+        var tx = i * (WORLD_W / 30) + 40;
+        var screenX = tx - cameraX;
+        if (screenX < -60 || screenX > sw + 60) continue;
+        var progress = tx / WORLD_W;
+        var treeH = 30 + progress * 40 + Math.sin(i * 7.3) * 15;
+        var treeW = 16 + Math.sin(i * 3.1) * 6;
+        var treeY = groundY - 8;
+        var zone = getZoneAt(tx);
+        ctx.fillStyle = '#5A3E2A';
+        ctx.fillRect(screenX - 2, treeY - treeH * 0.4, 4, treeH * 0.4 + 5);
+        ctx.beginPath();
+        ctx.ellipse(screenX, treeY - treeH * 0.5, treeW, treeH * 0.55, 0, 0, Math.PI * 2);
+        ctx.fillStyle = zone.hillColor2;
+        ctx.globalAlpha = 0.7;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawBeds(sw, sh, groundY) {
+      var bedY = groundY + 4;
+      var bedW = 44;
+      var bedH = 22;
+
+      beds.forEach(function(b) {
+        var sx = b.x - cameraX;
+        if (sx < -60 || sx > sw + 60) return;
+        var isNear = (nearestBed === b);
+
+        ctx.fillStyle = isNear ? '#6B4E3D' : '#5C3D2E';
+        roundRect(ctx, sx - bedW/2, bedY, bedW, bedH, 6);
+        ctx.fill();
+
+        ctx.fillStyle = isNear ? '#4A3520' : '#3E2818';
+        roundRect(ctx, sx - bedW/2 + 3, bedY + 3, bedW - 6, bedH - 6, 4);
+        ctx.fill();
+
+        if (isNear && !b.planted) {
+          ctx.strokeStyle = '#5A9E7E';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 3]);
+          roundRect(ctx, sx - bedW/2 - 2, bedY - 2, bedW + 4, bedH + 4, 8);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = 'rgba(90,158,126,0.15)';
+          roundRect(ctx, sx - bedW/2, bedY, bedW, bedH, 6);
+          ctx.fill();
+        }
+
+        if (b.planted) {
+          var p = PLANTS[b.planted];
+          var scale = b.growAnim;
+          ctx.save();
+          ctx.translate(sx, bedY - 4);
+          ctx.scale(scale, scale);
+          ctx.font = '24px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.emoji, 0, 0);
+          ctx.restore();
+
+          ctx.font = '8px -apple-system, sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.7)';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.name, sx, bedY + bedH + 10);
+        } else {
+          var hint = PLANTS[b.correctPlant].name;
+          ctx.font = '7px -apple-system, sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.textAlign = 'center';
+          ctx.fillText(hint, sx, bedY + bedH + 9);
+        }
+      });
+    }
+
+    function drawPlayer(sw, sh, roadY) {
+      var px = player.x - cameraX;
+      var py = roadY - 4;
+      var f = player.facing;
+      var frame = player.walkFrame;
+      var bobY = (frame === 1 || frame === 3) ? -2 : 0;
+
+      ctx.save();
+      ctx.translate(px, py + bobY);
+      ctx.scale(f, 1);
+
+      // boots
+      ctx.fillStyle = '#3A2818';
+      var legOffset = 0;
+      if (frame === 1) legOffset = 3;
+      if (frame === 3) legOffset = -3;
+      roundRect(ctx, -7 + legOffset, -4, 7, 6, 2); ctx.fill();
+      roundRect(ctx, 1 - legOffset, -4, 7, 6, 2); ctx.fill();
+
+      // trousers
+      ctx.fillStyle = '#5B7553';
+      roundRect(ctx, -6, -18, 6, 16, 2); ctx.fill();
+      roundRect(ctx, 1, -18, 6, 16, 2); ctx.fill();
+
+      // body/shirt
+      ctx.fillStyle = '#3D7A5F';
+      roundRect(ctx, -8, -34, 17, 18, 4); ctx.fill();
+
+      // arms
+      ctx.fillStyle = '#3D7A5F';
+      var armSwing = Math.sin(player.walkTimer * 8) * 6;
+      ctx.save();
+      ctx.translate(-9, -30);
+      ctx.rotate(armSwing * Math.PI / 180);
+      ctx.fillRect(-2, 0, 4, 14);
+      ctx.fillStyle = '#D4A574';
+      ctx.fillRect(-2, 12, 4, 4);
+      ctx.restore();
+      ctx.save();
+      ctx.translate(9, -30);
+      ctx.rotate(-armSwing * Math.PI / 180);
+      ctx.fillStyle = '#3D7A5F';
+      ctx.fillRect(-2, 0, 4, 14);
+      ctx.fillStyle = '#D4A574';
+      ctx.fillRect(-2, 12, 4, 4);
+      ctx.restore();
+
+      // head
+      ctx.fillStyle = '#D4A574';
+      ctx.beginPath();
+      ctx.ellipse(0.5, -40, 7, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // hat
+      ctx.fillStyle = '#C9B896';
+      ctx.beginPath();
+      ctx.ellipse(0.5, -48, 10, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      roundRect(ctx, -5, -52, 11, 6, 3); ctx.fill();
+
+      // eyes
+      ctx.fillStyle = '#1A2E23';
+      ctx.fillRect(3, -42, 2, 2);
+
+      ctx.restore();
+
+      // selected plant indicator above head
+      if (selectedPlant) {
+        ctx.save();
+        ctx.font = '18px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = 0.8 + Math.sin(Date.now() * 0.005) * 0.2;
+        ctx.fillText(PLANTS[selectedPlant].emoji, px, py - 60 + bobY);
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+    }
+
+    function drawAnimBirds(sw, sh) {
+      animBirds.forEach(function(b) {
+        ctx.save();
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = Math.max(0, 1 - b.t / 4);
+        ctx.fillText(b.emoji, b.x - cameraX, b.y);
+        ctx.restore();
+      });
+    }
+
+    function drawZoneDividers(sw, sh, groundY) {
+      for (var i = 1; i < 4; i++) {
+        var dx = (WORLD_W / 4) * i - cameraX;
+        if (dx < -5 || dx > sw + 5) continue;
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(dx, groundY - 30);
+        ctx.lineTo(dx, sh);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    function roundRect(c, x, y, w, h, r) {
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.lineTo(x + w - r, y);
+      c.quadraticCurveTo(x + w, y, x + w, y + r);
+      c.lineTo(x + w, y + h - r);
+      c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      c.lineTo(x + r, y + h);
+      c.quadraticCurveTo(x, y + h, x, y + h - r);
+      c.lineTo(x, y + r);
+      c.quadraticCurveTo(x, y, x + r, y);
+      c.closePath();
+    }
+
+    // ─── INTERACTION ───
+    function canvasClick(e) {
+      var rect = canvas.getBoundingClientRect();
+      var cx = e.clientX - rect.left;
+      var cy = e.clientY - rect.top;
+      var worldClickX = cx + cameraX;
+
+      if (nearestBed && selectedPlant) {
+        tryPlant(nearestBed);
+        return;
+      }
+
+      player.targetX = Math.max(40, Math.min(WORLD_W - 40, worldClickX));
+    }
+
+    function tryPlant(bed) {
+      if (!selectedPlant || bed.planted) return;
+      if (selectedPlant !== bed.correctPlant) {
+        setHint(PLANTS[selectedPlant].name + ' doesn\'t belong here — try the ' + PLANTS[selectedPlant].hint + ' zone', 'error');
+        return;
+      }
+      bed.planted = selectedPlant;
+      bed.growAnim = 0;
+      placed[bed.id] = selectedPlant;
+      selectedPlant = null;
+
+      var zone = ZONES[bed.zoneIndex];
+      var allDone = beds.filter(function(b){ return b.zoneId === zone.id; })
+                        .every(function(b){ return b.planted; });
+      if (allDone && !zonesComplete.has(zone.id)) {
+        zonesComplete.add(zone.id);
+        setHint(zone.name + ' complete! ' + zone.bird.name + ' has arrived!', 'success');
+        var birdEl = document.getElementById('bird-' + zone.id);
+        if (birdEl) setTimeout(function(){ birdEl.classList.add('earned'); }, 200);
+        spawnBirdAnim(zone);
+        if (zonesComplete.size === 4) setTimeout(celebrate, 1500);
+      } else {
+        setHint(PLANTS[bed.correctPlant].name + ' planted! Keep going.', 'success');
+      }
+      renderPalette();
+      updateProgress();
+    }
+
+    function spawnBirdAnim(zone) {
+      var zi = ZONES.indexOf(zone);
+      var bx = (zi + 0.5) * (WORLD_W / 4);
+      animBirds.push({
+        emoji: zone.bird.emoji,
+        x: bx, y: 200,
+        vx: (Math.random() - 0.5) * 80,
+        t: 0
+      });
+    }
+
+    // ─── UI RENDERING ───
+    function renderBirdShelf() {
+      var shelf = document.getElementById('birdShelf');
+      shelf.innerHTML = ZONES.map(function(z) {
+        return '<div class="bird-reward" id="bird-' + z.id + '">' +
+          '<span class="bird-icon">' + z.bird.emoji + '</span>' +
+          '<span>' + z.bird.name + '</span></div>';
       }).join('');
     }
 
     function renderPalette() {
-      const pal = document.getElementById('plantPalette');
-      const usedPlants = new Set(Object.values(placed));
-      pal.innerHTML = paletteOrder.map(pid => {
-        const p = PLANTS[pid];
-        const isUsed = usedPlants.has(pid);
-        const isSel = selectedPlant === pid;
-        return '<div class="plant-option ' + (isSel ? 'selected' : '') + ' ' + (isUsed ? 'used' : '') + '"' +
-          ' onclick="selectPlant(\'' + pid + '\')" data-plant="' + pid + '">' +
+      var pal = document.getElementById('plantPalette');
+      var usedPlants = new Set(Object.values(placed));
+      pal.innerHTML = paletteOrder.map(function(pid) {
+        var p = PLANTS[pid];
+        var isUsed = usedPlants.has(pid);
+        var isSel = selectedPlant === pid;
+        return '<div class="plant-option ' + (isSel?'selected':'') + ' ' + (isUsed?'used':'') + '"' +
+          ' onclick="selectPlant(\'' + pid + '\')">' +
           '<span class="plant-emoji">' + p.emoji + '</span>' +
-          '<span class="plant-name">' + p.name + '</span>' +
-        '</div>';
+          '<span class="plant-name">' + p.name + '</span></div>';
       }).join('');
     }
 
     function selectPlant(pid) {
       if (Object.values(placed).includes(pid)) return;
       selectedPlant = selectedPlant === pid ? null : pid;
-      setHint(selectedPlant
-        ? PLANTS[selectedPlant].name + ' selected — tap an empty bed'
-        : 'Select a plant below, then tap an empty bed to plant it');
-      renderPalette();
-    }
-
-    function placeInSlot(zoneId, index) {
-      var key = zoneId + '-' + index;
-      if (placed[key]) return;
-      if (!selectedPlant) {
-        setHint('Select a plant from the palette first', 'error');
-        return;
-      }
-
-      var zone = ZONES.find(function(z) { return z.id === zoneId; });
-      var correctPlant = zone.plants[index];
-
-      if (selectedPlant !== correctPlant) {
-        setHint(PLANTS[selectedPlant].name + ' doesn\'t belong here — try the ' + PLANTS[selectedPlant].hint + ' zone', 'error');
-        var slot = document.querySelector('[data-zone="' + zoneId + '"][data-index="' + index + '"]');
-        if (slot) {
-          slot.classList.add('wrong');
-          setTimeout(function() { slot.classList.remove('wrong'); }, 500);
-        }
-        return;
-      }
-
-      placed[key] = selectedPlant;
-      selectedPlant = null;
-
-      var allPlaced = zone.plants.every(function(_, i) { return placed[zoneId + '-' + i]; });
-      if (allPlaced && !zonesComplete.has(zoneId)) {
-        zonesComplete.add(zoneId);
-        setHint(zone.name + ' complete! ' + zone.bird.name + ' has arrived!', 'success');
-        setTimeout(function() {
-          var birdEl = document.getElementById('bird-' + zoneId);
-          if (birdEl) birdEl.classList.add('earned');
-        }, 300);
-        if (zonesComplete.size === 4) {
-          setTimeout(celebrate, 800);
-        }
+      if (selectedPlant) {
+        setHint(PLANTS[selectedPlant].name + ' selected — walk near a bed to plant');
       } else {
-        setHint(PLANTS[correctPlant].name + ' planted! Keep going.', 'success');
+        setHint('Select a plant below, then walk near a garden bed.');
       }
-
-      renderStreet();
       renderPalette();
-      updateProgress();
+
+      if (selectedPlant && nearestBed) {
+        tryPlant(nearestBed);
+      }
     }
 
     function updateProgress() {
       var total = 16;
       var count = Object.keys(placed).length;
-      var pct = (count / total) * 100;
-      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressFill').style.width = ((count/total)*100) + '%';
       document.getElementById('progressLabel').textContent = count + ' of ' + total + ' plants placed';
     }
 
@@ -681,12 +854,12 @@
       var el = document.getElementById('hintText');
       el.textContent = msg;
       el.className = 'hint-text' + (type ? ' ' + type : '');
-      if (type === 'error' || type === 'success') {
+      if (type) {
         setTimeout(function() {
           if (el.textContent === msg) {
             el.textContent = selectedPlant
-              ? PLANTS[selectedPlant].name + ' selected — tap an empty bed'
-              : 'Select a plant below, then tap an empty bed to plant it';
+              ? PLANTS[selectedPlant].name + ' selected — walk near a bed to plant'
+              : 'Click on the street to walk. Stand near a bed and select a plant.';
             el.className = 'hint-text';
           }
         }, 2500);
@@ -694,8 +867,7 @@
     }
 
     function celebrate() {
-      var overlay = document.getElementById('celebration');
-      overlay.classList.add('active');
+      document.getElementById('celebration').classList.add('active');
       var fb = document.getElementById('flyingBirds');
       fb.innerHTML = ZONES.map(function(z) {
         return '<span class="flying-bird">' + z.bird.emoji + '</span>';
@@ -704,60 +876,63 @@
     }
 
     function launchConfetti() {
-      var canvas = document.getElementById('confetti');
-      var ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      var colors = ['#3D7A5F', '#C9B896', '#B85C4A', '#7AABC5', '#5A9E7E', '#DDD4BA'];
-      var pieces = [];
+      var c = document.getElementById('confetti-canvas');
+      var cx = c.getContext('2d');
+      c.width = window.innerWidth; c.height = window.innerHeight;
+      var colors = ['#3D7A5F','#C9B896','#B85C4A','#7AABC5','#5A9E7E','#DDD4BA'];
+      var pcs = [];
       for (var i = 0; i < 140; i++) {
-        pieces.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          w: Math.random() * 8 + 4,
-          h: Math.random() * 6 + 3,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          vy: Math.random() * 3 + 1.5,
-          vx: (Math.random() - 0.5) * 2,
-          rot: Math.random() * 360,
-          vr: (Math.random() - 0.5) * 8,
+        pcs.push({
+          x: Math.random()*c.width, y: Math.random()*c.height - c.height,
+          w: Math.random()*8+4, h: Math.random()*6+3,
+          color: colors[Math.floor(Math.random()*colors.length)],
+          vy: Math.random()*3+1.5, vx: (Math.random()-0.5)*2,
+          rot: Math.random()*360, vr: (Math.random()-0.5)*8
         });
       }
-
-      var frame = 0;
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(function(p) {
-          p.y += p.vy;
-          p.x += p.vx;
-          p.rot += p.vr;
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate((p.rot * Math.PI) / 180);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-          ctx.restore();
+      var fr = 0;
+      function d() {
+        cx.clearRect(0,0,c.width,c.height);
+        pcs.forEach(function(p) {
+          p.y += p.vy; p.x += p.vx; p.rot += p.vr;
+          cx.save(); cx.translate(p.x,p.y);
+          cx.rotate(p.rot*Math.PI/180);
+          cx.fillStyle = p.color;
+          cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+          cx.restore();
         });
-        frame++;
-        if (frame < 300) requestAnimationFrame(draw);
-        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (++fr < 300) requestAnimationFrame(d);
+        else cx.clearRect(0,0,c.width,c.height);
       }
-      draw();
+      d();
     }
 
     function resetGame() {
-      selectedPlant = null;
-      placed = {};
-      zonesComplete = new Set();
       document.getElementById('celebration').classList.remove('active');
-      var ctx = document.getElementById('confetti').getContext('2d');
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      var cx = document.getElementById('confetti-canvas').getContext('2d');
+      cx.clearRect(0,0,cx.canvas.width,cx.canvas.height);
       init();
     }
 
+    // ─── EVENTS ───
+    document.getElementById('canvasWrap').addEventListener('click', canvasClick);
+
+    window.addEventListener('keydown', function(e) {
+      keysDown[e.code] = true;
+      if (e.code === 'Space' && nearestBed && selectedPlant) {
+        e.preventDefault();
+        tryPlant(nearestBed);
+      }
+    });
+    window.addEventListener('keyup', function(e) { keysDown[e.code] = false; });
+
+    window.addEventListener('resize', function() {
+      var wrap = document.getElementById('canvasWrap');
+      W = canvas.width = wrap.clientWidth * (window.devicePixelRatio || 1);
+      H = canvas.height = wrap.clientHeight * (window.devicePixelRatio || 1);
+    });
+
     init();
   </script>
-
 </body>
 </html>
