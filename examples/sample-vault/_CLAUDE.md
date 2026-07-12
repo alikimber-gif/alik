@@ -2,7 +2,7 @@
 
 Operating manual for this vault. Loaded by Claude Code on every session that touches it.
 
-This is a sample vault belonging to the fictional **Alex Rivera**. The structure shown here is what `/obsidian-init` produces, lightly edited to feel lived-in. Treat every name, project, and URL inside as fictional.
+This vault belongs to **Ali Kimber**, Communications and Engagement at Nelson City Council (NCC), Nelson, New Zealand.
 
 ## Section 0 - AI-first rule (non-negotiable)
 
@@ -20,10 +20,11 @@ If a note Claude is about to write would not pass this rule, fix the note before
 
 ## Section 1 - Identity
 
-- **Owner:** Alex Rivera, indie hacker building [[Projects/Tide]]
-- **Location:** Lisbon, Portugal
-- **Working hours:** roughly 09:00 to 18:00 WET, hard stop on weekends
-- **Time zone:** Europe/Lisbon
+- **Owner:** Ali Kimber, Communications and Engagement, [[Projects/Nelson City Council]]
+- **Organisation:** Nelson City Council (NCC)
+- **Location:** Nelson, New Zealand
+- **Working hours:** roughly 08:00 to 17:00 NZST, Monday to Friday
+- **Time zone:** Pacific/Auckland
 
 ## Section 2 - Folder structure
 
@@ -32,21 +33,21 @@ If a note Claude is about to write would not pass this rule, fix the note before
 - `people/` - one file per person worth remembering
 - `Ideas/` - fragment captures, dated filenames
 - `Decisions/` - standalone decision records (most decisions live inside project notes)
-- `Knowledge/` - synthesis, ADRs, learning notes
+- `Knowledge/` - synthesis, learning notes, council policies
 - `Research/` - outputs from `/research`, `/research-deep`, `/x-read`, `/x-pulse`, `/youtube`
-- `wiki/logs/` - dev logs and session logs
-- `social-media/` - content pipeline (ideas, swipe file, data points)
+- `wiki/logs/` - work logs and session logs
+- `social-media/` - content pipeline (ideas, swipe file, data points, NCC social posts)
 - `Boards/` - kanban boards for tasks per project
 - `Archive/` - archived notes, never deleted
 
-## Section 3 - Active projects (as of 2026-04-27)
+## Section 3 - Active projects (as of 2026-07-12)
 
-- [[Projects/Tide]] - habit-tracking SaaS, status: active, retention rebuild in progress
+- [[Projects/NCC Social Media]] - social media management and content strategy for Nelson City Council
+- [[Projects/NCC Communications]] - public communications and community engagement
 
 ## Section 4 - Key relationships
 
-- [[people/Alex Rivera]] - vault owner
-- [[people/Sam Patel]] - co-founder of Tide, technical lead
+- [[people/Ali Kimber]] - vault owner
 
 ## Section 5 - Defaults Claude should follow
 
@@ -55,3 +56,4 @@ If a note Claude is about to write would not pass this rule, fix the note before
 - Never create an orphaned note (every note links to at least one other)
 - Confidence levels are mandatory for any external claim
 - When in doubt about a fact, mark it `TBD` rather than guessing
+- Council communications should follow NCC tone of voice: clear, friendly, community-focused
