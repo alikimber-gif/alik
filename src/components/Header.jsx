@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './Header.css'
 
 const ranges = ['7D', '30D', '90D', '1Y']
@@ -9,7 +9,7 @@ export default function Header({ title, dateRange, onDateRangeChange }) {
       <div className="header-left">
         <h1 className="header-title">{title}</h1>
         <p className="header-subtitle">
-          Nelson City Council · Social Media Dashboard ·{' '}
+          Nelson City Council · Regional Spatial Planning · Public Engagement ·{' '}
           {new Date().toLocaleDateString('en-NZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -26,7 +26,7 @@ export default function Header({ title, dateRange, onDateRangeChange }) {
           ))}
         </div>
         <button className="btn-primary">
-          + New Post
+          Export Report
         </button>
       </div>
     </header>

@@ -1,61 +1,59 @@
 import React from 'react'
 import './PlatformCard.css'
 
-function formatNum(n) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K'
-  return n.toLocaleString()
+const statusLabels = {
+  active: 'Active',
+  upcoming: 'Upcoming',
+  completed: 'Completed',
 }
 
-const platformIcons = {
-  twitter:   '𝕏',
-  instagram: '◑',
-  facebook:  'f',
-  linkedin:  'in',
-  tiktok:    '♪',
-  youtube:   '▶',
-  nextdoor:  'nd',
+const statusColors = {
+  active: '#10b981',
+  upcoming: '#f59e0b',
+  completed: '#4a7a96',
 }
 
-export default function PlatformCard({ platform }) {
-  const { name, color, followers, followersChange, posts, engagement, reach, id } = platform
-  const isPositive = followersChange >= 0
+export default function PlatformCard({ consultation }) {
+  const { name, color, submissions, target, startDate, endDate, status, channel } = consultation
+  const progress = target > 0 ? Math.min((submissions / target) * 100, 100) : 0
+  const start = new Date(startDate).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short' })
+  const end = new Date(endDate).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' })
 
   return (
     <div className="platform-card" style={{ '--platform-color': color }}>
       <div className="platform-card-header">
         <div className="platform-icon" style={{ background: color }}>
-          {platformIcons[id] || id[0].toUpperCase()}
+          {name[0]}
         </div>
         <div className="platform-card-title">
           <p className="platform-name">{name}</p>
-          <p className={`platform-change ${isPositive ? 'pos' : 'neg'}`}>
-            {isPositive ? '↑' : '↓'} {Math.abs(followersChange).toFixed(1)}% this month
+          <p className="platform-change" style={{ color: statusColors[status] }}>
+            {statusLabels[status]} · {start} – {end}
           </p>
         </div>
       </div>
 
       <div className="platform-stats-grid">
         <div className="pstat">
-          <p className="pstat-value">{formatNum(followers)}</p>
-          <p className="pstat-label">Followers</p>
+          <p className="pstat-value">{submissions.toLocaleString()}</p>
+          <p className="pstat-label">Submissions</p>
         </div>
         <div className="pstat">
-          <p className="pstat-value">{formatNum(reach)}</p>
-          <p className="pstat-label">Reach</p>
+          <p className="pstat-value">{target.toLocaleString()}</p>
+          <p className="pstat-label">Target</p>
         </div>
         <div className="pstat">
-          <p className="pstat-value">{engagement}%</p>
-          <p className="pstat-label">Engagement</p>
+          <p className="pstat-value">{progress.toFixed(0)}%</p>
+          <p className="pstat-label">Progress</p>
         </div>
         <div className="pstat">
-          <p className="pstat-value">{posts}</p>
-          <p className="pstat-label">Posts</p>
+          <p className="pstat-value" style={{ fontSize: '13px' }}>{channel}</p>
+          <p className="pstat-label">Channel</p>
         </div>
       </div>
 
       <div className="platform-engagement-bar">
-        <div className="eng-bar-fill" style={{ width: `${Math.min(engagement * 6, 100)}%`, background: color }} />
+        <div className="eng-bar-fill" style={{ width: `${progress}%`, background: color }} />
       </div>
     </div>
   )
