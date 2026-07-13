@@ -5,7 +5,7 @@ type: project
 status: active
 tags: [project, communications, ncc, engagement]
 related-people: ["[[people/Ali Kimber]]"]
-related-projects: ["[[Projects/NCC Social Media]]"]
+related-projects: ["[[Projects/NCC Social Media]]", "[[Projects/NCC Joint Spatial Planning]]"]
 ai-first: true
 ---
 

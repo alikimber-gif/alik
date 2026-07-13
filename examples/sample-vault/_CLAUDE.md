@@ -40,10 +40,11 @@ If a note Claude is about to write would not pass this rule, fix the note before
 - `Boards/` - kanban boards for tasks per project
 - `Archive/` - archived notes, never deleted
 
-## Section 3 - Active projects (as of 2026-07-12)
+## Section 3 - Active projects (as of 2026-07-13)
 
 - [[Projects/NCC Social Media]] - social media management and content strategy for Nelson City Council
 - [[Projects/NCC Communications]] - public communications and community engagement
+- [[Projects/NCC Joint Spatial Planning]] - joint spatial planning and public engagement under the Planning Bill 2025
 
 ## Section 4 - Key relationships
 
