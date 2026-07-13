@@ -7,47 +7,49 @@ import EngagementChart from './components/EngagementChart'
 import AudienceChart from './components/AudienceChart'
 import PlatformCard from './components/PlatformCard'
 import RecentPosts from './components/RecentPosts'
-import { overviewStats, platforms } from './data/mockData'
+import SentimentChart from './components/SentimentChart'
+import ChannelBreakdown from './components/ChannelBreakdown'
+import { overviewStats, consultationPhases } from './data/mockData'
 import './App.css'
 
 const overviewCards = [
   {
-    label: 'Total Followers',
-    key: 'totalFollowers',
-    changeKey: 'followersChange',
+    label: 'Total Submissions',
+    key: 'totalSubmissions',
+    changeKey: 'submissionsChange',
     format: 'number',
-    color: '#0081C6',
+    color: '#3987e5',
+    icon: '▤',
+  },
+  {
+    label: 'Community Events',
+    key: 'communityEvents',
+    changeKey: 'eventsChange',
+    format: 'number',
+    color: '#199e70',
     icon: '◉',
   },
   {
-    label: 'Total Reach',
-    key: 'totalReach',
-    changeKey: 'reachChange',
-    format: 'number',
-    color: '#33a3d9',
+    label: 'Participation Rate',
+    key: 'participationRate',
+    changeKey: 'participationChange',
+    format: 'percent',
+    color: '#c98500',
     icon: '◈',
   },
   {
-    label: 'Avg. Engagement',
-    key: 'avgEngagement',
-    changeKey: 'engagementChange',
-    format: 'percent',
-    color: '#10b981',
-    icon: '◆',
-  },
-  {
-    label: 'Total Posts',
-    key: 'totalPosts',
-    changeKey: 'postsChange',
+    label: 'Feedback Responses',
+    key: 'feedbackResponses',
+    changeKey: 'feedbackChange',
     format: 'number',
-    color: '#f59e0b',
-    icon: '▤',
+    color: '#9085e9',
+    icon: '◻',
   },
 ]
 
 export default function App() {
   const [activeNav, setActiveNav] = useState('overview')
-  const [dateRange, setDateRange] = useState('30D')
+  const [dateRange, setDateRange] = useState('90D')
 
   return (
     <div className="app-layout">
@@ -55,13 +57,12 @@ export default function App() {
 
       <div className="main-content">
         <Header
-          title="Overview"
+          title="Public Engagement Overview"
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
         />
 
         <div className="dashboard-body">
-          {/* Overview Stats */}
           <section className="stats-grid">
             {overviewCards.map(card => (
               <StatsCard
@@ -76,7 +77,6 @@ export default function App() {
             ))}
           </section>
 
-          {/* Charts row */}
           <section className="charts-row">
             <div className="chart-col-wide">
               <FollowersChart />
@@ -86,25 +86,31 @@ export default function App() {
             </div>
           </section>
 
-          {/* Engagement chart */}
-          <section>
-            <EngagementChart />
+          <section className="charts-row">
+            <div className="chart-col-wide">
+              <EngagementChart />
+            </div>
+            <div className="chart-col-narrow">
+              <ChannelBreakdown />
+            </div>
           </section>
 
-          {/* Platform breakdown */}
+          <section>
+            <SentimentChart />
+          </section>
+
           <section>
             <div className="section-header">
-              <h2 className="section-title">Platform Breakdown</h2>
-              <p className="section-subtitle">Performance metrics per platform</p>
+              <h2 className="section-title">Active Consultations</h2>
+              <p className="section-subtitle">Current and upcoming regional spatial planning consultations</p>
             </div>
             <div className="platforms-grid">
-              {platforms.map(p => (
-                <PlatformCard key={p.id} platform={p} />
+              {consultationPhases.map(c => (
+                <PlatformCard key={c.id} consultation={c} />
               ))}
             </div>
           </section>
 
-          {/* Recent Posts */}
           <section>
             <RecentPosts />
           </section>

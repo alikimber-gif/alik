@@ -3,20 +3,19 @@ import './Sidebar.css'
 
 const navItems = [
   { id: 'overview', label: 'Overview', icon: '⊞' },
-  { id: 'analytics', label: 'Analytics', icon: '◈' },
-  { id: 'posts', label: 'Posts', icon: '▤' },
-  { id: 'audience', label: 'Audience', icon: '◉' },
-  { id: 'schedule', label: 'Schedule', icon: '◷' },
-  { id: 'messages', label: 'Messages', icon: '◻' },
+  { id: 'consultations', label: 'Consultations', icon: '◈' },
+  { id: 'submissions', label: 'Submissions', icon: '▤' },
+  { id: 'events', label: 'Community Events', icon: '◉' },
+  { id: 'feedback', label: 'Feedback', icon: '◻' },
+  { id: 'reports', label: 'Reports', icon: '◷' },
 ]
 
-const platformLinks = [
-  { id: 'facebook', label: 'Facebook', color: '#1877f2' },
-  { id: 'instagram', label: 'Instagram', color: '#e1306c' },
-  { id: 'twitter', label: 'Twitter / X', color: '#1da1f2' },
-  { id: 'linkedin', label: 'LinkedIn', color: '#0a66c2' },
-  { id: 'youtube', label: 'YouTube', color: '#ff0000' },
-  { id: 'nextdoor', label: 'Nextdoor', color: '#00b246' },
+const consultationLinks = [
+  { id: 'future-dev', label: 'Future Development', color: '#3987e5' },
+  { id: 'transport', label: 'Transport Corridors', color: '#199e70' },
+  { id: 'natural-hazards', label: 'Natural Hazards', color: '#c98500' },
+  { id: 'housing', label: 'Housing Intensification', color: '#008300' },
+  { id: 'coastal', label: 'Coastal Environment', color: '#9085e9' },
 ]
 
 export default function Sidebar({ activeNav, onNavChange }) {
@@ -31,7 +30,7 @@ export default function Sidebar({ activeNav, onNavChange }) {
       </div>
 
       <nav className="sidebar-nav">
-        <p className="nav-section-label">Main Menu</p>
+        <p className="nav-section-label">Public Engagement</p>
         {navItems.map(item => (
           <button
             key={item.id}
@@ -40,12 +39,11 @@ export default function Sidebar({ activeNav, onNavChange }) {
           >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
-            {item.id === 'messages' && <span className="nav-badge">3</span>}
           </button>
         ))}
 
-        <p className="nav-section-label" style={{ marginTop: '24px' }}>Platforms</p>
-        {platformLinks.map(p => (
+        <p className="nav-section-label" style={{ marginTop: '24px' }}>Active Consultations</p>
+        {consultationLinks.map(p => (
           <button
             key={p.id}
             className={`nav-item platform-item ${activeNav === p.id ? 'active' : ''}`}
@@ -58,10 +56,10 @@ export default function Sidebar({ activeNav, onNavChange }) {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="user-avatar">NCC</div>
+        <div className="user-avatar">RSP</div>
         <div className="user-info">
-          <p className="user-name">NCC Social Team</p>
-          <p className="user-role">Administrator</p>
+          <p className="user-name">Planning Team</p>
+          <p className="user-role">Regional Spatial Planning</p>
         </div>
         <button className="settings-btn" title="Settings">⚙</button>
       </div>

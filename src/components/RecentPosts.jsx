@@ -1,12 +1,6 @@
 import React from 'react'
-import { recentPosts, platforms } from '../data/mockData'
+import { recentFeedback } from '../data/mockData'
 import './RecentPosts.css'
-
-function formatNum(n) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K'
-  return n.toLocaleString()
-}
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -16,14 +10,17 @@ function timeAgo(dateStr) {
   return `${days}d ago`
 }
 
-const platformColors = Object.fromEntries(platforms.map(p => [p.id, p.color]))
-const platformNames = Object.fromEntries(platforms.map(p => [p.id, p.name]))
+const sentimentColors = {
+  positive: { bg: 'rgba(16, 185, 129, 0.12)', color: '#10b981' },
+  mixed: { bg: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' },
+  negative: { bg: 'rgba(239, 68, 68, 0.12)', color: '#ef4444' },
+}
 
 export default function RecentPosts() {
   return (
     <div className="recent-posts-card">
       <div className="rp-header">
-        <h3 className="chart-title">Recent Posts</h3>
+        <h3 className="chart-title">Recent Feedback</h3>
         <button className="rp-view-all">View all →</button>
       </div>
 
@@ -31,38 +28,33 @@ export default function RecentPosts() {
         <table className="rp-table">
           <thead>
             <tr>
-              <th>Platform</th>
-              <th>Content</th>
-              <th>Reach</th>
-              <th>Likes</th>
-              <th>Comments</th>
-              <th>Shares</th>
-              <th>Engagement</th>
-              <th>Published</th>
+              <th>Consultation</th>
+              <th>Summary</th>
+              <th>Channel</th>
+              <th>Ward</th>
+              <th>Sentiment</th>
+              <th>Received</th>
             </tr>
           </thead>
           <tbody>
-            {recentPosts.map(post => {
-              const color = platformColors[post.platform] || '#8b8fa8'
-              const pname = platformNames[post.platform] || post.platform
+            {recentFeedback.map(item => {
+              const sentiment = sentimentColors[item.sentiment]
               return (
-                <tr key={post.id} className="rp-row">
+                <tr key={item.id} className="rp-row">
                   <td>
-                    <span className="rp-platform-badge" style={{ background: `${color}20`, color }}>
-                      {pname}
+                    <span className="rp-platform-badge" style={{ background: 'rgba(57, 135, 229, 0.12)', color: '#3987e5' }}>
+                      {item.consultation}
                     </span>
                   </td>
-                  <td className="rp-content">{post.content}</td>
-                  <td className="rp-num">{formatNum(post.reach)}</td>
-                  <td className="rp-num">{formatNum(post.likes)}</td>
-                  <td className="rp-num">{formatNum(post.comments)}</td>
-                  <td className="rp-num">{formatNum(post.shares)}</td>
+                  <td className="rp-content">{item.summary}</td>
+                  <td className="rp-channel">{item.channel}</td>
+                  <td className="rp-channel">{item.ward}</td>
                   <td>
-                    <span className="rp-engagement">
-                      {post.engagement}%
+                    <span className="rp-engagement" style={{ background: sentiment.bg, color: sentiment.color }}>
+                      {item.sentiment}
                     </span>
                   </td>
-                  <td className="rp-time">{timeAgo(post.publishedAt)}</td>
+                  <td className="rp-time">{timeAgo(item.submittedAt)}</td>
                 </tr>
               )
             })}
