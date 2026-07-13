@@ -4,7 +4,7 @@ updated: 2026-07-13
 type: project
 status: active
 tags: [project, spatial-planning, ncc, planning-bill-2025, engagement]
-related-people: ["[[people/Ali Kimber]]"]
+related-people: ["[[people/Ali Kimber]]", "[[people/Tasman District Council]]"]
 related-projects: ["[[Projects/NCC Communications]]", "[[Projects/NCC Social Media]]"]
 ai-first: true
 ---
@@ -29,7 +29,7 @@ As a unitary authority, Nelson City Council will need to participate in joint sp
 
 - NCC is a **unitary authority** (combined regional council and territorial authority functions)
 - NCC already has **Te Ara o Whakatu** (City Centre Spatial Plan, adopted Oct 2021) which will need to align with the new regional spatial plan -- see [[Research/Web/2026-07-13 - Spatial Planning NZ]]
-- Joint spatial planning means working with neighbouring councils (TBD: confirm which councils NCC will partner with for the combined plan)
+- Joint spatial planning with [[people/Tasman District Council]] for the combined regional plan
 
 ## Communications and engagement workstream
 
@@ -48,7 +48,7 @@ As a unitary authority, Nelson City Council will need to participate in joint sp
 
 ## Open questions
 
-- Which councils will NCC partner with for the joint spatial plan?
+- ~~Which councils will NCC partner with for the joint spatial plan?~~ Answered: [[people/Tasman District Council]]
 - What is the expected timeline for councils to produce their spatial plans?
 - Will there be national guidance or templates for the engagement process?
 - How does NCC's unitary authority status affect its role in the joint plan?
