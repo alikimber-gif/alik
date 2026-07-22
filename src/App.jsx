@@ -1,115 +1,56 @@
-import React, { useState } from 'react'
-import Sidebar from './components/Sidebar'
-import Header from './components/Header'
-import StatsCard from './components/StatsCard'
-import FollowersChart from './components/FollowersChart'
-import EngagementChart from './components/EngagementChart'
-import AudienceChart from './components/AudienceChart'
-import PlatformCard from './components/PlatformCard'
-import RecentPosts from './components/RecentPosts'
-import { overviewStats, platforms } from './data/mockData'
-import './App.css'
-
-const overviewCards = [
-  {
-    label: 'Total Followers',
-    key: 'totalFollowers',
-    changeKey: 'followersChange',
-    format: 'number',
-    color: '#0081C6',
-    icon: '◉',
-  },
-  {
-    label: 'Total Reach',
-    key: 'totalReach',
-    changeKey: 'reachChange',
-    format: 'number',
-    color: '#33a3d9',
-    icon: '◈',
-  },
-  {
-    label: 'Avg. Engagement',
-    key: 'avgEngagement',
-    changeKey: 'engagementChange',
-    format: 'percent',
-    color: '#10b981',
-    icon: '◆',
-  },
-  {
-    label: 'Total Posts',
-    key: 'totalPosts',
-    changeKey: 'postsChange',
-    format: 'number',
-    color: '#f59e0b',
-    icon: '▤',
-  },
-]
+import { useState, useCallback } from 'react';
+import Navigation from './components/Navigation';
+import Dashboard from './pages/Dashboard';
+import SymptomLog from './pages/SymptomLog';
+import EnergyTracker from './pages/EnergyTracker';
+import FlareUpLog from './pages/FlareUpLog';
+import SupplementsPage from './pages/Supplements';
+import Insights from './pages/Insights';
+import './App.css';
 
 export default function App() {
-  const [activeNav, setActiveNav] = useState('overview')
-  const [dateRange, setDateRange] = useState('30D')
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const triggerRefresh = useCallback(() => {
+    setRefreshKey(k => k + 1);
+  }, []);
+
+  function renderPage() {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard onNavigate={setActiveTab} refresh={refreshKey} />;
+      case 'symptoms':
+        return <SymptomLog onRefresh={triggerRefresh} />;
+      case 'energy':
+        return <EnergyTracker onRefresh={triggerRefresh} />;
+      case 'flareups':
+        return <FlareUpLog onRefresh={triggerRefresh} />;
+      case 'supplements':
+        return <SupplementsPage onRefresh={triggerRefresh} />;
+      case 'insights':
+        return <Insights refresh={refreshKey} />;
+      default:
+        return <Dashboard onNavigate={setActiveTab} refresh={refreshKey} />;
+    }
+  }
 
   return (
-    <div className="app-layout">
-      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
-
-      <div className="main-content">
-        <Header
-          title="Overview"
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-        />
-
-        <div className="dashboard-body">
-          {/* Overview Stats */}
-          <section className="stats-grid">
-            {overviewCards.map(card => (
-              <StatsCard
-                key={card.key}
-                label={card.label}
-                value={overviewStats[card.key]}
-                change={overviewStats[card.changeKey]}
-                format={card.format}
-                accentColor={card.color}
-                icon={card.icon}
-              />
-            ))}
-          </section>
-
-          {/* Charts row */}
-          <section className="charts-row">
-            <div className="chart-col-wide">
-              <FollowersChart />
-            </div>
-            <div className="chart-col-narrow">
-              <AudienceChart />
-            </div>
-          </section>
-
-          {/* Engagement chart */}
-          <section>
-            <EngagementChart />
-          </section>
-
-          {/* Platform breakdown */}
-          <section>
-            <div className="section-header">
-              <h2 className="section-title">Platform Breakdown</h2>
-              <p className="section-subtitle">Performance metrics per platform</p>
-            </div>
-            <div className="platforms-grid">
-              {platforms.map(p => (
-                <PlatformCard key={p.id} platform={p} />
-              ))}
-            </div>
-          </section>
-
-          {/* Recent Posts */}
-          <section>
-            <RecentPosts />
-          </section>
+    <div className="app">
+      <header className="app-header">
+        <div className="app-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="var(--color-primary)" opacity="0.15"/>
+            <path d="M12 6a3.5 3.5 0 0 0-3.5 3.5c0 1.38.8 2.57 1.96 3.15A5.002 5.002 0 0 0 7 17.5h2a3 3 0 0 1 6 0h2a5.002 5.002 0 0 0-3.46-4.85A3.49 3.49 0 0 0 15.5 9.5 3.5 3.5 0 0 0 12 6z" fill="var(--color-primary)" opacity="0.4"/>
+            <path d="M9 11c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5v1.5a2.5 2.5 0 0 1-5 0V11z" fill="var(--color-primary)"/>
+          </svg>
+          <span>Hashi Tracker</span>
         </div>
-      </div>
+      </header>
+      <main className="app-main">
+        {renderPage()}
+      </main>
+      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
-  )
+  );
 }
