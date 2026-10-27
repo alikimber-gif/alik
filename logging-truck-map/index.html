@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logging Truck Route</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    :root {
+      /* Nelson City Council brand */
+      --ncc-blue: #0081C6;
+      --ncc-blue-dark: #00629a;
+      --route: #f28c28;
+      --route-done: #0081C6;
+      --text: #1a2b36;
+      --panel: #ffffff;
+      --border: #d5e3ec;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font-family: Arial, Helvetica, sans-serif; color: var(--text); background: #ffffff; }
+    .truck-map { display: flex; flex-direction: column; height: 100%; min-height: 420px; }
+    #map { flex: 1; min-height: 320px; }
+
+    .controls {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+      padding: 10px 16px; background: var(--panel); border-top: 3px solid var(--ncc-blue);
+    }
+    .controls button {
+      font: inherit; font-weight: 600; padding: 8px 16px; border-radius: 4px; cursor: pointer;
+      border: 2px solid var(--ncc-blue); background: var(--ncc-blue); color: #fff;
+    }
+    .controls button.secondary { background: #fff; color: var(--ncc-blue); }
+    .controls button:hover { background: var(--ncc-blue-dark); border-color: var(--ncc-blue-dark); color: #fff; }
+    .controls button:focus-visible, .controls input:focus-visible, .controls select:focus-visible { outline: 3px solid #f28c28; outline-offset: 2px; }
+    .controls label { font-size: 14px; display: flex; align-items: center; gap: 6px; }
+    .controls input[type=range] { width: 160px; accent-color: var(--ncc-blue); }
+    .controls select { font: inherit; padding: 4px; }
+    .status { font-size: 14px; margin-left: auto; }
+
+    .truck-icon { transition: none; }
+    .truck-icon svg { display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
+    .truck-icon.flip svg { transform: scaleX(-1); }
+    .end-label { font-weight: 700; font-size: 13px; }
+
+    @media (max-width: 520px) {
+      .controls input[type=range] { width: 110px; }
+      .status { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="truck-map">
+    <div id="map" role="region" aria-label="Map of the logging truck route from Marsden Valley to Port Nelson"></div>
+    <div class="controls">
+      <button id="playBtn" type="button" aria-pressed="false">Play</button>
+      <button id="restartBtn" type="button" class="secondary">Restart</button>
+      <label for="progress">Journey
+        <input id="progress" type="range" min="0" max="1000" value="0" aria-describedby="status" />
+      </label>
+      <label for="speed">Speed
+        <select id="speed">
+          <option value="0.5">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="2">Fast</option>
+        </select>
+      </label>
+      <span id="status" class="status" aria-live="polite">Start: Marsden Valley</span>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    // Route from Marsden Valley (south) to Port Nelson (north), traced from the planning map.
+    // [lat, lng] pairs. Replace with GIS-exported coordinates for exact road alignment.
+    const route = [
+      [-41.32302, 173.25789],
+      [-41.32135, 173.25557],
+      [-41.31920, 173.25295],
+      [-41.31705, 173.24980],
+      [-41.31658, 173.24770],
+      [-41.31594, 173.24487],
+      [-41.31443, 173.24319],
+      [-41.31228, 173.24130],
+      [-41.31340, 173.23962],
+      [-41.31499, 173.23730],
+      [-41.31387, 173.23562],
+      [-41.31260, 173.23332],
+      [-41.30887, 173.23667],
+      [-41.30545, 173.23962],
+      [-41.30370, 173.24108],
+      [-41.29933, 173.24245],
+      [-41.29336, 173.24402],
+      [-41.28780, 173.24560],
+      [-41.28223, 173.24697],
+      [-41.28160, 173.24875],
+      [-41.27985, 173.25137],
+      [-41.27762, 173.25368],
+      [-41.27651, 173.25474],
+      [-41.27309, 173.25872],
+      [-41.26951, 173.26292],
+      [-41.26617, 173.26712],
+      [-41.26713, 173.26797],
+      [-41.26808, 173.26901],
+      [-41.26967, 173.27343],
+      [-41.26753, 173.27447],
+      [-41.26538, 173.27553]
+    ];
+
+    // Optional points of interest shown in the status line as the truck passes them.
+    const places = [
+      { name: 'Marsden Valley', at: 0 },
+      { name: 'Stoke', at: 0.30 },
+      { name: 'Annesbrook', at: 0.45 },
+      { name: 'Tāhunanui', at: 0.62 },
+      { name: 'Rocks Road', at: 0.75 },
+      { name: 'Port Nelson', at: 0.98 }
+    ];
+
+    const JOURNEY_SECONDS = 30; // length of one trip at "Normal" speed
+
+    // Base maps
+    const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics'
+    });
+    const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    });
+
+    const map = L.map('map', { layers: [satellite], scrollWheelZoom: false });
+    L.control.layers({ 'Satellite': satellite, 'Streets': streets }).addTo(map);
+    map.on('click', () => map.scrollWheelZoom.enable());
+
+    // Full route and the part already travelled
+    const fullLine = L.polyline(route, { color: getCss('--route'), weight: 5, opacity: 0.9 }).addTo(map);
+    const doneLine = L.polyline([route[0]], { color: getCss('--route-done'), weight: 6, opacity: 1 }).addTo(map);
+    map.fitBounds(fullLine.getBounds(), { padding: [30, 30] });
+
+    // Start and end markers
+    endMarker(route[0], 'Marsden Valley', 'Start of route');
+    endMarker(route[route.length - 1], 'Port Nelson', 'End of route');
+
+    // Logging truck icon (side view, faces right)
+    const truckSvg = `
+      <svg width="64" height="30" viewBox="0 0 64 30" aria-hidden="true">
+        <rect x="2" y="17" width="44" height="3" fill="#333"/>
+        <rect x="6" y="6" width="36" height="4" rx="2" fill="#8b5a2b" stroke="#5a3a1a"/>
+        <rect x="4" y="10" width="38" height="4" rx="2" fill="#a0692f" stroke="#5a3a1a"/>
+        <rect x="6" y="14" width="36" height="3" rx="1.5" fill="#8b5a2b" stroke="#5a3a1a"/>
+        <rect x="8" y="4" width="2" height="13" fill="#333"/>
+        <rect x="38" y="4" width="2" height="13" fill="#333"/>
+        <path d="M46 20 V9 h9 l6 6 v5 z" fill="#0081C6" stroke="#004a75"/>
+        <path d="M50 11 h4.5 l4 4 h-8.5 z" fill="#cfe9f7"/>
+        <circle cx="11" cy="23" r="4" fill="#222"/><circle cx="11" cy="23" r="1.5" fill="#999"/>
+        <circle cx="21" cy="23" r="4" fill="#222"/><circle cx="21" cy="23" r="1.5" fill="#999"/>
+        <circle cx="38" cy="23" r="4" fill="#222"/><circle cx="38" cy="23" r="1.5" fill="#999"/>
+        <circle cx="55" cy="23" r="4" fill="#222"/><circle cx="55" cy="23" r="1.5" fill="#999"/>
+      </svg>`;
+    const truckIcon = (flip) => L.divIcon({
+      className: 'truck-icon' + (flip ? ' flip' : ''),
+      html: truckSvg, iconSize: [64, 30], iconAnchor: [32, 22]
+    });
+    const truck = L.marker(route[0], { icon: truckIcon(false), keyboard: false, title: 'Logging truck' }).addTo(map);
+
+    // Distance along the route
+    const cum = [0];
+    for (let i = 1; i < route.length; i++) cum.push(cum[i - 1] + map.distance(route[i - 1], route[i]));
+    const total = cum[cum.length - 1];
+
+    function pointAt(fraction) {
+      const d = fraction * total;
+      let i = 1;
+      while (i < cum.length - 1 && cum[i] < d) i++;
+      const segLen = cum[i] - cum[i - 1] || 1;
+      const t = Math.min(Math.max((d - cum[i - 1]) / segLen, 0), 1);
+      const a = route[i - 1], b = route[i];
+      return { latlng: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], index: i, east: b[1] >= a[1] };
+    }
+
+    // Animation state
+    const playBtn = document.getElementById('playBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const slider = document.getElementById('progress');
+    const speedSel = document.getElementById('speed');
+    const statusEl = document.getElementById('status');
+    let progress = 0, playing = false, lastTime = null, facingEast = true;
+
+    function render() {
+      const p = pointAt(progress);
+      truck.setLatLng(p.latlng);
+      if (p.east !== facingEast) { facingEast = p.east; truck.setIcon(truckIcon(!facingEast)); }
+      doneLine.setLatLngs(route.slice(0, p.index).concat([p.latlng]));
+      slider.value = Math.round(progress * 1000);
+
+      const km = (progress * total / 1000).toFixed(1);
+      const place = places.filter(pl => progress >= pl.at).pop();
+      const label = progress >= 1 ? 'Arrived: Port Nelson' : 'Near ' + place.name;
+      statusEl.textContent = `${label} (${km} of ${(total / 1000).toFixed(1)} km)`;
+    }
+
+    function step(now) {
+      if (!playing) return;
+      if (lastTime !== null) {
+        const dt = (now - lastTime) / 1000;
+        progress += dt * Number(speedSel.value) / JOURNEY_SECONDS;
+        if (progress >= 1) { progress = 1; setPlaying(false); }
+      }
+      lastTime = now;
+      render();
+      if (playing) requestAnimationFrame(step);
+    }
+
+    function setPlaying(on) {
+      playing = on;
+      lastTime = null;
+      playBtn.textContent = on ? 'Pause' : 'Play';
+      playBtn.setAttribute('aria-pressed', String(on));
+      if (on) {
+        if (progress >= 1) progress = 0;
+        requestAnimationFrame(step);
+      }
+    }
+
+    playBtn.addEventListener('click', () => setPlaying(!playing));
+    restartBtn.addEventListener('click', () => { progress = 0; render(); setPlaying(true); });
+    slider.addEventListener('input', () => { progress = slider.value / 1000; render(); });
+
+    render();
+    // Autoplay unless the visitor prefers reduced motion
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setPlaying(true);
+
+    function endMarker(latlng, name, note) {
+      L.circleMarker(latlng, { radius: 8, color: '#fff', weight: 3, fillColor: getCss('--ncc-blue'), fillOpacity: 1 })
+        .addTo(map)
+        .bindTooltip(`<span class="end-label">${name}</span>`, { permanent: true, direction: 'right', offset: [8, 0] })
+        .bindPopup(`<strong>${name}</strong><br>${note}`);
+    }
+    function getCss(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  </script>
+</body>
+</html>
