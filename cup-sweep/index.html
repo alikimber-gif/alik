@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cup Day Sweep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: race card. Countdown banner on a turf band, entry form beside the field of 24, results board below. */
+:root {
+  --bg: #eef3ee;
+  --paper: #ffffff;
+  --ink: #142019;
+  --muted: #56655b;
+  --line: #d3ddd5;
+  --turf: #14532d;
+  --turf-2: #1d6b3c;
+  --rail: #ffffff;
+  --gold: #b9832a;
+  --gold-soft: #f3e6cc;
+  --red: #b3261e;
+  --ok: #1d7a43;
+  --chip: #e5ece6;
+  --display: "Bowlby One SC", "Arial Black", Impact, sans-serif;
+  --body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --num: "Barlow Condensed", "Arial Narrow", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1711; --paper: #12231a; --ink: #e6efe8; --muted: #9db0a3; --line: #24392c;
+  --turf: #0f3d22; --turf-2: #155030; --rail: #e9f1eb; --gold: #e0ad55; --gold-soft: #3a2f1a;
+  --red: #ef6b62; --ok: #5cc98a; --chip: #1b3024; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b1711; --paper: #12231a; --ink: #e6efe8; --muted: #9db0a3; --line: #24392c;
+  --turf: #0f3d22; --turf-2: #155030; --rail: #e9f1eb; --gold: #e0ad55; --gold-soft: #3a2f1a;
+  --red: #ef6b62; --ok: #5cc98a; --chip: #1b3024; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+a { color: inherit; }
+
+/* Banner */
+.banner { background: repeating-linear-gradient(90deg, var(--turf) 0 64px, var(--turf-2) 64px 128px); color: #fff; position: relative; overflow: hidden; }
+.banner::after { content: ""; position: absolute; left: 0; right: 0; bottom: 18px; height: 6px; background: repeating-linear-gradient(90deg, #fff 0 22px, transparent 22px 30px); opacity: .9; }
+.banner .wrap { padding-block: 28px 44px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+.eyebrow { font: 600 13px/1 var(--num); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+.banner h1 { font: 400 clamp(38px, 7vw, 72px)/0.95 var(--display); letter-spacing: .01em; margin-top: 10px; }
+.banner p { margin: 12px 0 0; max-width: 52ch; opacity: .92; }
+.post { background: var(--rail); color: #142019; border-radius: 6px; padding: 12px 16px; min-width: 240px; box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+.post .lbl { font: 600 12px/1 var(--num); letter-spacing: .12em; text-transform: uppercase; color: #56655b; }
+.clock { display: flex; gap: 10px; margin-top: 8px; font-family: var(--num); font-variant-numeric: tabular-nums; }
+.clock div { text-align: center; }
+.clock b { display: block; font-size: 34px; line-height: 1; font-weight: 700; }
+.clock span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #56655b; }
+.post .when { font-size: 13px; margin-top: 8px; color: #3a4a40; }
+.runner { position: absolute; bottom: 22px; left: -60px; width: 52px; height: 36px; animation: gallop 14s linear infinite; z-index: 1; }
+@keyframes gallop { to { transform: translateX(calc(100vw + 120px)); } }
+@media (prefers-reduced-motion: reduce) { .runner { animation: none; left: 24px; } }
+
+/* Main */
+main { padding-block: 28px 48px; display: grid; gap: 28px; }
+.grid { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } .banner .wrap { grid-template-columns: 1fr; } .post { min-width: 0; } }
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.sticky { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+@media (max-width: 860px) { .sticky { position: static; } }
+h2 { font: 400 22px/1.1 var(--display); letter-spacing: .02em; }
+.sub { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+label { display: block; font: 600 13px/1 var(--num); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+input[type=text] { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: 500 16px var(--body); }
+.picked { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px dashed var(--line); border-radius: 6px; min-height: 64px; }
+.picked.has { border-style: solid; border-color: var(--gold); background: var(--gold-soft); }
+.picked .empty { color: var(--muted); font-size: 14px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.btn { border: 0; border-radius: 6px; padding: 12px 18px; font-weight: 700; background: var(--turf); color: #fff; }
+.btn:hover { filter: brightness(1.12); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.gold { background: var(--gold); color: #1a1408; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; filter: none; }
+.msg { font-size: 14px; margin-top: 12px; min-height: 1.4em; }
+.msg.err { color: var(--red); } .msg.ok { color: var(--ok); }
+.fine { font-size: 13px; color: var(--muted); margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+
+/* Field */
+.fieldhead { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.chipbtn { border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: 600 13px var(--num); letter-spacing: .06em; text-transform: uppercase; }
+.chipbtn[aria-pressed=true] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.field { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.horse { display: grid; grid-template-columns: 44px 46px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 10px; position: relative; }
+.horse:hover:not([disabled]) { border-color: var(--gold); }
+.horse.sel { border: 2px solid var(--gold); padding: 9px; background: var(--gold-soft); }
+.horse.taken { opacity: .62; }
+.horse.scr { opacity: .45; }
+.horse.scr .nm { text-decoration: line-through; }
+.cloth { width: 44px; height: 52px; border-radius: 4px; display: grid; place-items: center; font: 700 26px/1 var(--num); color: #fff; font-variant-numeric: tabular-nums; }
+.silk { width: 46px; height: 46px; }
+.nm { font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.meta { font-size: 12.5px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.tag { font: 600 12px/1 var(--num); letter-spacing: .05em; padding: 4px 7px; border-radius: 4px; background: var(--chip); color: var(--ink); font-variant-numeric: tabular-nums; }
+.tag.owner { background: var(--turf); color: #fff; }
+.tag.me { background: var(--gold); color: #1a1408; }
+.tag.scr { background: var(--red); color: #fff; }
+
+/* Board */
+.board { display: grid; gap: 8px; margin-top: 16px; }
+.line { display: grid; grid-template-columns: 56px 36px 46px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 6px; background: var(--bg); border: 1px solid var(--line); }
+.line .cloth { width: 36px; height: 42px; font-size: 21px; }
+.line .silk { width: 40px; height: 40px; }
+.place { font: 700 26px/1 var(--num); font-variant-numeric: tabular-nums; color: var(--muted); }
+.place.p1 { color: var(--gold); } .place.p2 { color: #8c9aa3; } .place.p3 { color: #a8693a; }
+.line.p1 { border-color: var(--gold); background: var(--gold-soft); }
+.who { font-weight: 700; overflow-wrap: anywhere; }
+.who small { display: block; font-weight: 500; color: var(--muted); font-size: 13px; }
+.pos { font: 600 14px var(--num); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.winner { display: grid; gap: 6px; padding: 18px; border-radius: 8px; background: var(--turf); color: #fff; margin-top: 16px; }
+.winner .big { font: 400 clamp(26px, 4.5vw, 40px)/1.05 var(--display); }
+.emptyboard { color: var(--muted); padding: 18px; border: 1px dashed var(--line); border-radius: 6px; margin-top: 16px; }
+@media (max-width: 520px) { .line { grid-template-columns: 40px 36px minmax(0, 1fr) auto; } .line .silk { display: none; } }
+
+/* Steward */
+.steward { border: 2px dashed var(--gold); }
+.order { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; min-height: 36px; }
+.order .cloth { width: 34px; height: 34px; font-size: 18px; }
+.stewgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.sbtn { display: flex; gap: 8px; align-items: center; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); text-align: left; font-size: 13px; }
+.sbtn .cloth { width: 26px; height: 28px; font-size: 15px; flex: none; }
+.sbtn[aria-pressed=true] { opacity: .4; }
+.sbtn.scr { text-decoration: line-through; opacity: .5; }
+.toggle { display: flex; gap: 8px; align-items: center; font-size: 14px; margin-top: 12px; }
+footer { color: var(--muted); font-size: 13px; padding-bottom: 32px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.rm { border: 0; background: transparent; color: var(--red); font: 600 13px var(--num); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; }
+.copybox { width: 100%; min-height: 160px; margin-top: 12px; font: 13px/1.45 ui-monospace, Consolas, monospace; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="banner">
+  <svg class="runner" viewBox="0 0 64 44" aria-hidden="true"><path fill="#fff" d="M4 30c4-1 7-4 10-8 3-4 8-6 14-6h12l6-7c2-2 5-3 8-2l6 2-2 4-5-1-3 5 3 4-3 3-4-3-4 3v6l6 9h-4l-6-8-10 1-6 7h-4l5-9c-5 1-9 2-12 4-3 1-6 0-7-4z"/></svg>
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Comms and Engagement · Flemington, 3200m · Race 7</div>
+      <h1>Cup Day Sweep</h1>
+      <p>Post your name and horse in the team chat and the organiser adds you to the board. Pick from the field of 24, then watch it run. No money involved. Just bragging rights in the office.</p>
+    </div>
+    <div class="post" aria-live="polite">
+      <div class="lbl" id="clockLbl">Jump time countdown</div>
+      <div class="clock" id="clock">
+        <div><b id="cd-d">0</b><span>days</span></div>
+        <div><b id="cd-h">00</b><span>hrs</span></div>
+        <div><b id="cd-m">00</b><span>mins</span></div>
+        <div><b id="cd-s">00</b><span>secs</span></div>
+      </div>
+      <div class="when">Tuesday 3 November, 5:00pm NZ time (3:00pm AEDT)</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<main>
+  <section class="panel" id="resultsPanel" aria-labelledby="resHead">
+    <h2 id="resHead">The board</h2>
+    <p class="sub" id="resSub">Everyone in the sweep and the horse they are riding with.</p>
+    <div id="winner"></div>
+    <div class="board" id="board"></div>
+    <div class="row">
+      <button class="btn ghost" type="button" id="copyBtn">Copy board for Teams</button>
+    </div>
+    <textarea class="copybox" id="copyBox" readonly hidden aria-label="Board as text"></textarea>
+    <div class="msg" id="copyMsg" role="status"></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel sticky" aria-labelledby="entryHead">
+      <h2 id="entryHead">Add an entry</h2>
+      <p class="sub" id="entrySub">One horse per person. First in, first served.</p>
+      <form id="entryForm" autocomplete="off">
+        <label for="nameIn">Your name</label>
+        <input type="text" id="nameIn" maxlength="40" placeholder="e.g. Ali K" required>
+        <label>Your horse</label>
+        <div class="picked" id="picked"><span class="empty">Tap a horse in the field to pick it.</span></div>
+        <div class="row">
+          <button class="btn" type="submit" id="saveBtn">Add to the sweep</button>
+          <button class="btn ghost" type="button" id="dipBtn">Lucky dip</button>
+        </div>
+        <div class="msg" id="msg" role="status"></div>
+      </form>
+      <p class="fine">Entries save in this browser on this computer. Keep this file open on the organiser's machine and share the board with the copy button or a screen share.</p>
+      <p class="fine" style="border:0;padding-top:0;margin-top:4px">Odds are TAB odds as at the barrier draw and will move before the jump. Official results and scratchings: <a href="https://www.vrc.com.au/" target="_blank" rel="noopener">vrc.com.au</a>.</p>
+    </section>
+
+    <section aria-labelledby="fieldHead">
+      <div class="fieldhead">
+        <div>
+          <h2 id="fieldHead">The field</h2>
+          <p class="sub"><span id="freeCount">24</span> of 24 horses still free</p>
+        </div>
+        <div class="filters" role="group" aria-label="Show horses">
+          <button class="chipbtn" data-f="all" aria-pressed="true">All</button>
+          <button class="chipbtn" data-f="free" aria-pressed="false">Still free</button>
+          <button class="chipbtn" data-f="odds" aria-pressed="false">By odds</button>
+        </div>
+      </div>
+      <div class="field" id="field"></div>
+    </section>
+  </div>
+
+  <section class="panel steward" id="steward" aria-labelledby="stewHead">
+    <h2 id="stewHead">Stewards' room</h2>
+    <p class="sub">For the organiser. After the race, tap horses in their finishing order from the official result, then post it. Enter as many placings as you can. A full order ranks everyone.</p>
+    <div class="order" id="order"></div>
+    <div class="row" style="margin-top:0">
+      <button class="btn gold" type="button" id="postRes">Post result</button>
+      <button class="btn ghost" type="button" id="undoRes">Undo last</button>
+      <button class="btn ghost" type="button" id="clearRes">Clear result</button>
+    </div>
+    <label>Finishing order</label>
+    <div class="stewgrid" id="stewOrder"></div>
+    <label>Scratchings (tap to mark scratched)</label>
+    <div class="stewgrid" id="stewScr"></div>
+    <div class="toggle"><input type="checkbox" id="lockIn"><label for="lockIn" style="margin:0;text-transform:none;letter-spacing:0;font:500 14px var(--body);color:var(--ink)">Close entries (no new picks or changes)</label></div>
+    <div class="msg" id="stewMsg" role="status"></div>
+    <div class="row">
+      <button class="btn ghost" type="button" id="resetAll">Start a new sweep</button>
+    </div>
+  </section>
+
+  <footer>A bit of fun for the team. No money changes hands. Field, barriers and odds as supplied; check <a href="https://www.vrc.com.au/" target="_blank" rel="noopener">vrc.com.au</a> for late changes.</footer>
+</main>
+</div>
+
+<script>
+const FIELD = [
+  [1,"Sons And Lovers","GB","Joseph O'Brien","Dylan Browne McMonagle",3,19,null],
+  [2,"Trustyourinstinct","IRE","Joseph O'Brien","James McDonald",18,7.5,"57kg"],
+  [3,"Knight's Choice","AU","John Symons & Sheila Laxon","Robbie Dolan",2,34,null],
+  [4,"Middle Earth","GB","Ciaron Maher","Mark Zahra",1,16,null],
+  [5,"Vauban","FR","Gai Waterhouse & Adrian Bott","Jordan Childs",22,51,null],
+  [6,"Enfjaar","IRE","Roger Varian","Ray Dawson",8,23,null],
+  [7,"Royal Supremacy","IRE","Ciaron Maher","Ben Allen",21,51,null],
+  [8,"Wine Dark Sea","GB","Harry Charlton","Damian Lane",23,41,null],
+  [9,"Asterix","NZ","Chris Waller","Jye McNeil",6,61,null],
+  [10,"Goodie Two Shoes","IRE","Joseph O'Brien","Wayne Lordan",19,26,"55kg"],
+  [11,"Juja Kibo","IRE","Ciaron Maher","Sam Clipperton",14,12,null],
+  [12,"Hopewell Rock","IRE","George Boughey","Zac Lloyd",15,9.5,null],
+  [13,"Onesmoothoperator","USA","Tim Fitzsimmons","Declan Bates",13,61,null],
+  [14,"Soul Of Spain","IRE","Chris Waller","Tommy Berry",5,34,null],
+  [15,"Zahrann","IRE","Ciaron Maher","Ben Melham",11,31,null],
+  [16,"So You Are","AU","Bjorn Baker","Rachel King",7,12,null],
+  [17,"Future History","GB","Gregory Hickman","Jamie Melham",12,51,"53.5kg"],
+  [18,"James J Braddock","IRE","Joseph O'Brien","Craig Williams",24,19,"53.5kg"],
+  [19,"Kizlyar","IRE","Joseph O'Brien","Beau Mertens",20,41,"53.5kg"],
+  [20,"Point Of Law","GB","Ciaron Maher","Ethan Brown",9,7,"53kg"],
+  [21,"Strictly Business","AU","Thomas Carberry","Dean Yendall",4,71,"53kg"],
+  [22,"Mr Monaco","GB","Ciaron Maher","Jabez Johnstone",16,23,"52.5kg"],
+  [23,"Zakouma","AU","Grahame Begg","William Pike",10,34,"52kg"],
+  [24,"Shockletz","NZ","Ciaron Maher","Harry Coffey",17,10,"51kg"]
+].map(([n,name,c,trainer,jockey,barrier,odds,kg]) => ({n,name,c,trainer,jockey,barrier,odds,kg}));
+const H = Object.fromEntries(FIELD.map(h => [h.n, h]));
+
+// Saddlecloth and silks colours, generated per horse
+const CLOTH = ["#b3261e","#ffffff","#1f4fa3","#e0b100","#1d7a43","#111111","#e36f1e","#c23c8a","#2aa3b8","#6a3fa0","#8a5a2b","#4b5563"];
+const SILK = ["#b3261e","#1f4fa3","#e0b100","#1d7a43","#111111","#ffffff","#e36f1e","#c23c8a","#2aa3b8","#6a3fa0","#7a1f2b","#f2c3d0","#0e3b5c","#9bbf3a"];
+function clothColor(n){ return CLOTH[(n-1) % CLOTH.length]; }
+function clothText(n){ const c = clothColor(n); return (c === "#ffffff" || c === "#e0b100") ? "#111" : "#fff"; }
+function cloth(n){ return `<div class="cloth" style="background:${clothColor(n)};color:${clothText(n)};${clothColor(n)==="#ffffff"?"box-shadow:inset 0 0 0 1px #9aa59e;":""}">${n}</div>`; }
+function silk(n){
+  const a = SILK[(n*5) % SILK.length], b = SILK[(n*3+4) % SILK.length] === a ? SILK[(n+7) % SILK.length] : SILK[(n*3+4) % SILK.length];
+  const pat = n % 5, id = "s"+n+Math.random().toString(36).slice(2,6);
+  const body = "M14 8 L22 5 Q24 9 26 5 L34 8 L42 16 L37 22 L34 19 L34 42 L14 42 L14 19 L11 22 L6 16 Z";
+  let deco = "";
+  if (pat === 0) deco = `<rect x="0" y="16" width="48" height="6" fill="${b}"/><rect x="0" y="28" width="48" height="6" fill="${b}"/>`;
+  else if (pat === 1) deco = `<rect x="18" y="0" width="5" height="48" fill="${b}"/><rect x="28" y="0" width="5" height="48" fill="${b}"/>`;
+  else if (pat === 2) deco = `<path d="M10 6 L18 6 L40 44 L32 44 Z" fill="${b}"/>`;
+  else if (pat === 3) deco = `<rect x="24" y="0" width="24" height="24" fill="${b}"/><rect x="0" y="24" width="24" height="24" fill="${b}"/>`;
+  else deco = `<circle cx="20" cy="20" r="3" fill="${b}"/><circle cx="29" cy="28" r="3" fill="${b}"/><circle cx="19" cy="34" r="3" fill="${b}"/><circle cx="30" cy="14" r="2.5" fill="${b}"/>`;
+  return `<svg class="silk" viewBox="0 0 48 48" aria-hidden="true"><defs><clipPath id="${id}"><path d="${body}"/></clipPath></defs><path d="${body}" fill="${a}"/><g clip-path="url(#${id})">${deco}</g><path d="${body}" fill="none" stroke="#5b6b61" stroke-width="1"/><ellipse cx="24" cy="5" rx="5" ry="3" fill="${b}" stroke="#5b6b61" stroke-width="1"/></svg>`;
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const odds = o => "$" + o.toFixed(2);
+const ord = n => { const t = n % 100, u = n % 10; return n + ((t >= 11 && t <= 13) ? "th" : u === 1 ? "st" : u === 2 ? "nd" : u === 3 ? "rd" : "th"); };
+
+// State, saved in this browser
+const KEY = "cupDaySweep2026";
+const S = { entries: [], result: { order: [], scratched: [], locked: false, posted: false }, choice: null, filter: "all", stewOrder: [] };
+function load(){
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (d) {
+      S.entries = (d.entries || []).filter(e => e && e.name && H[e.horse]);
+      S.result = { order: [], scratched: [], locked: false, posted: false, ...(d.result || {}) };
+      S.result.order = (S.result.order || []).filter(n => H[n]);
+      S.result.scratched = (S.result.scratched || []).filter(n => H[n]);
+      S.stewOrder = S.result.order.slice();
+    }
+  } catch {}
+}
+let canSave = true;
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify({ entries: S.entries, result: S.result })); canSave = true; }
+  catch { canSave = false; }
+}
+const $ = id => document.getElementById(id);
+
+// Countdown: 3 Nov 2026 3:00pm AEDT = 04:00 UTC
+const JUMP = Date.UTC(2026, 10, 3, 4, 0, 0);
+function tick(){
+  const ms = JUMP - Date.now();
+  if (ms <= 0) {
+    $("clockLbl").textContent = S.result.posted ? "Result is in" : "They're racing";
+    ["d","h","m","s"].forEach(k => $("cd-"+k).textContent = k === "d" ? "0" : "00");
+    return;
+  }
+  const s = Math.floor(ms/1000);
+  $("cd-d").textContent = Math.floor(s/86400);
+  $("cd-h").textContent = String(Math.floor(s%86400/3600)).padStart(2,"0");
+  $("cd-m").textContent = String(Math.floor(s%3600/60)).padStart(2,"0");
+  $("cd-s").textContent = String(s%60).padStart(2,"0");
+}
+
+function ownersOf(n){ return S.entries.filter(e => e.horse === n); }
+function isScr(n){ return (S.result.scratched || []).includes(n); }
+function allTaken(){ return FIELD.filter(h => !isScr(h.n)).every(h => ownersOf(h.n).length); }
+
+function renderField(){
+  let list = FIELD.slice();
+  if (S.filter === "free") list = list.filter(h => !ownersOf(h.n).length && !isScr(h.n));
+  if (S.filter === "odds") list.sort((a,b) => a.odds - b.odds);
+  const locked = S.result.locked, full = allTaken();
+  $("field").innerHTML = list.map(h => {
+    const os = ownersOf(h.n), scr = isScr(h.n);
+    const sel = S.choice === h.n;
+    const dis = scr || (os.length && !full) || locked;
+    const tags = [`<span class="tag">Barrier ${h.barrier}</span>`, `<span class="tag">${odds(h.odds)}</span>`];
+    if (h.kg) tags.push(`<span class="tag">${h.kg}</span>`);
+    if (scr) tags.push(`<span class="tag scr">Scratched</span>`);
+    os.forEach(o => tags.push(`<span class="tag owner">${esc(o.name)}</span>`));
+    return `<button type="button" class="horse${sel?" sel":""}${os.length?" taken":""}${scr?" scr":""}" data-n="${h.n}" ${dis?"disabled":""} aria-pressed="${sel}">
+      ${cloth(h.n)}${silk(h.n)}
+      <div><div class="nm">${esc(h.name)} <span style="font-weight:500;color:var(--muted)">(${h.c})</span></div>
+      <div class="meta">J: ${esc(h.jockey)}<br>T: ${esc(h.trainer)}</div>
+      <div class="tags">${tags.join("")}</div></div></button>`;
+  }).join("") || `<p class="sub">Every horse has a rider. Switch to All to double up on a horse.</p>`;
+  $("freeCount").textContent = FIELD.filter(h => !ownersOf(h.n).length && !isScr(h.n)).length;
+}
+
+function renderPicked(){
+  const h = H[S.choice], p = $("picked");
+  if (!h) { p.className = "picked"; p.innerHTML = `<span class="empty">Tap a horse in the field to pick it.</span>`; return; }
+  p.className = "picked has";
+  p.innerHTML = `${cloth(h.n)}${silk(h.n)}<div><div class="nm">${esc(h.name)}</div><div class="meta">${esc(h.jockey)} · Barrier ${h.barrier} · ${odds(h.odds)}</div></div>`;
+}
+
+function renderEntry(){
+  const locked = S.result.locked;
+  $("saveBtn").disabled = locked; $("dipBtn").disabled = locked; $("nameIn").disabled = locked;
+  if (locked) $("entrySub").textContent = "Entries are closed. Good luck everyone!";
+  else if (allTaken()) $("entrySub").textContent = "Every horse has a rider, so new entries can double up on any horse.";
+  else $("entrySub").textContent = "One horse per person. First in, first served.";
+  renderPicked();
+}
+
+function ranked(){
+  const order = S.result.order || [];
+  return S.entries.map(e => { const i = order.indexOf(e.horse); return { ...e, pos: i >= 0 ? i + 1 : null }; })
+    .sort((a,b) => (a.pos ?? 999) - (b.pos ?? 999) || H[a.horse].odds - H[b.horse].odds || a.name.localeCompare(b.name));
+}
+function isPosted(){ return S.result.posted && (S.result.order || []).length > 0; }
+
+function renderBoard(){
+  const posted = isPosted();
+  const rows = posted ? ranked() : S.entries.slice().sort((a,b) => a.horse - b.horse);
+  $("resHead").textContent = posted ? "Results" : "The board";
+  $("resSub").textContent = posted ? "Placings from the official finishing order. Closest to the post wins."
+    : (S.entries.length ? `${S.entries.length} ${S.entries.length===1?"person":"people"} in the sweep so far. Results go up here after the race.` : "Everyone in the sweep and the horse they are riding with.");
+  $("winner").innerHTML = "";
+  if (posted) {
+    const best = rows.find(r => r.pos);
+    const cupWinner = H[S.result.order[0]];
+    const mini = cloth(cupWinner.n).replace('class="cloth" style="', 'class="cloth" style="display:inline-grid;width:24px;height:26px;font-size:15px;vertical-align:middle;');
+    if (best) {
+      const ties = rows.filter(r => r.pos === best.pos);
+      const names = ties.map(t => esc(t.name)).join(" and ");
+      const line = best.pos === 1 ? `${names} picked the Cup winner, ${esc(H[best.horse].name)}!`
+        : `${names} ${ties.length>1?"are":"is"} closest with ${esc(H[best.horse].name)} in ${ord(best.pos)}.`;
+      $("winner").innerHTML = `<div class="winner"><div class="eyebrow">Sweep winner</div><div class="big">${line}</div><div style="opacity:.85">The Cup went to ${mini} ${esc(cupWinner.name)}. Bragging rights only.</div></div>`;
+    } else {
+      $("winner").innerHTML = `<div class="winner"><div class="eyebrow">Result posted</div><div class="big">${esc(cupWinner.name)} won the Cup.</div><div style="opacity:.85">None of the sweep horses are placed yet. Add more of the finishing order in the Stewards' room.</div></div>`;
+    }
+  }
+  if (!rows.length) {
+    $("board").innerHTML = `<div class="emptyboard">No entries yet. Type a name, tap a horse in the field and press Add to the sweep. Each entry appears here.</div>`;
+    return;
+  }
+  $("board").innerHTML = rows.map(r => {
+    const h = H[r.horse];
+    const pc = posted && r.pos && r.pos <= 3 ? "p"+r.pos : "";
+    const place = posted ? (r.pos ? ord(r.pos) : (isScr(h.n) ? "SCR" : "–")) : "";
+    const right = posted ? (r.pos ? `Finished ${ord(r.pos)}` : (isScr(h.n) ? "Scratched" : "Also ran"))
+      : `${odds(h.odds)}${S.result.locked ? "" : ` <button type="button" class="rm" data-rm="${esc(r.id)}" aria-label="Remove ${esc(r.name)}">Remove</button>`}`;
+    return `<div class="line ${pc}">
+      <div class="place ${pc}">${place}</div>${cloth(h.n)}${silk(h.n)}
+      <div class="who">${esc(r.name)}<small>${esc(h.name)} · ${esc(h.jockey)}</small></div>
+      <div class="pos">${right}</div></div>`;
+  }).join("");
+}
+
+function renderSteward(){
+  $("order").innerHTML = S.stewOrder.length ? S.stewOrder.map((n,i) => `<span title="${ord(i+1)}: ${esc(H[n].name)}">${cloth(n)}</span>`).join("") : `<span class="sub" style="margin:0">No placings entered yet.</span>`;
+  $("stewOrder").innerHTML = FIELD.map(h => `<button type="button" class="sbtn" data-o="${h.n}" aria-pressed="${S.stewOrder.includes(h.n)}" ${S.stewOrder.includes(h.n)||isScr(h.n)?"disabled":""}>${cloth(h.n)}<span>${esc(h.name)}</span></button>`).join("");
+  $("stewScr").innerHTML = FIELD.map(h => `<button type="button" class="sbtn${isScr(h.n)?" scr":""}" data-s="${h.n}" aria-pressed="${isScr(h.n)}">${cloth(h.n)}<span>${esc(h.name)}</span></button>`).join("");
+  $("lockIn").checked = !!S.result.locked;
+}
+
+function render(){ renderField(); renderEntry(); renderBoard(); renderSteward(); tick(); }
+function say(t, kind){ const m = $("msg"); m.textContent = t; m.className = "msg " + (kind || ""); }
+function stewSay(t, kind){ const m = $("stewMsg"); m.textContent = t; m.className = "msg " + (kind || ""); }
+function commit(){ save(); render(); if (!canSave) say("This browser isn't saving entries. Keep this tab open until the race is over.", "err"); }
+
+// Entry events
+$("field").addEventListener("click", e => {
+  const b = e.target.closest(".horse"); if (!b || b.disabled) return;
+  S.choice = +b.dataset.n; say(""); renderField(); renderPicked();
+  if (window.matchMedia("(max-width: 860px)").matches) $("entryHead").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+document.querySelectorAll(".chipbtn").forEach(b => b.addEventListener("click", () => {
+  S.filter = b.dataset.f;
+  document.querySelectorAll(".chipbtn").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderField();
+}));
+$("dipBtn").addEventListener("click", () => {
+  let pool = FIELD.filter(h => !isScr(h.n) && !ownersOf(h.n).length);
+  if (!pool.length) pool = FIELD.filter(h => !isScr(h.n));
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  S.choice = pick.n; say(`The lucky dip drew number ${pick.n}, ${pick.name}. Press Add to the sweep to lock it in.`, "ok");
+  renderField(); renderPicked();
+});
+$("entryForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("nameIn").value.trim();
+  if (!name) return say("Add a name first.", "err");
+  if (!S.choice) return say("Pick a horse from the field first.", "err");
+  if (S.entries.some(x => x.name.toLowerCase() === name.toLowerCase())) return say(`${name} is already in the sweep. Remove their entry first to change their horse.`, "err");
+  const os = ownersOf(S.choice);
+  if (os.length && !allTaken()) return say(`${H[S.choice].name} is already taken by ${os[0].name}. Pick another horse.`, "err");
+  S.entries.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), name: name.slice(0,40), horse: S.choice });
+  say(`${name} is on ${H[S.choice].name}. Good luck!`, "ok");
+  S.choice = null; $("nameIn").value = ""; commit(); $("nameIn").focus();
+});
+$("board").addEventListener("click", e => {
+  const b = e.target.closest("[data-rm]"); if (!b) return;
+  const gone = S.entries.find(x => x.id === b.dataset.rm);
+  S.entries = S.entries.filter(x => x.id !== b.dataset.rm);
+  commit(); if (gone) say(`${gone.name} removed. ${H[gone.horse].name} is free again.`, "ok");
+});
+
+// Copy board as text for Teams
+function boardText(){
+  const posted = isPosted();
+  const lines = [posted ? "CUP DAY SWEEP: RESULTS" : "CUP DAY SWEEP: WHO'S ON WHAT", ""];
+  if (posted) {
+    lines.push(`Melbourne Cup winner: ${H[S.result.order[0]].name}`, "");
+    ranked().forEach(r => lines.push(`${r.pos ? ord(r.pos) : (isScr(r.horse) ? "SCR" : "Also ran")}  ${r.name}  (${r.horse}. ${H[r.horse].name})`));
+  } else {
+    S.entries.slice().sort((a,b) => a.horse - b.horse).forEach(r => lines.push(`${r.horse}. ${H[r.horse].name}  ${odds(H[r.horse].odds)}  ${r.name}`));
+    const free = FIELD.filter(h => !ownersOf(h.n).length && !isScr(h.n));
+    if (free.length) lines.push("", `Still free: ${free.map(h => h.n + ". " + h.name).join(", ")}`);
+  }
+  lines.push("", "No money involved. Just bragging rights.");
+  return lines.join("\n");
+}
+$("copyBtn").addEventListener("click", async () => {
+  const t = boardText(), box = $("copyBox");
+  box.value = t;
+  try { await navigator.clipboard.writeText(t); box.hidden = true; $("copyMsg").textContent = "Copied. Paste it into the Teams chat."; $("copyMsg").className = "msg ok"; }
+  catch { box.hidden = false; box.focus(); box.select(); $("copyMsg").textContent = "Press Ctrl+C (or Cmd+C) to copy the selected text."; $("copyMsg").className = "msg"; }
+});
+
+// Steward controls
+$("stewOrder").addEventListener("click", e => { const b = e.target.closest("[data-o]"); if (!b || b.disabled) return; S.stewOrder.push(+b.dataset.o); stewSay(""); renderSteward(); });
+$("undoRes").addEventListener("click", () => { S.stewOrder.pop(); renderSteward(); });
+$("postRes").addEventListener("click", () => {
+  if (!S.stewOrder.length) return stewSay("Tap at least the winner first.", "err");
+  S.result.order = S.stewOrder.slice(); S.result.posted = true; S.result.locked = true; commit();
+  stewSay(`Result posted with ${S.result.order.length} placing${S.result.order.length>1?"s":""}. Entries are now closed.`, "ok");
+  $("resultsPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("clearRes").addEventListener("click", () => { S.stewOrder = []; S.result.order = []; S.result.posted = false; commit(); stewSay("Result cleared.", "ok"); });
+$("stewScr").addEventListener("click", e => {
+  const b = e.target.closest("[data-s]"); if (!b) return;
+  const n = +b.dataset.s, cur = S.result.scratched || [];
+  S.result.scratched = cur.includes(n) ? cur.filter(x => x !== n) : [...cur, n];
+  S.stewOrder = S.stewOrder.filter(x => !S.result.scratched.includes(x));
+  commit(); stewSay(cur.includes(n) ? `${H[n].name} reinstated.` : `${H[n].name} marked scratched.`, "ok");
+});
+$("lockIn").addEventListener("change", e => { S.result.locked = e.target.checked; commit(); stewSay(e.target.checked ? "Entries closed." : "Entries open again.", "ok"); });
+let resetArmed = false;
+$("resetAll").addEventListener("click", () => {
+  if (!resetArmed) { resetArmed = true; $("resetAll").textContent = "Tap again to clear every entry and result"; setTimeout(() => { resetArmed = false; $("resetAll").textContent = "Start a new sweep"; }, 4000); return; }
+  resetArmed = false; $("resetAll").textContent = "Start a new sweep";
+  S.entries = []; S.result = { order: [], scratched: [], locked: false, posted: false }; S.stewOrder = []; S.choice = null;
+  commit(); stewSay("All entries and results cleared.", "ok");
+});
+
+load(); render(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
