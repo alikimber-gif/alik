@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Flood System Animation</title>
+<style>
+  html,body{margin:0;padding:0;background:#F6F8FA;overflow:hidden}
+  svg{display:block;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;margin:auto}
+  text{font-family:Carlito,Calibri,"Inter",Arial,sans-serif}
+</style>
+</head>
+<body>
+<svg id="svg" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+/* Nelson City Council: flood monitoring system, animated diagram.
+   Deterministic: render(t) draws the frame for time t (seconds). */
+const DUR = 54;
+const C = {
+  blue:'#0077C8', teal:'#174A5B', ink:'#1F2B33', grey:'#4A5A66', line:'#DDE5EB',
+  pale:'#EEF2F5', mid:'#B5C2CB', slate:'#7A99AC', bg:'#F6F8FA', red:'#D0402B',
+  amber:'#E89B1C', green:'#2E8B57'
+};
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('svg');
+function el(tag, attrs={}, parent=svg){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e); return e;
+}
+function set(e, attrs){ for (const k in attrs) e.setAttribute(k, attrs[k]); }
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ramp=(t,a,b)=>clamp((t-a)/(b-a));
+const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const er=(t,a,b)=>ease(ramp(t,a,b));
+const lerp=(a,b,k)=>a+(b-a)*k;
+function mix(c1,c2,k){
+  const p=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
+  const a=p(c1),b=p(c2);
+  return '#'+a.map((v,i)=>Math.round(lerp(v,b[i],k)).toString(16).padStart(2,'0')).join('');
+}
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};
+
+/* ---------- Timeline ---------- */
+// stage windows
+const ST = [ [0,5], [5,15], [15,25], [25,36], [36,46], [46,DUR] ];
+function stageAt(t){ for(let i=ST.length-1;i>=0;i--) if(t>=ST[i][0]) return i; return 0; }
+function rain(t){ // 0..1 intensity
+  if (t<5) return 0;
+  if (t<46) return clamp(0.18*er(t,5,12) + 0.27*er(t,15,21) + 0.30*er(t,25,30) + 0.25*er(t,36,39));
+  return lerp(1,0.15,er(t,46,52));
+}
+function river(t){ // 0..1 level, lags rainfall
+  const up = 0.08 + 0.12*er(t,10,18) + 0.25*er(t,18,26) + 0.22*er(t,27,35) + 0.23*er(t,35,40);
+  return up - 0.25*er(t,47,53);
+}
+const THRESH = 0.78;
+
+/* ---------- Iso geometry for the landscape slab ---------- */
+const O=[640,520], U=[900,330], V=[330,-190];
+const P=(s,w,h=0)=>[O[0]+U[0]*s+V[0]*w, O[1]+U[1]*s+V[1]*w-h];
+const pt=a=>a[0].toFixed(1)+','+a[1].toFixed(1);
+function smooth(pts){ // catmull-rom -> bezier
+  let d='M'+pt(pts[0]);
+  for(let i=0;i<pts.length-1;i++){
+    const p0=pts[i-1]||pts[i], p1=pts[i], p2=pts[i+1], p3=pts[i+2]||p2;
+    const c1=[p1[0]+(p2[0]-p0[0])/6, p1[1]+(p2[1]-p0[1])/6];
+    const c2=[p2[0]-(p3[0]-p1[0])/6, p2[1]-(p3[1]-p1[1])/6];
+    d+=' C'+pt(c1)+' '+pt(c2)+' '+pt(p2);
+  }
+  return d;
+}
+
+/* ---------- Static build ---------- */
+const defs = el('defs');
+defs.innerHTML = `
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F6F8FA"/>
+  </linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+    <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1F2B33" flood-opacity="0.14"/>
+  </filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+  <clipPath id="sceneClip"><rect x="610" y="0" width="1310" height="1080"/></clipPath>
+`;
+el('rect',{x:0,y:0,width:1920,height:1080,fill:C.bg});
+const skyDim = el('rect',{x:610,y:0,width:1310,height:1080,fill:'#4A5A66',opacity:0});
+
+const scene = el('g',{'clip-path':'url(#sceneClip)'});
+
+// Distant ranges
+const far = el('g',{},scene);
+el('path',{d:'M610,420 L700,330 L770,360 L850,270 L930,320 L1010,250 L1100,310 L1180,280 L1260,340 L1350,300 L1440,360 L1440,520 L610,520 Z',fill:'#DDE5EB'},far);
+el('path',{d:'M610,450 L690,380 L760,410 L840,340 L920,380 L990,330 L1070,370 L1150,350 L1230,395 L1300,380 L1300,560 L610,560 Z',fill:'#C9D6DF'},far);
+
+// Slab faces
+const A=P(0,0), B=P(1,0), Cc=P(1,1), D=P(0,1), TH=95;
+const front = el('polygon',{points:[A,B,[B[0],B[1]+TH],[A[0],A[1]+TH]].map(pt).join(' '),fill:'#8E6A4F'},scene);
+const right = el('polygon',{points:[B,Cc,[Cc[0],Cc[1]+TH],[B[0],B[1]+TH]].map(pt).join(' '),fill:'#735540'},scene);
+// soil strata
+el('path',{d:`M${pt([A[0],A[1]+38])} L${pt([B[0],B[1]+38])}`,stroke:'#7D5B43','stroke-width':2,opacity:.6},scene);
+el('path',{d:`M${pt([A[0],A[1]+70])} L${pt([B[0],B[1]+70])}`,stroke:'#7D5B43','stroke-width':2,opacity:.4},scene);
+const topFace = el('polygon',{points:[A,B,Cc,D].map(pt).join(' '),fill:'#A9CF8E'},scene);
+// sea at the downstream end (Tasman Bay)
+const seaPts=[P(.9,0),P(1,0),P(1,1),P(.86,1)];
+el('path',{d:'M'+pt(P(.9,0))+' Q'+pt(P(.84,.5))+' '+pt(P(.86,1))+' L'+pt(P(1,1))+' L'+pt(P(1,0))+' Z',fill:'#5DADE2'},scene);
+el('polygon',{points:[B,Cc,[Cc[0],Cc[1]+30],[B[0],B[1]+30]].map(pt).join(' '),fill:'#2F80B8'},scene);
+el('polygon',{points:[P(.9,0),B,[B[0],B[1]+30],[P(.9,0)[0],P(.9,0)[1]+30]].map(pt).join(' '),fill:'#3A8DC4'},scene);
+
+// grass texture patches
+seed=11;
+for(let i=0;i<40;i++){ const p=P(rnd()*.85,rnd()); el('ellipse',{cx:p[0],cy:p[1],rx:30+rnd()*40,ry:10+rnd()*10,fill:'#9BC47F',opacity:.6},scene); }
+
+// River geometry (s,w)
+const RIV=[[.10,.62],[.18,.52],[.27,.58],[.36,.49],[.46,.56],[.56,.48],[.66,.55],[.75,.50],[.84,.54],[.93,.52]];
+const rivPath = smooth(RIV.map(a=>P(a[0],a[1])));
+const flood = el('path',{d:rivPath,fill:'none',stroke:'#8ECDF0','stroke-linecap':'round','stroke-linejoin':'round',opacity:0},scene);
+const rivUp = el('path',{d:smooth(RIV.slice(0,4).map(a=>P(a[0],a[1]))),fill:'none',stroke:'#4FA9E0','stroke-linecap':'round'},scene);
+const rivMid = el('path',{d:smooth(RIV.slice(3,7).map(a=>P(a[0],a[1]))),fill:'none',stroke:'#4FA9E0','stroke-linecap':'round'},scene);
+const rivLow = el('path',{d:smooth(RIV.slice(6).map(a=>P(a[0],a[1]))),fill:'none',stroke:'#4FA9E0','stroke-linecap':'round'},scene);
+const rivShine = el('path',{d:rivPath,fill:'none',stroke:'#FFFFFF','stroke-width':2,'stroke-dasharray':'18 46',opacity:.7,'stroke-linecap':'round'},scene);
+
+// Side stream feeding the stormwater intake
+const STREAM=[[.33,.02],[.40,.08],[.48,.11],[.555,.19]];
+const stream = el('path',{d:smooth(STREAM.map(a=>P(a[0],a[1]))),fill:'none',stroke:'#4FA9E0','stroke-linecap':'round'},scene);
+// piped network under town (dashed)
+el('path',{d:smooth([[.57,.2],[.66,.24],[.74,.30],[.8,.36]].map(a=>P(a[0],a[1]))),fill:'none',stroke:'#7A99AC','stroke-width':3,'stroke-dasharray':'6 7'},scene);
+
+// Roads + bridge
+el('path',{d:'M'+pt(P(.45,.15))+' L'+pt(P(.95,.15)),stroke:'#D4D8DB','stroke-width':12,'stroke-linecap':'round'},scene);
+el('path',{d:'M'+pt(P(.72,.02))+' L'+pt(P(.72,.98)),stroke:'#D4D8DB','stroke-width':12,'stroke-linecap':'round'},scene);
+el('path',{d:'M'+pt(P(.72,.44))+' L'+pt(P(.72,.60)),stroke:'#B5C2CB','stroke-width':16},scene);
+
+// Hills (forested) and trees
+const hills=[ {s:.03,w:.42,h:210,hw:150}, {s:.08,w:.85,h:250,hw:175}, {s:.17,w:.18,h:150,hw:130},
+              {s:.2,w:.78,h:160,hw:140}, {s:.3,w:.92,h:110,hw:110}, {s:.27,w:.3,h:95,hw:120} ];
+hills.map(h=>({...h,b:P(h.s,h.w)})).sort((a,b)=>a.b[1]-b.b[1]).forEach(h=>{
+  const [x,y]=h.b;
+  el('path',{d:`M${x-h.hw},${y} Q${x-h.hw*.45},${y-h.h*.75} ${x},${y-h.h} Q${x+h.hw*.45},${y-h.h*.75} ${x+h.hw},${y} Z`,fill:'#79A863'},scene);
+  el('path',{d:`M${x},${y-h.h} Q${x+h.hw*.45},${y-h.h*.75} ${x+h.hw},${y} L${x+h.hw*.15},${y} Q${x+h.hw*.12},${y-h.h*.5} ${x},${y-h.h} Z`,fill:'#5F8F4C'},scene);
+});
+seed=3;
+const treeG = el('g',{},scene);
+const trees=[];
+for(let i=0;i<70;i++){
+  const s=.02+rnd()*.5, w=.05+rnd()*.9;
+  const wr = RIV.reduce((m,a)=>Math.abs(a[0]-s)<Math.abs(m[0]-s)?a:m)[1];
+  if (Math.abs(w-wr)<.09) continue;
+  if (s>.3 && w<.25) continue;
+  trees.push(P(s,w));
+}
+trees.sort((a,b)=>a[1]-b[1]).forEach(([x,y])=>{
+  el('rect',{x:x-1.5,y:y-6,width:3,height:7,fill:'#6B4F3A'},treeG);
+  el('path',{d:`M${x-8},${y-5} L${x},${y-28} L${x+8},${y-5} Z`,fill:'#3F7D4E'},treeG);
+});
+
+// Houses
+function house(s,w,parent){
+  const [x,y]=P(s,w);
+  const g=el('g',{},parent);
+  el('rect',{x:x-12,y:y-14,width:24,height:15,fill:'#FFFFFF',stroke:'#B5C2CB','stroke-width':1},g);
+  el('path',{d:`M${x-15},${y-13} L${x},${y-25} L${x+15},${y-13} Z`,fill:'#B9533F'},g);
+  el('rect',{x:x-3,y:y-8,width:6,height:9,fill:'#7A99AC'},g);
+  return g;
+}
+const houses = el('g',{},scene);
+const housePts=[];
+for (const s of [.6,.66,.79,.85]) for (const w of [.06,.24,.32]) housePts.push([s,w]);
+for (const s of [.62,.78,.84]) for (const w of [.7,.8]) housePts.push([s,w]);
+housePts.sort((a,b)=>P(...a)[1]-P(...b)[1]).forEach(a=>house(a[0],a[1],houses));
+
+/* ---------- Instruments ---------- */
+const inst = el('g',{},scene);
+
+// 1. Rain radar on the back hill
+const radarP = P(.3,.92,110);
+const radarG = el('g',{},inst);
+el('rect',{x:radarP[0]-5,y:radarP[1]-6,width:10,height:40,fill:'#B5C2CB'},radarG);
+el('rect',{x:radarP[0]-16,y:radarP[1]-10,width:32,height:8,fill:'#7A99AC'},radarG);
+el('path',{d:`M${radarP[0]-18},${radarP[1]-10} A18,18 0 0 1 ${radarP[0]+18},${radarP[1]-10} Z`,fill:'#FFFFFF',stroke:'#7A99AC','stroke-width':2},radarG);
+const radarPulses=[0,1,2].map(()=>el('path',{fill:'none',stroke:C.blue,'stroke-width':3,opacity:0},inst));
+const radarDot = el('circle',{cx:radarP[0],cy:radarP[1]-18,r:4,fill:C.blue,opacity:0},inst);
+
+// 2a. Rain gauge
+const rgP = P(.21,.3);
+const rgG = el('g',{},inst);
+el('rect',{x:rgP[0]-2,y:rgP[1]-22,width:4,height:22,fill:'#4A5A66'},rgG);
+el('rect',{x:rgP[0]-9,y:rgP[1]-48,width:18,height:28,rx:3,fill:'#FFFFFF',stroke:'#4A5A66','stroke-width':2},rgG);
+const rgFill = el('rect',{x:rgP[0]-7,y:rgP[1]-22,width:14,height:0,fill:'#4FA9E0'},rgG);
+el('ellipse',{cx:rgP[0],cy:rgP[1]-48,rx:9,ry:3,fill:'#DDE5EB',stroke:'#4A5A66','stroke-width':1.5},rgG);
+
+// 2b. River gauge (staff gauge + level readout)
+const rvS=.47; const rvW=.545;
+const gP = P(rvS,rvW-.02);
+const gG = el('g',{},inst);
+el('rect',{x:gP[0]-3,y:gP[1]-64,width:6,height:66,fill:'#FFFFFF',stroke:'#1F2B33','stroke-width':1.5},gG);
+for(let i=0;i<6;i++) el('rect',{x:gP[0]-3,y:gP[1]-60+i*10,width:6,height:5,fill:i<1?C.red:'#1F2B33'},gG);
+el('rect',{x:gP[0]+4,y:gP[1]-70,width:20,height:13,rx:2,fill:'#4A5A66'},gG);
+el('circle',{cx:gP[0]+14,cy:gP[1]-63.5,r:3,fill:'#FFFFFF'},gG);
+
+// river level readout card (floats above gauge)
+const rdX=gP[0]+48, rdY=gP[1]-112;
+const readout = el('g',{opacity:0,filter:'url(#shadow)'});
+el('rect',{x:rdX,y:rdY,width:150,height:120,rx:10,fill:'#FFFFFF'},readout);
+el('text',{x:rdX+14,y:rdY+26,'font-size':17,'font-weight':700,fill:C.ink},readout).textContent='River level';
+el('rect',{x:rdX+16,y:rdY+38,width:26,height:70,rx:4,fill:C.pale,stroke:C.mid},readout);
+const rdFill = el('rect',{x:rdX+16,y:rdY+108,width:26,height:0,rx:3,fill:C.blue},readout);
+const thY = rdY+108-70*THRESH;
+el('line',{x1:rdX+10,y1:thY,x2:rdX+48,y2:thY,stroke:C.red,'stroke-width':3},readout);
+el('text',{x:rdX+56,y:thY+5,'font-size':14,fill:C.red,'font-weight':700},readout).textContent='Alarm';
+const rdState = el('text',{x:rdX+56,y:rdY+100,'font-size':15,fill:C.grey,'font-weight':700},readout);
+el('line',{x1:gP[0]+8,y1:gP[1]-40,x2:rdX,y2:gP[1]-40,stroke:C.mid,'stroke-width':2,'stroke-dasharray':'4 4'},readout);
+
+// 3a. Stormwater intake + camera
+const inP = P(.565,.2);
+const pond = el('ellipse',{cx:inP[0]-8,cy:inP[1]-2,rx:0,ry:0,fill:'#6CB8E6',opacity:.85},inst);
+const inG = el('g',{},inst);
+el('rect',{x:inP[0]-14,y:inP[1]-14,width:28,height:16,fill:'#9AA7B0',stroke:'#4A5A66','stroke-width':1.5},inG);
+for(let i=0;i<4;i++) el('line',{x1:inP[0]-9+i*6,y1:inP[1]-11,x2:inP[0]-9+i*6,y2:inP[1]+1,stroke:'#4A5A66','stroke-width':2},inG);
+const debris = el('g',{opacity:0},inst);
+[[-12,-6,7],[-5,-9,6],[3,-5,7],[-9,0,5],[8,-8,5]].forEach(([dx,dy,r],i)=>
+  el('ellipse',{cx:inP[0]+dx-4,cy:inP[1]+dy,rx:r,ry:r*.6,fill:i%2?'#6B4F3A':'#8A6A3E'},debris));
+el('path',{d:`M${inP[0]-24},${inP[1]-12} L${inP[0]+8},${inP[1]-2}`,stroke:'#5C432F','stroke-width':4},debris);
+const camP = P(.535,.27);
+const camCone = el('path',{d:`M${camP[0]+8},${camP[1]-50} L${inP[0]+14},${inP[1]-16} L${inP[0]-26},${inP[1]+4} Z`,fill:C.blue,opacity:0},inst);
+const camG = el('g',{},inst);
+el('rect',{x:camP[0]-2,y:camP[1]-50,width:4,height:50,fill:'#4A5A66'},camG);
+el('rect',{x:camP[0]-6,y:camP[1]-60,width:20,height:12,rx:3,fill:'#1F2B33'},camG);
+const camLed = el('circle',{cx:camP[0]+10,cy:camP[1]-54,r:3,fill:'#7A99AC'},camG);
+
+// crew truck
+const truck = el('g',{opacity:0},inst);
+el('rect',{x:-16,y:-14,width:22,height:13,rx:2,fill:'#F2A33A'},truck);
+el('rect',{x:6,y:-11,width:10,height:10,rx:2,fill:'#E08A1E'},truck);
+el('rect',{x:9,y:-9,width:5,height:4,fill:'#DDE5EB'},truck);
+el('circle',{cx:-10,cy:0,r:3.5,fill:'#1F2B33'},truck); el('circle',{cx:10,cy:0,r:3.5,fill:'#1F2B33'},truck);
+const truckLight = el('rect',{x:-8,y:-18,width:8,height:4,rx:1,fill:C.amber},truck);
+
+// 3b. SCADA pump station
+const pmP = P(.8,.38);
+const pmG = el('g',{},inst);
+el('rect',{x:pmP[0]-28,y:pmP[1]-34,width:48,height:34,fill:'#FFFFFF',stroke:'#4A5A66','stroke-width':2},pmG);
+el('path',{d:`M${pmP[0]-32},${pmP[1]-34} L${pmP[0]-4},${pmP[1]-48} L${pmP[0]+24},${pmP[1]-34} Z`,fill:'#174A5B'},pmG);
+const fan = el('g',{},pmG);
+for(let i=0;i<3;i++) el('ellipse',{cx:0,cy:-7,rx:3.2,ry:7,fill:'#0077C8',transform:`rotate(${i*120})`},fan);
+el('circle',{cx:0,cy:0,r:2.5,fill:'#1F2B33'},fan);
+const pumpLed = el('circle',{cx:pmP[0]+14,cy:pmP[1]-27,r:3.5,fill:'#7A99AC'},pmG);
+const pumpJet = el('path',{d:`M${pmP[0]+20},${pmP[1]-10} Q${pmP[0]+48},${pmP[1]-28} ${P(.82,.5)[0]},${P(.82,.5)[1]}`,fill:'none',stroke:'#4FA9E0','stroke-width':4,'stroke-dasharray':'8 8',opacity:0},inst);
+
+// 4. Council operations centre
+const ocP = P(.67,.86);
+const ocG = el('g',{},inst);
+el('rect',{x:ocP[0]-36,y:ocP[1]-46,width:72,height:46,fill:'#FFFFFF',stroke:'#174A5B','stroke-width':2},ocG);
+el('rect',{x:ocP[0]-36,y:ocP[1]-54,width:72,height:9,fill:'#174A5B'},ocG);
+for(let r=0;r<2;r++) for(let c=0;c<4;c++) el('rect',{x:ocP[0]-28+c*15,y:ocP[1]-38+r*15,width:10,height:9,fill:'#B5D7EE'},ocG);
+el('line',{x1:ocP[0]+22,y1:ocP[1]-54,x2:ocP[0]+22,y2:ocP[1]-82,stroke:'#4A5A66','stroke-width':3},ocG);
+el('circle',{cx:ocP[0]+22,cy:ocP[1]-84,r:4,fill:'#4A5A66'},ocG);
+const ocAlarm = el('circle',{cx:ocP[0]-20,cy:ocP[1]-60,r:6,fill:'#7A99AC'},ocG);
+const ocRings=[0,1].map(()=>el('circle',{cx:ocP[0],cy:ocP[1]-30,r:0,fill:'none',stroke:C.red,'stroke-width':3,opacity:0},inst));
+
+/* ---------- Data links to the operations centre ---------- */
+const OCIN=[ocP[0],ocP[1]-50];
+function makeLink(from, lift){
+  const ctrl=[(from[0]+OCIN[0])/2,Math.min(from[1],OCIN[1])-lift];
+  const path=el('path',{d:`M${pt(from)} Q${pt(ctrl)} ${pt(OCIN)}`,fill:'none',stroke:C.blue,'stroke-width':2,'stroke-dasharray':'5 7',opacity:0},scene);
+  const dots=[0,1,2].map(()=>el('circle',{r:5,fill:C.blue,stroke:'#FFFFFF','stroke-width':2,opacity:0},scene));
+  return {from,ctrl,path,dots};
+}
+const links = {
+  radar: makeLink([radarP[0],radarP[1]-20], 90),
+  rg: makeLink([rgP[0],rgP[1]-50], 160),
+  rv: makeLink([gP[0]+14,gP[1]-70], 120),
+  cam: makeLink([camP[0]+4,camP[1]-62], 140),
+  pump: makeLink([pmP[0]-4,pmP[1]-48], 80),
+};
+function linkFrame(L, t, on){
+  set(L.path,{opacity:.55*on});
+  L.dots.forEach((d,i)=>{
+    const k=((t*0.55)+i/3)%1, a=L.from, c=L.ctrl, b=OCIN;
+    const x=(1-k)*(1-k)*a[0]+2*(1-k)*k*c[0]+k*k*b[0];
+    const y=(1-k)*(1-k)*a[1]+2*(1-k)*k*c[1]+k*k*b[1];
+    set(d,{cx:x,cy:y,opacity:on*Math.min(1,Math.sin(k*Math.PI)*3)});
+  });
+}
+
+/* ---------- Clouds and rain ---------- */
+function cloud(parent){
+  const g=el('g',{},parent);
+  const parts=[[0,40,62],[70,10,78],[150,30,66],[220,48,52],[-60,60,46],[110,62,70]];
+  const shapes=parts.map(([x,y,r])=>el('circle',{cx:x,cy:y,r},g));
+  shapes.push(el('rect',{x:-90,y:60,width:350,height:52,rx:26},g));
+  return {g,shapes};
+}
+const rainG = el('g',{},scene);
+const cloudsG = el('g',{},scene);
+const cloudA = cloud(cloudsG), cloudB = cloud(cloudsG);
+const cloudBottom=[200,215];
+const cloudAx=[700,1060], cloudBx=[1180,1540];
+// drops
+seed=21;
+function makeDrops(n, sR, wR, xR){
+  const out=[];
+  while(out.length<n){
+    const s=lerp(sR[0],sR[1],rnd()), w=lerp(wR[0],wR[1],rnd());
+    const p=P(s,w); if(p[0]<xR[0]||p[0]>xR[1]) continue;
+    out.push({tx:p[0],ty:p[1],ph:rnd(),e:el('line',{stroke:'#4FA9E0','stroke-width':2,'stroke-linecap':'round',opacity:0},rainG)});
+  }
+  return out;
+}
+const dropsA = makeDrops(220,[0,.55],[0,1],[cloudAx[0]-40,cloudAx[1]+150]);
+const dropsB = makeDrops(180,[.45,.95],[0,1],[cloudBx[0]-40,cloudBx[1]+120]);
+
+/* ---------- Labels in the scene ---------- */
+const labelsG = el('g',{},svg);
+function label(text, x, y, anchor='middle'){
+  const g=el('g',{opacity:0},labelsG);
+  const w=text.length*9.2+28;
+  const x0 = anchor==='middle'? x-w/2 : anchor==='end'? x-w : x;
+  const r=el('rect',{x:x0,y:y-19,width:w,height:30,rx:15,fill:'#FFFFFF',stroke:C.line,filter:'url(#shadow)'},g);
+  const t=el('text',{x:x0+w/2,y:y+1.5,'text-anchor':'middle','font-size':18,'font-weight':700,fill:C.ink},g);
+  t.textContent=text;
+  return {g,r,t};
+}
+const L_met  = label('MetService forecast', 1010, 92);
+const L_radar= label('Nelson Tasman rain radar', radarP[0]+10, radarP[1]-74);
+const L_rg   = label('Rain gauge', rgP[0]-10, rgP[1]-72);
+const L_rv   = label('River-level gauge', gP[0]-16, gP[1]-58,'end');
+const L_cam  = label('Stormwater camera', camP[0]-150, camP[1]-40);
+const L_pump = label('SCADA pump station', pmP[0]-20, pmP[1]+38);
+const L_oc   = label('Council operations centre', ocP[0], ocP[1]-112);
+const tagBlock = label('Blockage detected', inP[0]+40, inP[1]+44,'start');
+set(tagBlock.r,{fill:C.red,stroke:C.red}); set(tagBlock.t,{fill:'#FFFFFF'});
+const tagClear = label('Intake cleared', inP[0]+40, inP[1]+44,'start');
+set(tagClear.r,{fill:C.green,stroke:C.green}); set(tagClear.t,{fill:'#FFFFFF'});
+const tagAlarm = label('Alarm threshold reached', rdX+75, rdY-26);
+set(tagAlarm.r,{fill:C.red,stroke:C.red}); set(tagAlarm.t,{fill:'#FFFFFF'});
+
+svg.insertBefore(readout, labelsG);
+const seaLbl = el('text',{x:P(.965,.42)[0],y:P(.965,.42)[1],'text-anchor':'middle','font-size':20,fill:'#FFFFFF','font-weight':700},labelsG);
+seaLbl.textContent='Tasman Bay';
+
+/* ---------- Phone with public alert ---------- */
+const phX=1660, phY=150;
+const phRings=[0,1,2].map(()=>el('circle',{cx:phX+100,cy:phY+190,r:0,fill:'none',stroke:C.blue,'stroke-width':3,opacity:0},svg));
+const phone = el('g',{opacity:0},svg);
+el('rect',{x:phX,y:phY,width:200,height:380,rx:28,fill:'#1F2B33',filter:'url(#shadow)'},phone);
+el('rect',{x:phX+10,y:phY+14,width:180,height:352,rx:20,fill:'#EEF2F5'},phone);
+el('rect',{x:phX+75,y:phY+22,width:50,height:8,rx:4,fill:'#1F2B33'},phone);
+const note = el('g',{},phone);
+el('rect',{x:phX+18,y:phY+56,width:164,height:150,rx:12,fill:'#FFFFFF',stroke:C.line},note);
+el('rect',{x:phX+18,y:phY+56,width:164,height:30,rx:12,fill:C.blue},note);
+el('rect',{x:phX+18,y:phY+74,width:164,height:12,fill:C.blue},note);
+el('text',{x:phX+30,y:phY+77,'font-size':16,'font-weight':700,fill:'#FFFFFF'},note).textContent='Antenno';
+el('text',{x:phX+170,y:phY+77,'font-size':13,fill:'#FFFFFF','text-anchor':'end'},note).textContent='now';
+[['Flood alert',18,700,C.red],['River levels are high.',15,400,C.ink],['Stay away from rivers',15,400,C.ink],['and streams. Check',15,400,C.ink],['for updates.',15,400,C.ink]]
+  .forEach(([s,fs,fw,fc],i)=>{ el('text',{x:phX+30,y:phY+110+i*21,'font-size':fs,'font-weight':fw,fill:fc},note).textContent=s; });
+const housePings = el('g',{},svg);
+const pingPts = housePts.filter((_,i)=>i%2===0).map(a=>{const p=P(a[0],a[1]); return el('circle',{cx:p[0],cy:p[1]-36,r:7,fill:C.blue,stroke:'#FFFFFF','stroke-width':2,opacity:0},housePings);});
+
+/* ---------- Caption bar ---------- */
+const capG = el('g',{},svg);
+el('rect',{x:640,y:978,width:1240,height:74,rx:14,fill:C.teal},capG);
+const capNum = el('circle',{cx:682,cy:1015,r:21,fill:C.blue},capG);
+const capNumT = el('text',{x:682,y:1022,'text-anchor':'middle','font-size':22,'font-weight':700,fill:'#FFFFFF'},capG);
+const capT = el('text',{x:716,y:1024,'font-size':27,fill:'#FFFFFF'},capG);
+const CAPS=[
+  ['', "Nelson's flood monitoring system works as one connected system."],
+  ['1','Rain is forecast. The radar tracks the rain band before it reaches the catchment.'],
+  ['2','Rain reaches the hills. Gauges confirm rainfall and rising rivers in near real time.'],
+  ['3','Heavy rain. A camera spots a blocked intake, SCADA runs the pumps, crews respond.'],
+  ['4','The river reaches its alarm threshold. Council acts and Antenno alerts residents.'],
+  ['↺','Rain eases. What we learn improves the network for next time.']
+];
+
+/* ---------- Left panel ---------- */
+const lp = el('g',{},svg);
+el('rect',{x:0,y:0,width:610,height:1080,fill:'#FFFFFF'},lp);
+el('line',{x1:610,y1:0,x2:610,y2:1080,stroke:C.line,'stroke-width':2},lp);
+el('text',{x:60,y:86,'font-size':18,'font-weight':700,fill:C.blue,'letter-spacing':2.5},lp).textContent='THE COMPLETE SYSTEM';
+const tt=el('text',{x:60,y:140,'font-size':46,'font-weight':700,fill:C.ink},lp);
+el('tspan',{x:60,dy:0},tt).textContent='How the system responds';
+el('tspan',{x:60,dy:52},tt).textContent='as rain increases';
+
+// meters
+function meter(y, title){
+  el('text',{x:60,y,'font-size':19,'font-weight':700,fill:C.ink},lp).textContent=title;
+  el('rect',{x:60,y:y+12,width:490,height:16,rx:8,fill:C.pale,stroke:C.line},lp);
+  const f=el('rect',{x:60,y:y+12,width:0,height:16,rx:8,fill:C.blue},lp);
+  return f;
+}
+const rainFill = meter(258,'Rainfall');
+['Light','Moderate','Heavy','Severe'].forEach((s,i)=>{
+  el('text',{x:60+i*163.3+(i===3?0:0),y:312,'font-size':15,fill:C.grey,'text-anchor':i===3?'end':'start',
+     ...(i===3?{x:550}:{})},lp).textContent=s;
+});
+const rainState = el('text',{x:550,y:258,'font-size':19,'font-weight':700,fill:C.blue,'text-anchor':'end'},lp);
+const rivFill = meter(352,'River level');
+el('line',{x1:60+490*THRESH,y1:358,x2:60+490*THRESH,y2:392,stroke:C.red,'stroke-width':3},lp);
+el('text',{x:60+490*THRESH,y:410,'font-size':15,fill:C.red,'font-weight':700,'text-anchor':'middle'},lp).textContent='Alarm threshold';
+const rivState = el('text',{x:550,y:352,'font-size':19,'font-weight':700,fill:C.blue,'text-anchor':'end'},lp);
+
+// layer cards
+const CARDS=[
+  ['See the weather coming','MetService forecasts · rain radar'],
+  ['See what is happening locally','Rain gauges · river-level and flow gauges'],
+  ['Protect assets and drainage','Stormwater sensors and cameras · SCADA'],
+  ['Warn and respond','Flood thresholds · emergency management · Antenno'],
+];
+const cards = CARDS.map(([ti,sub],i)=>{
+  const y=440+i*124;
+  const g=el('g',{},lp);
+  const bg=el('rect',{x:48,y,width:514,height:110,rx:12,fill:'#FFFFFF',stroke:C.line,'stroke-width':2},g);
+  const bar=el('rect',{x:48,y,width:6,height:110,rx:3,fill:C.line},g);
+  const circ=el('circle',{cx:98,cy:y+40,r:21,fill:C.pale,stroke:C.mid,'stroke-width':2},g);
+  const num=el('text',{x:98,y:y+47,'text-anchor':'middle','font-size':21,'font-weight':700,fill:C.grey},g); num.textContent=i+1;
+  const t1=el('text',{x:134,y:y+34,'font-size':23,'font-weight':700,fill:C.ink},g); t1.textContent=ti;
+  const t2=el('text',{x:134,y:y+60,'font-size':17,fill:C.grey},g); t2.textContent=sub;
+  const dot=el('circle',{cx:140,cy:y+86,r:6,fill:C.mid},g);
+  const st=el('text',{x:154,y:y+92,'font-size':18,'font-weight':700,fill:C.slate},g);
+  return {g,bg,bar,circ,num,dot,st,y};
+});
+const loopT = el('text',{x:60,y:958,'font-size':18,fill:C.slate,'font-weight':700},lp);
+loopT.textContent='↺  Lessons and improvements feed back into monitoring';
+// footer
+el('image',{href:'ncc-mark.png',x:56,y:996,width:46,height:46},lp);
+el('text',{x:114,y:1016,'font-size':18,'font-weight':700,fill:C.ink},lp).textContent='Nelson City Council';
+el('text',{x:114,y:1038,'font-size':16,fill:C.grey},lp).textContent='Te Kaunihera o Whakatū';
+
+// Final overlay
+const finale = el('g',{opacity:0},svg);
+el('rect',{x:790,y:60,width:940,height:96,rx:16,fill:'#FFFFFF',filter:'url(#shadow)'},finale);
+const fT=el('text',{x:1260,y:120,'text-anchor':'middle','font-size':34,'font-weight':700,fill:C.teal},finale);
+fT.textContent='Together, they form one flood-resilience system.';
+
+/* ---------- Card status logic ---------- */
+function cardState(i,t){
+  // returns [mode, text]; mode: 0 idle, 1 active, 2 done
+  const s=stageAt(t);
+  if (s>=5) return [2, ['Watching for the next event','Data saved for review','Assets checked after the event','Review: what we learned'][i]];
+  const act=i+1;
+  if (s<act) return [0,'Standing by'];
+  if (s===act){
+    if (i===0) return [1, t<8?'Forecast received':'Radar tracking the rain band'];
+    if (i===1) return [1, t<19?'Rain gauges recording':'River rising · data sent to Council'];
+    if (i===2) return [1, t<28?'Intake water level rising': t<32.5?'Blockage detected · crew sent':'Intake cleared · pumps running'];
+    if (i===3) return [1, t<38.5?'Alarm threshold reached':'Response under way · residents alerted'];
+  }
+  return [2, ['Radar still tracking','Gauges reporting live','Pumps and intakes monitored',''][i]];
+}
+
+/* ---------- Render ---------- */
+function render(t){
+  const R=rain(t), Lv=river(t), s=stageAt(t);
+
+  // atmosphere
+  set(skyDim,{opacity:.10*R});
+
+  // clouds
+  const ca = er(t,1.5,8), cb = er(t,24,30);
+  const dark = mix('#DDE5EB','#6E7F8C',R);
+  set(cloudA.g,{transform:`translate(${lerp(-200,cloudAx[0],ca)},${90}) scale(${lerp(.9,1.15,R)})`,opacity:ca*(t>50?lerp(1,.5,er(t,50,54)):1)});
+  cloudA.shapes.forEach(e=>set(e,{fill:dark}));
+  set(cloudB.g,{transform:`translate(${lerp(2000,cloudBx[0],cb)},${100}) scale(${lerp(.9,1.05,R)})`,opacity:cb*(t>46?lerp(1,0,er(t,46,52)):1)});
+  cloudB.shapes.forEach(e=>set(e,{fill:mix('#B5C2CB','#5E6F7C',R)}));
+
+  // rain
+  const drawDrops=(drops, amount, top)=>{
+    const n=Math.floor(drops.length*amount);
+    drops.forEach((d,i)=>{
+      if(i>=n){ set(d.e,{opacity:0}); return; }
+      const fall=d.ty-top, sp=900;
+      const k=((t*sp/fall)+d.ph)%1;
+      const y=top+k*fall, len=10+16*R;
+      const x=d.tx-(1-k)*30;
+      set(d.e,{x1:x,y1:y-len,x2:x+len*.12,y2:y,opacity:.75});
+    });
+  };
+  drawDrops(dropsA, ca>.95? clamp(R*1.15):0, cloudBottom[0]+90);
+  drawDrops(dropsB, cb>.95? clamp((R-.5)*2):0, cloudBottom[1]+90);
+
+  // river and stream
+  set(rivUp,{'stroke-width':6+10*Lv});
+  set(rivMid,{'stroke-width':9+20*Lv});
+  set(rivLow,{'stroke-width':12+30*Lv});
+  const fl = clamp((Lv-.55)/.45);
+  set(flood,{'stroke-width':30+80*fl,opacity:.55*fl});
+  set(rivShine,{'stroke-dashoffset':-t*(30+90*Lv),'stroke-width':1.5+2*Lv});
+  set(stream,{'stroke-width':3+7*R});
+  set(L_met.g,{opacity: er(t,6,7)*(1-er(t,14.5,15.5))});
+
+  // radar
+  const radOn = ramp(t,6,7);
+  radarPulses.forEach((p,i)=>{
+    const k=((t*0.6)+i/3)%1, r=20+k*230;
+    const [x,y]=[radarP[0],radarP[1]-18];
+    const a1=-165*Math.PI/180, a2=-105*Math.PI/180;
+    p.setAttribute('d',`M${x+r*Math.cos(a1)},${y+r*Math.sin(a1)} A${r},${r} 0 0 1 ${x+r*Math.cos(a2)},${y+r*Math.sin(a2)}`);
+    set(p,{opacity:radOn*(1-k)*.8*(t<52?1:0)});
+  });
+  set(radarDot,{opacity:radOn*(0.5+0.5*Math.sin(t*6))});
+  set(L_radar.g,{opacity:er(t,6.5,7.5)*(s===1?1:.0)});
+  linkFrame(links.radar,t,ramp(t,7,8)*(s<=4?1:0.4));
+
+  // rain gauge
+  set(rgFill,{y:rgP[1]-22-24*clamp(R*1.1), height:24*clamp(R*1.1)});
+  set(L_rg.g,{opacity:er(t,15.5,16.5)*(s===2?1:0)});
+  linkFrame(links.rg,t,ramp(t,16,17)*(s<=4?1:0.4));
+
+  // river gauge + readout
+  set(readout,{opacity:er(t,17,18)});
+  set(rdFill,{y:rdY+108-70*Lv,height:70*Lv,fill:Lv>=THRESH?C.red:C.blue});
+  rdState.textContent = Lv>=THRESH?'High': Lv>.45?'Rising':'Normal';
+  set(rdState,{fill:Lv>=THRESH?C.red:C.grey});
+  set(L_rv.g,{opacity:er(t,17.5,18.5)*(s===2?1:0)});
+  linkFrame(links.rv,t,ramp(t,18,19)*(s<=4?1:0.4));
+
+  // stormwater intake
+  const blocked = t>=27 && t<32.5;
+  set(debris,{opacity:er(t,26.5,27.3)*(1-er(t,32.3,32.8))});
+  const pondK = clamp(R*.6) * (blocked? lerp(1,2.2,er(t,27,30)) : t>=32.5? lerp(2.2,1,er(t,32.5,34)) : 1);
+  set(pond,{rx:10+16*pondK*(t>24?1:R),ry:5+7*pondK*(t>24?1:R)});
+  set(L_cam.g,{opacity:er(t,25.5,26.5)*(s===3?1:0)});
+  const camAlert = t>=28 && t<32.5;
+  set(camCone,{opacity:ramp(t,26,27)*(s<=4?.18:0), fill:camAlert?C.red:C.blue});
+  set(camLed,{fill: camAlert? (Math.sin(t*12)>0?C.red:'#F5B7AE') : t>=26? C.green : '#7A99AC'});
+  set(tagBlock.g,{opacity:er(t,28,28.5)*(1-er(t,32.3,32.7))});
+  set(tagClear.g,{opacity:er(t,32.7,33.1)*(1-er(t,35,35.6))});
+  linkFrame(links.cam,t,ramp(t,26,27)*(s<=4?1:0.4));
+  // truck: drive along road from far end of town to the intake
+  const tk = er(t,29,31.8);
+  const tp = P(lerp(.94,.6,tk),.15);
+  set(truck,{opacity:ramp(t,28.8,29.2)*(1-ramp(t,34.5,35.2)),transform:`translate(${tp[0]},${tp[1]}) scale(-1,1)`});
+  set(truckLight,{fill:Math.sin(t*14)>0?C.amber:'#FFE2A8'});
+
+  // pumps
+  const pumpOn = t>=29 && t<50;
+  set(fan,{transform:`translate(${pmP[0]-4},${pmP[1]-17}) rotate(${pumpOn? t*360 : 0})`});
+  set(pumpLed,{fill:pumpOn?C.green:'#7A99AC'});
+  set(pumpJet,{opacity:pumpOn? .9:0,'stroke-dashoffset':-t*60});
+  set(L_pump.g,{opacity:er(t,29,30)*(s===3?1:0)});
+  linkFrame(links.pump,t,ramp(t,29,30)*(s<=4?1:0.4));
+
+  // operations centre
+  const alarm = Lv>=THRESH && t<46;
+  set(ocAlarm,{fill: alarm? (Math.sin(t*10)>0?C.red:'#F5B7AE') : t>7? C.green : '#7A99AC'});
+  ocRings.forEach((r,i)=>{ const k=((t*.8)+i/2)%1; set(r,{r:30+k*70,opacity:alarm?(1-k)*.8:0}); });
+  set(L_oc.g,{opacity:er(t,7.5,8.5)*(s===1||s===4?1:0)});
+  set(tagAlarm.g,{opacity:(alarm?1:0)*er(t,36.5,37)*(1-er(t,40,40.5))});
+
+  // phone + pings
+  const ph = er(t,38.5,39.5)*(1-er(t,46,47));
+  set(phone,{opacity:ph,transform:`translate(0,${(1-ph)*40})`});
+  phRings.forEach((r,i)=>{ const k=((t*.7)+i/3)%1; set(r,{r:40+k*150,opacity:ph*(1-k)*.5*(t<45?1:0)}); });
+  pingPts.forEach((p,i)=>{ const k=ramp(t,39+i*.15,39.4+i*.15); set(p,{opacity:k*(1-er(t,45,46))*(0.6+0.4*Math.sin(t*5+i))}); });
+
+  // finale
+  set(finale,{opacity:er(t,47.5,48.5)});
+
+  // caption
+  const cap = CAPS[s];
+  const cf = Math.min(er(t,ST[s][0],ST[s][0]+.6), s<5? 1-er(t,ST[s][1]-.4,ST[s][1]) : 1);
+  set(capG,{opacity:t<.5?er(t,0,.5):1});
+  set(capT,{opacity:cf, x: cap[0]?716:664});
+  set(capNum,{opacity:cap[0]?cf:0}); set(capNumT,{opacity:cap[0]?cf:0});
+  capT.textContent=cap[1]; capNumT.textContent=cap[0];
+
+  // left panel meters
+  set(rainFill,{width:Math.max(0,490*R)});
+  rainState.textContent = R<.02?'None': R<.3?'Light': R<.55?'Moderate': R<.85?'Heavy':'Severe';
+  set(rivFill,{width:490*Lv, fill:Lv>=THRESH?C.red:C.blue});
+  rivState.textContent = Lv>=THRESH?'Above alarm threshold': Lv>.45?'Rising':'Normal';
+  set(rivState,{fill:Lv>=THRESH?C.red:C.blue});
+
+  // cards
+  cards.forEach((c,i)=>{
+    const [m,txt]=cardState(i,t);
+    const intro = er(t,.3+i*.25,1.1+i*.25);
+    set(c.g,{opacity:intro,transform:`translate(${(1-intro)*-30},0)`});
+    const active=m===1, done=m===2;
+    set(c.bg,{fill:active?'#EAF4FB':'#FFFFFF',stroke:active?C.blue:C.line});
+    set(c.bar,{fill:active?C.blue:done?C.teal:C.line});
+    set(c.circ,{fill:active?C.blue:done?C.teal:C.pale,stroke:active?C.blue:done?C.teal:C.mid});
+    set(c.num,{fill:active||done?'#FFFFFF':C.grey});
+    set(c.dot,{fill:active?(txt.startsWith('Blockage')||txt.startsWith('Alarm')?C.red:C.blue):done?C.green:C.mid,
+      opacity: active? .55+.45*Math.sin(t*6):1});
+    set(c.st,{fill:active?(txt.startsWith('Blockage')||txt.startsWith('Alarm')?C.red:C.blue):done?C.teal:C.slate});
+    c.st.textContent=txt;
+  });
+  set(loopT,{fill: s===5? C.blue : C.slate, opacity: s===5? .7+.3*Math.sin(t*4) : .8});
+}
+window.render = render;
+window.DURATION = DUR;
+
+if (!location.search.includes('capture')){
+  const t0=performance.now();
+  const loop=()=>{ render(((performance.now()-t0)/1000)%DUR); requestAnimationFrame(loop); };
+  loop();
+} else {
+  render(0);
+}
+</script>
+</body>
+</html>
