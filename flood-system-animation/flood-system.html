@@ -473,6 +473,14 @@ function cardState(i,t){
   return [2, ['Radar still tracking','Gauges reporting live','Pumps and intakes monitored',''][i]];
 }
 
+/* Distance travelled by the river shimmer: integrate speed over time so the
+   flow always moves downstream and simply slows as the river drops. */
+function flowDist(t){
+  const dt=1/60; let d=0;
+  for(let x=0;x<t;x+=dt) d+=(30+90*river(x))*Math.min(dt,t-x);
+  return d;
+}
+
 /* ---------- Render ---------- */
 function render(t){
   const R=rain(t), Lv=river(t), s=stageAt(t);
@@ -509,7 +517,7 @@ function render(t){
   set(rivLow,{'stroke-width':12+30*Lv});
   const fl = clamp((Lv-.55)/.45);
   set(flood,{'stroke-width':30+80*fl,opacity:.55*fl});
-  set(rivShine,{'stroke-dashoffset':-t*(30+90*Lv),'stroke-width':1.5+2*Lv});
+  set(rivShine,{'stroke-dashoffset':-flowDist(t),'stroke-width':1.5+2*Lv});
   set(stream,{'stroke-width':3+7*R});
   set(L_met.g,{opacity: er(t,6,7)*(1-er(t,14.5,15.5))});
 
