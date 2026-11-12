@@ -259,14 +259,33 @@ const ocRings=[0,1].map(()=>el('circle',{cx:ocP[0],cy:ocP[1]-30,r:0,fill:'none',
 
 /* ---------- Data links to the operations centre ---------- */
 const OCIN=[ocP[0],ocP[1]-50];
-function makeLink(from, lift){
-  const ctrl=[(from[0]+OCIN[0])/2,Math.min(from[1],OCIN[1])-lift];
-  const path=el('path',{d:`M${pt(from)} Q${pt(ctrl)} ${pt(OCIN)}`,fill:'none',stroke:C.blue,'stroke-width':2,'stroke-dasharray':'5 7',opacity:0},scene);
+function makeLink(from, lift, to=OCIN){
+  const ctrl=[(from[0]+to[0])/2,Math.min(from[1],to[1])-lift];
+  const path=el('path',{d:`M${pt(from)} Q${pt(ctrl)} ${pt(to)}`,fill:'none',stroke:C.blue,'stroke-width':2,'stroke-dasharray':'5 7',opacity:0},scene);
   const dots=[0,1,2].map(()=>el('circle',{r:5,fill:C.blue,stroke:'#FFFFFF','stroke-width':2,opacity:0},scene));
-  return {from,ctrl,path,dots};
+  return {from,ctrl,to,path,dots};
 }
+
+/* ---------- MetService and Tasman District Council (off-site partners) ---------- */
+const mtP=[1565,318];            // base centre of the partner building
+const mtG = el('g',{});           // added to the top layer later so it sits above the sky
+// small floating ground tile
+el('polygon',{points:`${mtP[0]-70},${mtP[1]} ${mtP[0]},${mtP[1]-26} ${mtP[0]+70},${mtP[1]} ${mtP[0]},${mtP[1]+26}`,fill:'#A9CF8E'},mtG);
+el('polygon',{points:`${mtP[0]-70},${mtP[1]} ${mtP[0]},${mtP[1]+26} ${mtP[0]},${mtP[1]+44} ${mtP[0]-70},${mtP[1]+18}`,fill:'#8E6A4F'},mtG);
+el('polygon',{points:`${mtP[0]},${mtP[1]+26} ${mtP[0]+70},${mtP[1]} ${mtP[0]+70},${mtP[1]+18} ${mtP[0]},${mtP[1]+44}`,fill:'#735540'},mtG);
+// building
+el('rect',{x:mtP[0]-34,y:mtP[1]-58,width:68,height:62,fill:'#FFFFFF',stroke:'#4A5A66','stroke-width':2},mtG);
+el('rect',{x:mtP[0]-38,y:mtP[1]-66,width:76,height:10,fill:'#7A99AC'},mtG);
+for(let r=0;r<3;r++) for(let c=0;c<4;c++) el('rect',{x:mtP[0]-26+c*14,y:mtP[1]-50+r*15,width:9,height:9,fill:'#B5D7EE'},mtG);
+el('rect',{x:mtP[0]-6,y:mtP[1]-8,width:12,height:12,fill:'#4A5A66'},mtG);
+// rooftop satellite dish
+el('line',{x1:mtP[0]+20,y1:mtP[1]-66,x2:mtP[0]+20,y2:mtP[1]-80,stroke:'#4A5A66','stroke-width':3},mtG);
+el('path',{d:`M${mtP[0]+8},${mtP[1]-90} A14,14 0 0 0 ${mtP[0]+32},${mtP[1]-78} Z`,fill:'#DDE5EB',stroke:'#4A5A66','stroke-width':2},mtG);
+const mtLed = el('circle',{cx:mtP[0]-22,cy:mtP[1]-72,r:5,fill:'#7A99AC'},mtG);
+const MTIN=[mtP[0]-36,mtP[1]-40];
 const links = {
   radar: makeLink([radarP[0],radarP[1]-20], 90),
+  radarMet: makeLink([radarP[0]+4,radarP[1]-24], 60, MTIN),
   rg: makeLink([rgP[0],rgP[1]-50], 160),
   rv: makeLink([gP[0]+14,gP[1]-70], 120),
   cam: makeLink([camP[0]+4,camP[1]-62], 140),
@@ -275,7 +294,7 @@ const links = {
 function linkFrame(L, t, on){
   set(L.path,{opacity:.55*on});
   L.dots.forEach((d,i)=>{
-    const k=((t*0.55)+i/3)%1, a=L.from, c=L.ctrl, b=OCIN;
+    const k=((t*0.55)+i/3)%1, a=L.from, c=L.ctrl, b=L.to;
     const x=(1-k)*(1-k)*a[0]+2*(1-k)*k*c[0]+k*k*b[0];
     const y=(1-k)*(1-k)*a[1]+2*(1-k)*k*c[1]+k*k*b[1];
     set(d,{cx:x,cy:y,opacity:on*Math.min(1,Math.sin(k*Math.PI)*3)});
@@ -335,6 +354,13 @@ const tagAlarm = label('Alarm threshold reached', rdX+75, rdY-26);
 set(tagAlarm.r,{fill:C.red,stroke:C.red}); set(tagAlarm.t,{fill:'#FFFFFF'});
 
 svg.insertBefore(readout, labelsG);
+svg.insertBefore(mtG, labelsG);
+// two-line partner label
+const L_met2 = (()=>{ const g=el('g',{opacity:0},labelsG);
+  el('rect',{x:mtP[0]-118,y:mtP[1]+56,width:236,height:54,rx:14,fill:'#FFFFFF',stroke:C.line,filter:'url(#shadow)'},g);
+  el('text',{x:mtP[0],y:mtP[1]+78,'text-anchor':'middle','font-size':18,'font-weight':700,fill:C.ink},g).textContent='MetService and';
+  el('text',{x:mtP[0],y:mtP[1]+99,'text-anchor':'middle','font-size':18,'font-weight':700,fill:C.ink},g).textContent='Tasman District Council';
+  return {g}; })();
 const seaLbl = el('text',{x:P(.965,.42)[0],y:P(.965,.42)[1],'text-anchor':'middle','font-size':20,fill:'#FFFFFF','font-weight':700},labelsG);
 seaLbl.textContent='Tasman Bay';
 
@@ -499,6 +525,10 @@ function render(t){
   set(radarDot,{opacity:radOn*(0.5+0.5*Math.sin(t*6))});
   set(L_radar.g,{opacity:er(t,6.5,7.5)*(s===1?1:.0)});
   linkFrame(links.radar,t,ramp(t,7,8)*(s<=4?1:0.4));
+  linkFrame(links.radarMet,t,ramp(t,7.5,8.5)*(s<=4?1:0.4));
+  set(mtG,{opacity:er(t,0.8,1.8)*(1-0.0*s)});
+  set(mtLed,{fill: t>=8 ? (s<=4 && Math.sin(t*5)>0 ? C.green : '#8FD3AE') : '#7A99AC'});
+  set(L_met2.g,{opacity:er(t,8,9)*(s===1?1:0)});
 
   // rain gauge
   set(rgFill,{y:rgP[1]-22-24*clamp(R*1.1), height:24*clamp(R*1.1)});
