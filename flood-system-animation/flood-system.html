@@ -14,7 +14,9 @@
 <script>
 /* Nelson City Council: flood monitoring system, animated diagram.
    Deterministic: render(t) draws the frame for time t (seconds). */
-const DUR = 54;
+const STORY = 54;          // length of the story timeline (stage timings below)
+const DUR = 90;            // length of the finished clip in seconds
+const SLOW = STORY/DUR;    // story time advances slower than real time
 const C = {
   blue:'#0077C8', teal:'#174A5B', ink:'#1F2B33', grey:'#4A5A66', line:'#DDE5EB',
   pale:'#EEF2F5', mid:'#B5C2CB', slate:'#7A99AC', bg:'#F6F8FA', red:'#D0402B',
@@ -42,7 +44,7 @@ let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/21474836
 
 /* ---------- Timeline ---------- */
 // stage windows
-const ST = [ [0,5], [5,15], [15,25], [25,36], [36,46], [46,DUR] ];
+const ST = [ [0,5], [5,15], [15,25], [25,36], [36,46], [46,STORY] ];
 function stageAt(t){ for(let i=ST.length-1;i>=0;i--) if(t>=ST[i][0]) return i; return 0; }
 function rain(t){ // 0..1 intensity
   if (t<5) return 0;
@@ -475,14 +477,16 @@ function cardState(i,t){
 
 /* Distance travelled by the river shimmer: integrate speed over time so the
    flow always moves downstream and simply slows as the river drops. */
-function flowDist(t){
+function flowDist(m){ // m = real seconds
   const dt=1/60; let d=0;
-  for(let x=0;x<t;x+=dt) d+=(30+90*river(x))*Math.min(dt,t-x);
+  for(let x=0;x<m;x+=dt) d+=(30+90*river(x*SLOW))*Math.min(dt,m-x);
   return d;
 }
 
 /* ---------- Render ---------- */
-function render(t){
+function render(m){
+  // m = real clip time (drives motion speeds); t = story time (drives what happens when)
+  const t = m*SLOW;
   const R=rain(t), Lv=river(t), s=stageAt(t);
 
   // atmosphere
@@ -502,7 +506,7 @@ function render(t){
     drops.forEach((d,i)=>{
       if(i>=n){ set(d.e,{opacity:0}); return; }
       const fall=d.ty-top, sp=900;
-      const k=((t*sp/fall)+d.ph)%1;
+      const k=((m*sp/fall)+d.ph)%1;
       const y=top+k*fall, len=10+16*R;
       const x=d.tx-(1-k)*30;
       set(d.e,{x1:x,y1:y-len,x2:x+len*.12,y2:y,opacity:.75});
@@ -517,31 +521,31 @@ function render(t){
   set(rivLow,{'stroke-width':12+30*Lv});
   const fl = clamp((Lv-.55)/.45);
   set(flood,{'stroke-width':30+80*fl,opacity:.55*fl});
-  set(rivShine,{'stroke-dashoffset':-flowDist(t),'stroke-width':1.5+2*Lv});
+  set(rivShine,{'stroke-dashoffset':-flowDist(m),'stroke-width':1.5+2*Lv});
   set(stream,{'stroke-width':3+7*R});
   set(L_met.g,{opacity: er(t,6,7)*(1-er(t,14.5,15.5))});
 
   // radar
   const radOn = ramp(t,6,7);
   radarPulses.forEach((p,i)=>{
-    const k=((t*0.6)+i/3)%1, r=20+k*230;
+    const k=((m*0.6)+i/3)%1, r=20+k*230;
     const [x,y]=[radarP[0],radarP[1]-18];
     const a1=-165*Math.PI/180, a2=-105*Math.PI/180;
     p.setAttribute('d',`M${x+r*Math.cos(a1)},${y+r*Math.sin(a1)} A${r},${r} 0 0 1 ${x+r*Math.cos(a2)},${y+r*Math.sin(a2)}`);
     set(p,{opacity:radOn*(1-k)*.8*(t<52?1:0)});
   });
-  set(radarDot,{opacity:radOn*(0.5+0.5*Math.sin(t*6))});
+  set(radarDot,{opacity:radOn*(0.5+0.5*Math.sin(m*6))});
   set(L_radar.g,{opacity:er(t,6.5,7.5)*(s===1?1:.0)});
-  linkFrame(links.radar,t,ramp(t,7,8)*(s<=4?1:0.4));
-  linkFrame(links.radarMet,t,ramp(t,7.5,8.5)*(s<=4?1:0.4));
+  linkFrame(links.radar,m,ramp(t,7,8)*(s<=4?1:0.4));
+  linkFrame(links.radarMet,m,ramp(t,7.5,8.5)*(s<=4?1:0.4));
   set(mtG,{opacity:er(t,0.8,1.8)*(1-0.0*s)});
-  set(mtLed,{fill: t>=8 ? (s<=4 && Math.sin(t*5)>0 ? C.green : '#8FD3AE') : '#7A99AC'});
+  set(mtLed,{fill: t>=8 ? (s<=4 && Math.sin(m*5)>0 ? C.green : '#8FD3AE') : '#7A99AC'});
   set(L_met2.g,{opacity:er(t,8,9)*(s===1?1:0)});
 
   // rain gauge
   set(rgFill,{y:rgP[1]-22-24*clamp(R*1.1), height:24*clamp(R*1.1)});
   set(L_rg.g,{opacity:er(t,15.5,16.5)*(s===2?1:0)});
-  linkFrame(links.rg,t,ramp(t,16,17)*(s<=4?1:0.4));
+  linkFrame(links.rg,m,ramp(t,16,17)*(s<=4?1:0.4));
 
   // river gauge + readout
   set(readout,{opacity:er(t,17,18)});
@@ -549,7 +553,7 @@ function render(t){
   rdState.textContent = Lv>=THRESH?'High': Lv>.45?'Rising':'Normal';
   set(rdState,{fill:Lv>=THRESH?C.red:C.grey});
   set(L_rv.g,{opacity:er(t,17.5,18.5)*(s===2?1:0)});
-  linkFrame(links.rv,t,ramp(t,18,19)*(s<=4?1:0.4));
+  linkFrame(links.rv,m,ramp(t,18,19)*(s<=4?1:0.4));
 
   // stormwater intake
   const blocked = t>=27 && t<32.5;
@@ -559,36 +563,36 @@ function render(t){
   set(L_cam.g,{opacity:er(t,25.5,26.5)*(s===3?1:0)});
   const camAlert = t>=28 && t<32.5;
   set(camCone,{opacity:ramp(t,26,27)*(s<=4?.18:0), fill:camAlert?C.red:C.blue});
-  set(camLed,{fill: camAlert? (Math.sin(t*12)>0?C.red:'#F5B7AE') : t>=26? C.green : '#7A99AC'});
+  set(camLed,{fill: camAlert? (Math.sin(m*12)>0?C.red:'#F5B7AE') : t>=26? C.green : '#7A99AC'});
   set(tagBlock.g,{opacity:er(t,28,28.5)*(1-er(t,32.3,32.7))});
   set(tagClear.g,{opacity:er(t,32.7,33.1)*(1-er(t,35,35.6))});
-  linkFrame(links.cam,t,ramp(t,26,27)*(s<=4?1:0.4));
+  linkFrame(links.cam,m,ramp(t,26,27)*(s<=4?1:0.4));
   // truck: drive along road from far end of town to the intake
   const tk = er(t,29,31.8);
   const tp = P(lerp(.94,.6,tk),.15);
   set(truck,{opacity:ramp(t,28.8,29.2)*(1-ramp(t,34.5,35.2)),transform:`translate(${tp[0]},${tp[1]}) scale(-1,1)`});
-  set(truckLight,{fill:Math.sin(t*14)>0?C.amber:'#FFE2A8'});
+  set(truckLight,{fill:Math.sin(m*14)>0?C.amber:'#FFE2A8'});
 
   // pumps
   const pumpOn = t>=29 && t<50;
-  set(fan,{transform:`translate(${pmP[0]-4},${pmP[1]-17}) rotate(${pumpOn? t*360 : 0})`});
+  set(fan,{transform:`translate(${pmP[0]-4},${pmP[1]-17}) rotate(${pumpOn? m*360 : 0})`});
   set(pumpLed,{fill:pumpOn?C.green:'#7A99AC'});
-  set(pumpJet,{opacity:pumpOn? .9:0,'stroke-dashoffset':-t*60});
+  set(pumpJet,{opacity:pumpOn? .9:0,'stroke-dashoffset':-m*60});
   set(L_pump.g,{opacity:er(t,29,30)*(s===3?1:0)});
-  linkFrame(links.pump,t,ramp(t,29,30)*(s<=4?1:0.4));
+  linkFrame(links.pump,m,ramp(t,29,30)*(s<=4?1:0.4));
 
   // operations centre
   const alarm = Lv>=THRESH && t<46;
-  set(ocAlarm,{fill: alarm? (Math.sin(t*10)>0?C.red:'#F5B7AE') : t>7? C.green : '#7A99AC'});
-  ocRings.forEach((r,i)=>{ const k=((t*.8)+i/2)%1; set(r,{r:30+k*70,opacity:alarm?(1-k)*.8:0}); });
+  set(ocAlarm,{fill: alarm? (Math.sin(m*10)>0?C.red:'#F5B7AE') : t>7? C.green : '#7A99AC'});
+  ocRings.forEach((r,i)=>{ const k=((m*.8)+i/2)%1; set(r,{r:30+k*70,opacity:alarm?(1-k)*.8:0}); });
   set(L_oc.g,{opacity:er(t,7.5,8.5)*(s===1||s===4?1:0)});
   set(tagAlarm.g,{opacity:(alarm?1:0)*er(t,36.5,37)*(1-er(t,40,40.5))});
 
   // phone + pings
   const ph = er(t,38.5,39.5)*(1-er(t,46,47));
   set(phone,{opacity:ph,transform:`translate(0,${(1-ph)*40})`});
-  phRings.forEach((r,i)=>{ const k=((t*.7)+i/3)%1; set(r,{r:40+k*150,opacity:ph*(1-k)*.5*(t<45?1:0)}); });
-  pingPts.forEach((p,i)=>{ const k=ramp(t,39+i*.15,39.4+i*.15); set(p,{opacity:k*(1-er(t,45,46))*(0.6+0.4*Math.sin(t*5+i))}); });
+  phRings.forEach((r,i)=>{ const k=((m*.7)+i/3)%1; set(r,{r:40+k*150,opacity:ph*(1-k)*.5*(t<45?1:0)}); });
+  pingPts.forEach((p,i)=>{ const k=ramp(t,39+i*.15,39.4+i*.15); set(p,{opacity:k*(1-er(t,45,46))*(0.6+0.4*Math.sin(m*5+i))}); });
 
   // finale
   set(finale,{opacity:er(t,47.5,48.5)});
@@ -619,11 +623,11 @@ function render(t){
     set(c.circ,{fill:active?C.blue:done?C.teal:C.pale,stroke:active?C.blue:done?C.teal:C.mid});
     set(c.num,{fill:active||done?'#FFFFFF':C.grey});
     set(c.dot,{fill:active?(txt.startsWith('Blockage')||txt.startsWith('Alarm')?C.red:C.blue):done?C.green:C.mid,
-      opacity: active? .55+.45*Math.sin(t*6):1});
+      opacity: active? .55+.45*Math.sin(m*6):1});
     set(c.st,{fill:active?(txt.startsWith('Blockage')||txt.startsWith('Alarm')?C.red:C.blue):done?C.teal:C.slate});
     c.st.textContent=txt;
   });
-  set(loopT,{fill: s===5? C.blue : C.slate, opacity: s===5? .7+.3*Math.sin(t*4) : .8});
+  set(loopT,{fill: s===5? C.blue : C.slate, opacity: s===5? .7+.3*Math.sin(m*4) : .8});
 }
 window.render = render;
 window.DURATION = DUR;
